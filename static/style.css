@@ -83,3 +83,15 @@
 .prac-option.wrong{background:#fde8e8 !important;border-color:#d9534f !important;color:#d9534f}
 .prac-hint-box{background:#fff8db;border:1px solid #fce8a6;border-radius:8px;padding:10px 14px;font-size:13px;color:#854d0e;line-height:1.5}
 
+/* ═══════════════════════════════════════════════════════════
+   COMPANY RECRUITMENT GUIDE STYLES
+═══════════════════════════════════════════════════════════ */
+.company-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;margin-bottom:24px}
+.company-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:22px;display:flex;flex-direction:column;transition:transform .15s,border-color .15s}
+.company-card:hover{transform:translateY(-3px);border-color:#aabcf0;box-shadow:0 8px 24px rgba(40,89,216,0.08)}
+.company-tier-badge{font:700 10px "DM Mono",monospace;background:#e8eeff;color:var(--blue);padding:4px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:0.5px}
+.rounds-timeline{display:flex;flex-direction:column;gap:14px}
+.round-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 20px;border-left:4px solid var(--blue)}
+.round-header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px}
+.round-number{width:28px;height:28px;border-radius:50%;background:#e8eeff;color:var(--blue);font:700 13px "DM Mono",monospace;display:grid;place-items:center}
+

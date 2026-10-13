@@ -218,6 +218,9 @@ def init_db():
         # ── Initialize Practice Arena tables and seed questions ──────────────
         _init_practice_db(conn)
 
+        # ── Initialize Company Recruitment Guide tables and seed data ────────
+        _init_company_db(conn)
+
 def save_attempt(student_name, attempt_type, topic, score, feedback):
     user = session.get("user", {})
     with get_db() as conn:
@@ -1760,6 +1763,496 @@ def practice_bookmarks():
             WHERE pb.user_id=%s ORDER BY pq.topic, pb.created_at DESC
         """, (uid,)).fetchall()
     return render_template("practice_bookmarks.html", bookmarks=bookmarks, topic_icons=TOPIC_ICONS)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  COMPANY-WISE RECRUITMENT INSIGHTS & INTERVIEW GUIDE MODULE
+# ══════════════════════════════════════════════════════════════════════════════
+
+_COMPANY_SEED = [
+    {
+        "name": "Tata Consultancy Services (TCS)",
+        "slug": "tcs",
+        "tier": "Tier 1 - Mass Recruiter",
+        "industry": "IT Services & Consulting",
+        "logo_emoji": "🏢",
+        "salary_range": "₹3.36 LPA (Ninja) to ₹7.0 - ₹9.0 LPA (Digital / Prime)",
+        "eligibility_cgpa": "60% or 6.0 CGPA across 10th, 12th, UG",
+        "eligibility_dept": "B.E / B.Tech / M.E / M.Tech / MCA / M.Sc (All branches eligible)",
+        "description": "TCS conducts the National Qualifier Test (TCS NQT) for campus hiring, offering Ninja, Digital, and Prime bands based on test and interview scores.",
+        "skills_required": ["Python", "Java", "DSA", "DBMS", "Quantitative Aptitude"],
+        "rounds": [
+            {
+                "round_number": 1,
+                "round_name": "TCS NQT (Foundation + Advanced Section)",
+                "duration_min": 165,
+                "format": "Online Computer-Based Test",
+                "elimination_rate": "Very High",
+                "description": "Foundation section tests Numerical, Verbal, and Reasoning Ability. Advanced section tests Advanced Quantitative, Reasoning, and 2 hands-on coding problems.",
+                "key_topics": ["Quantitative Aptitude", "Logical Reasoning", "Verbal English", "Hands-on Coding (Python/Java/C++)"]
+            },
+            {
+                "round_number": 2,
+                "round_name": "Technical Interview",
+                "duration_min": 45,
+                "format": "Face-to-Face / Virtual Video Interview",
+                "elimination_rate": "Medium",
+                "description": "Thorough assessment of fundamentals in programming (Python/Java), Object-Oriented Programming, Database queries (SQL), and academic projects.",
+                "key_topics": ["OOP Concepts", "Basic Data Structures", "SQL Joins & Normalization", "Final Year Project Architecture"]
+            },
+            {
+                "round_number": 3,
+                "round_name": "Managerial & HR Interview",
+                "duration_min": 25,
+                "format": "Personal Interview",
+                "elimination_rate": "Low",
+                "description": "Evaluation of cultural fit, willingness to relocate, communication clarity, shift flexibility, and situational judgment.",
+                "key_topics": ["Situational Scenarios", "Relocation & Shifts", "Team Conflict Resolution", "Career Aspirations"]
+            }
+        ],
+        "questions": [
+            {
+                "round_number": 2,
+                "topic": "Python",
+                "difficulty": "easy",
+                "question": "What is the difference between a list and a tuple in Python, and when would you prefer a tuple?",
+                "answer_pointers": "Lists are mutable (modifiable in-place); tuples are immutable. Tuples provide integrity protection for fixed data, faster iteration, and can serve as dictionary keys."
+            },
+            {
+                "round_number": 2,
+                "topic": "DBMS",
+                "difficulty": "medium",
+                "question": "Explain 1NF, 2NF, and 3NF database normalization with a real-world scenario.",
+                "answer_pointers": "1NF ensures atomic columns and unique rows. 2NF removes partial dependency on composite keys. 3NF removes transitive functional dependencies."
+            },
+            {
+                "round_number": 2,
+                "topic": "Java",
+                "difficulty": "medium",
+                "question": "Can we override a private or static method in Java? Why or why not?",
+                "answer_pointers": "No. Private methods are not inherited outside the class. Static methods belong to the class, not instances; declaring the same static method in a subclass is method hiding, not overriding."
+            },
+            {
+                "round_number": 1,
+                "topic": "DSA",
+                "difficulty": "easy",
+                "question": "Write an algorithm to reverse an array in-place without using extra space.",
+                "answer_pointers": "Use two pointers (start at 0, end at n-1). Swap elements while start < end, incrementing start and decrementing end. Runs in O(n) time and O(1) space."
+            }
+        ]
+    },
+    {
+        "name": "Zoho Corporation",
+        "slug": "zoho",
+        "tier": "Product Company",
+        "industry": "SaaS & Cloud Software",
+        "logo_emoji": "⚡",
+        "salary_range": "₹6.0 LPA to ₹8.5 LPA (Member Technical Staff)",
+        "eligibility_cgpa": "No strict CGPA cutoff (pure skill-based evaluation)",
+        "eligibility_dept": "Any Engineering or Science degree",
+        "description": "Zoho places heavy emphasis on core algorithmic problem solving, clean code writing, data structure implementation without built-in libraries, and system design.",
+        "skills_required": ["Java", "DSA", "C Programming", "OOP", "DBMS"],
+        "rounds": [
+            {
+                "round_number": 1,
+                "round_name": "Round 1: Basic Programming & C/Java Aptitude",
+                "duration_min": 90,
+                "format": "Written / Online Test",
+                "elimination_rate": "Very High",
+                "description": "C/Java snippet tracing, pointer arithmetic, recursion trace, loops, and math puzzles. Heavy elimination round.",
+                "key_topics": ["Pointers & Memory", "Output Tracing", "Recursion", "Operators & Precedence"]
+            },
+            {
+                "round_number": 2,
+                "round_name": "Round 2: Basic Problem Solving (5 Coding Questions)",
+                "duration_min": 120,
+                "format": "Machine Coding / Pen-Paper Coding",
+                "elimination_rate": "High",
+                "description": "Implementation of string manipulation, matrix manipulation, patterns, and mathematical algorithms without using standard library shortcuts.",
+                "key_topics": ["String Manipulation", "Matrix Traversal", "Sorting Logic", "Pattern Generation"]
+            },
+            {
+                "round_number": 3,
+                "round_name": "Round 3: Advanced Problem Solving / Design Round",
+                "duration_min": 150,
+                "format": "System Design / Machine Coding",
+                "elimination_rate": "Medium",
+                "description": "Develop a console-based application (e.g., Railway Reservation System, Dungeon Game, Snake Game, Splitwise) applying Object-Oriented principles.",
+                "key_topics": ["Low-Level System Design", "OOP Architecture", "State Management", "Data Flow"]
+            },
+            {
+                "round_number": 4,
+                "round_name": "Round 4: Technical & HR Discussion",
+                "duration_min": 45,
+                "format": "In-person Interview",
+                "elimination_rate": "Low",
+                "description": "Discussion on your machine coding solution, code optimization, data structures used, passion for software engineering, and mindset.",
+                "key_topics": ["Time & Space Optimization", "Culture Alignment", "Problem-Solving Mindset"]
+            }
+        ],
+        "questions": [
+            {
+                "round_number": 2,
+                "topic": "DSA",
+                "difficulty": "medium",
+                "question": "Given an array, print the elements in alternate sorting order: max, min, 2nd max, 2nd min, etc.",
+                "answer_pointers": "Sort array first, then use two pointers from both ends (left=0, right=n-1). Print right, then left until pointers meet. O(n log n) time."
+            },
+            {
+                "round_number": 2,
+                "topic": "DSA",
+                "difficulty": "medium",
+                "question": "Find the substring with the maximum length without repeating characters.",
+                "answer_pointers": "Sliding window technique using a hash map or 256-element array to store the last seen index of each character. O(n) time, O(min(m, n)) space."
+            },
+            {
+                "round_number": 3,
+                "topic": "Java",
+                "difficulty": "hard",
+                "question": "Design a Railway Ticket Reservation system with confirmed, RAC, and waiting list ticket allocation.",
+                "answer_pointers": "Identify core entities: Passenger, Ticket, Berth, BookingManager. Use Queues for RAC/WL management, Maps for PNR lookup, and OOP encapsulation for ticket states."
+            }
+        ]
+    },
+    {
+        "name": "Infosys",
+        "slug": "infosys",
+        "tier": "Tier 1 - IT Services",
+        "industry": "IT Services & Consulting",
+        "logo_emoji": "🔷",
+        "salary_range": "₹3.6 LPA (System Engineer) to ₹6.5 LPA (DSE) / ₹9.5 LPA (Power Programmer)",
+        "eligibility_cgpa": "65% or 6.5 CGPA in 10th, 12th, and Degree",
+        "eligibility_dept": "B.E / B.Tech / M.E / M.Tech / MCA",
+        "description": "Infosys hires through national assessment programs (InfyTQ and HackWithInfy) with distinct tracks for System Engineer, Digital Specialist Engineer, and Specialist Programmer.",
+        "skills_required": ["Python", "Java", "DSA", "DBMS", "Web Development"],
+        "rounds": [
+            {
+                "round_number": 1,
+                "round_name": "Infosys Online Assessment",
+                "duration_min": 100,
+                "format": "Online Adaptive Examination",
+                "elimination_rate": "High",
+                "description": "Sections include Mathematical Thinking, Logical Reasoning, Verbal Ability, Pseudocode Evaluation, and Numerical Puzzle Solving.",
+                "key_topics": ["Reasoning Ability", "Data Interpretation", "Pseudocode Debugging", "Verbal Ability"]
+            },
+            {
+                "round_number": 2,
+                "round_name": "Technical & HR Interview",
+                "duration_min": 40,
+                "format": "Virtual Interview",
+                "elimination_rate": "Medium",
+                "description": "Testing candidate on chosen programming language (Python/Java), SQL queries, project contributions, and situational HR questions.",
+                "key_topics": ["SQL Queries & Subqueries", "OOP Polymorphism & Inheritance", "Project Challenges", "Adaptability"]
+            }
+        ],
+        "questions": [
+            {
+                "round_number": 2,
+                "topic": "DBMS",
+                "difficulty": "medium",
+                "question": "How do you find the second highest salary from an Employee table in SQL?",
+                "answer_pointers": "Use subquery: SELECT MAX(salary) FROM Employee WHERE salary < (SELECT MAX(salary) FROM Employee); OR using DENSE_RANK() window function."
+            },
+            {
+                "round_number": 2,
+                "topic": "Python",
+                "difficulty": "easy",
+                "question": "What is PEP 8 in Python and why is it important?",
+                "answer_pointers": "PEP 8 is the official style guide for Python code. It standardizes formatting (indentation, naming conventions, line length) to maximize readability and maintainability."
+            },
+            {
+                "round_number": 2,
+                "topic": "Web Development",
+                "difficulty": "easy",
+                "question": "Explain the difference between synchronous and asynchronous HTTP requests.",
+                "answer_pointers": "Synchronous requests block execution until the server replies, freezing the UI. Asynchronous requests run in the background (using Promises / async-await), maintaining responsiveness."
+            }
+        ]
+    },
+    {
+        "name": "Amazon",
+        "slug": "amazon",
+        "tier": "Tier 1 - Tech Giant / Product",
+        "industry": "E-Commerce & Cloud Computing",
+        "logo_emoji": "📦",
+        "salary_range": "₹28.0 LPA to ₹45.0 LPA (Software Development Engineer - 1)",
+        "eligibility_cgpa": "6.5+ CGPA with no active backlogs",
+        "eligibility_dept": "CSE, IT, ECE, EEE (All branches for off-campus)",
+        "description": "Amazon rigorously assesses candidates on Data Structures, Algorithms, System Scalability, and Amazon's 16 Leadership Principles (Customer Obsession, Ownership, Bias for Action).",
+        "skills_required": ["DSA", "Java", "Python", "System Design", "Leadership Principles"],
+        "rounds": [
+            {
+                "round_number": 1,
+                "round_name": "Online Assessment (OA1 + OA2)",
+                "duration_min": 105,
+                "format": "Hackerrank Coding + Work Style Assessment",
+                "elimination_rate": "Very High",
+                "description": "2 medium-to-hard LeetCode-style algorithmic coding challenges followed by the Amazon Work Simulation & Leadership Principle questionnaire.",
+                "key_topics": ["Trees & Graphs", "Dynamic Programming", "Sliding Window", "Leadership Principles"]
+            },
+            {
+                "round_number": 2,
+                "round_name": "Technical Round 1: DSA & Problem Solving",
+                "duration_min": 60,
+                "format": "Live Collaborative Coding (Amazon Chime)",
+                "elimination_rate": "High",
+                "description": "Solve 1-2 complex algorithmic problems with complete edge-case handling and time/space complexity analysis, plus 1 Leadership Principle question.",
+                "key_topics": ["Binary Search Trees", "Heaps / Priority Queue", "Graph Traversal (BFS/DFS)", "Customer Obsession"]
+            },
+            {
+                "round_number": 3,
+                "round_name": "Technical Round 2: Data Structures & Code Quality",
+                "duration_min": 60,
+                "format": "Live Collaborative Coding",
+                "elimination_rate": "Medium",
+                "description": "Focus on modular design, clean code, handling large inputs, and Leadership Principles (Bias for Action, Deliver Results).",
+                "key_topics": ["Trie Data Structure", "Two Pointers", "Dynamic Programming", "Ownership"]
+            },
+            {
+                "round_number": 4,
+                "round_name": "Bar Raiser Round",
+                "duration_min": 60,
+                "format": "Senior Leader Interview",
+                "elimination_rate": "High",
+                "description": "Conducted by an independent Amazonian trained to ensure the hire raises the talent bar. Deep dive into past projects, architecture tradeoffs, and behavioural scenarios.",
+                "key_topics": ["Architecture Decisions", "Conflict with Peers", "Failure & Recovery", "Have Backbone; Disagree & Commit"]
+            }
+        ],
+        "questions": [
+            {
+                "round_number": 2,
+                "topic": "DSA",
+                "difficulty": "hard",
+                "question": "Given an array of integers representing asteroid sizes, simulate their collisions where opposites collide and the smaller one explodes.",
+                "answer_pointers": "Use a Stack. Push positive (moving right) asteroids. When negative (moving left) arrives, resolve collisions with stack top while top is positive and smaller. O(n) time, O(n) space."
+            },
+            {
+                "round_number": 2,
+                "topic": "DSA",
+                "difficulty": "medium",
+                "question": "Serialize and deserialize a Binary Tree so it can be reconstructed identically.",
+                "answer_pointers": "Use preorder traversal with delimiters (e.g., comma-separated) and marker '# ' for NULL nodes. Deserialization reconstructs tree recursively using a Queue or iterator. O(n) time."
+            },
+            {
+                "round_number": 4,
+                "topic": "Java",
+                "difficulty": "medium",
+                "question": "Tell me about a time you had to deliver a critical project under a tight deadline and had to make technical tradeoffs (Bias for Action).",
+                "answer_pointers": "Structure using STAR method (Situation, Task, Action, Result). State the constraint, tradeoff made, data backing your decision, mitigation for technical debt, and positive outcome."
+            }
+        ]
+    },
+    {
+        "name": "Cognizant (CTS)",
+        "slug": "cognizant",
+        "tier": "Tier 1 - IT Services",
+        "industry": "IT Services & Digital Solutions",
+        "logo_emoji": "🔷",
+        "salary_range": "₹4.0 LPA (GenC) to ₹6.75 LPA (GenC Elevate) / ₹9.25 LPA (GenC Next)",
+        "eligibility_cgpa": "60% or 6.0 CGPA with max 1 standing backlog",
+        "eligibility_dept": "All Engineering streams & MCA",
+        "description": "Cognizant offers GenC, GenC Elevate, and GenC Next hiring tiers. GenC Next tests full stack engineering, advanced algorithms, and cloud skills.",
+        "skills_required": ["Java", "Python", "DBMS", "Web Development", "DSA"],
+        "rounds": [
+            {
+                "round_number": 1,
+                "round_name": "Cognizant Skill Assessment",
+                "duration_min": 120,
+                "format": "Online AMCAT / HackerEarth Test",
+                "elimination_rate": "High",
+                "description": "Aptitude (Quantitative, Analytical, English) followed by Automata coding tests (2 problems). GenC Next candidates take an advanced coding test.",
+                "key_topics": ["Quantitative Math", "Logical Deduction", "Coding Automata (Java/Python)", "Code Debugging"]
+            },
+            {
+                "round_number": 2,
+                "round_name": "Technical & HR Interview",
+                "duration_min": 35,
+                "format": "Virtual Interview",
+                "elimination_rate": "Medium",
+                "description": "Testing foundational programming knowledge, database queries, web technologies, and resume project defense.",
+                "key_topics": ["OOP in Java/Python", "SQL Joins & Group By", "REST API Basics", "Project Walkthrough"]
+            }
+        ],
+        "questions": [
+            {
+                "round_number": 2,
+                "topic": "Java",
+                "difficulty": "easy",
+                "question": "What is the difference between ArrayList and LinkedList in Java?",
+                "answer_pointers": "ArrayList is backed by dynamic array, offering O(1) random access but O(n) element insertion/deletion. LinkedList uses doubly-linked nodes, with O(1) insertion at endpoints but O(n) search."
+            },
+            {
+                "round_number": 2,
+                "topic": "Web Development",
+                "difficulty": "medium",
+                "question": "Explain how CSS Flexbox simplifies responsive layout design.",
+                "answer_pointers": "Flexbox enables one-dimensional layout control. Attributes like justify-content, align-items, and flex-wrap allow child items to stretch or shrink dynamically without floats or absolute positioning."
+            },
+            {
+                "round_number": 2,
+                "topic": "DBMS",
+                "difficulty": "easy",
+                "question": "What is the difference between DELETE, TRUNCATE, and DROP commands?",
+                "answer_pointers": "DELETE is DML (removes rows, can be filtered with WHERE, rollbackable). TRUNCATE is DDL (removes all rows fast, resets identity, cannot be rolled back easily). DROP is DDL (destroys the whole table structure)."
+            }
+        ]
+    }
+]
+
+def _init_company_db(conn):
+    """Create company guide tables and seed data."""
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS comp_companies (
+            id               BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+            name             TEXT NOT NULL,
+            slug             TEXT NOT NULL UNIQUE,
+            tier             TEXT NOT NULL,
+            industry         TEXT NOT NULL,
+            logo_emoji       TEXT NOT NULL DEFAULT '🏢',
+            salary_range     TEXT NOT NULL,
+            eligibility_cgpa TEXT NOT NULL,
+            eligibility_dept TEXT NOT NULL,
+            description      TEXT NOT NULL,
+            skills_required  JSONB NOT NULL DEFAULT '[]',
+            created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS comp_rounds (
+            id               BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+            company_id       BIGINT NOT NULL REFERENCES comp_companies(id) ON DELETE CASCADE,
+            round_number     INT NOT NULL,
+            round_name       TEXT NOT NULL,
+            duration_min     INT NOT NULL DEFAULT 60,
+            format           TEXT NOT NULL,
+            elimination_rate TEXT NOT NULL DEFAULT 'Medium',
+            description      TEXT NOT NULL,
+            key_topics       JSONB NOT NULL DEFAULT '[]',
+            created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS comp_questions (
+            id               BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+            company_id       BIGINT NOT NULL REFERENCES comp_companies(id) ON DELETE CASCADE,
+            round_number     INT NOT NULL DEFAULT 1,
+            topic            TEXT NOT NULL,
+            difficulty       TEXT NOT NULL DEFAULT 'medium',
+            question         TEXT NOT NULL,
+            answer_pointers  TEXT NOT NULL,
+            created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        )
+    """)
+
+    # Seed if empty
+    existing = conn.execute("SELECT COUNT(*) AS c FROM comp_companies").fetchone()
+    if existing and existing["c"] == 0:
+        for c in _COMPANY_SEED:
+            c_row = conn.execute("""
+                INSERT INTO comp_companies
+                  (name, slug, tier, industry, logo_emoji, salary_range,
+                   eligibility_cgpa, eligibility_dept, description, skills_required)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id
+            """, (c["name"], c["slug"], c["tier"], c["industry"], c["logo_emoji"],
+                  c["salary_range"], c["eligibility_cgpa"], c["eligibility_dept"],
+                  c["description"], json.dumps(c["skills_required"]))).fetchone()
+            cid = c_row["id"]
+
+            for r in c.get("rounds", []):
+                conn.execute("""
+                    INSERT INTO comp_rounds
+                      (company_id, round_number, round_name, duration_min,
+                       format, elimination_rate, description, key_topics)
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
+                """, (cid, r["round_number"], r["round_name"], r["duration_min"],
+                      r["format"], r["elimination_rate"], r["description"],
+                      json.dumps(r.get("key_topics", []))))
+
+            for q in c.get("questions", []):
+                conn.execute("""
+                    INSERT INTO comp_questions
+                      (company_id, round_number, topic, difficulty, question, answer_pointers)
+                    VALUES (%s,%s,%s,%s,%s,%s)
+                """, (cid, q["round_number"], q["topic"], q["difficulty"],
+                      q["question"], q["answer_pointers"]))
+
+
+# ── Routes for Company Recruitment Guide ──────────────────────────────────────
+
+@app.route("/companies")
+@login_required
+def companies_list():
+    tier_filter = request.args.get("tier", "").strip()
+    industry_filter = request.args.get("industry", "").strip()
+
+    with get_db() as conn:
+        q = "SELECT * FROM comp_companies WHERE 1=1"
+        params = []
+        if tier_filter:
+            q += " AND tier ILIKE %s"; params.append(f"%{tier_filter}%")
+        if industry_filter:
+            q += " AND industry ILIKE %s"; params.append(f"%{industry_filter}%")
+        q += " ORDER BY id ASC"
+
+        raw_companies = conn.execute(q, params).fetchall()
+
+        tiers = [r["tier"] for r in conn.execute(
+            "SELECT DISTINCT tier FROM comp_companies ORDER BY 1"
+        ).fetchall()]
+        industries = [r["industry"] for r in conn.execute(
+            "SELECT DISTINCT industry FROM comp_companies ORDER BY 1"
+        ).fetchall()]
+
+    companies = []
+    for r in raw_companies:
+        item = dict(r)
+        skills = item.get("skills_required", [])
+        item["skills_list"] = json.loads(skills) if isinstance(skills, str) else skills
+        companies.append(item)
+
+    return render_template("companies_list.html",
+                           companies=companies,
+                           tiers=tiers,
+                           industries=industries,
+                           tier_filter=tier_filter,
+                           industry_filter=industry_filter)
+
+
+@app.route("/companies/<slug>")
+@login_required
+def company_detail(slug):
+    with get_db() as conn:
+        comp_raw = conn.execute(
+            "SELECT * FROM comp_companies WHERE slug=%s", (slug,)
+        ).fetchone()
+        if not comp_raw:
+            abort(404)
+
+        company = dict(comp_raw)
+        skills = company.get("skills_required", [])
+        company["skills_list"] = json.loads(skills) if isinstance(skills, str) else skills
+
+        raw_rounds = conn.execute(
+            "SELECT * FROM comp_rounds WHERE company_id=%s ORDER BY round_number ASC",
+            (company["id"],)
+        ).fetchall()
+
+        rounds = []
+        for r in raw_rounds:
+            item = dict(r)
+            topics = item.get("key_topics", [])
+            item["key_topics"] = json.loads(topics) if isinstance(topics, str) else topics
+            rounds.append(item)
+
+        questions = conn.execute(
+            "SELECT * FROM comp_questions WHERE company_id=%s ORDER BY round_number ASC, id ASC",
+            (company["id"],)
+        ).fetchall()
+
+    return render_template("company_detail.html",
+                           company=company,
+                           rounds=rounds,
+                           questions=questions)
 
 
 # Create/upgrade the table on startup so it also works under gunicorn on Render.

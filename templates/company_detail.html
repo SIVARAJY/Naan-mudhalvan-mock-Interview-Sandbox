@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}{{ company.name }} Recruitment Process & Interview Guide · SkillSandbox{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+  <div style="display:flex;align-items:center;gap:8px;">
+    <a href="{{ url_for('companies_list') }}" class="text-link">← All Companies</a>
+    <span class="muted">/</span>
+    <span style="font-weight:700;">{{ company.name }}</span>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <a href="{{ url_for('practice_arena') }}" class="button secondary" style="font-size:12px;padding:6px 12px;">⚡ Practice Arena</a>
+    <a href="{{ url_for('learning_hub') }}" class="button secondary" style="font-size:12px;padding:6px 12px;">📚 Learning Hub</a>
+  </div>
+</div>
+
+<!-- Company Hero -->
+<div class="panel" style="padding:28px;margin-bottom:24px;">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;">
+    <div style="display:flex;align-items:flex-start;gap:16px;">
+      <span style="font-size:48px;line-height:1;">{{ company.logo_emoji }}</span>
+      <div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:4px;">
+          <h1 style="margin:0;font-size:28px;letter-spacing:-0.8px;">{{ company.name }}</h1>
+          <span class="company-tier-badge">{{ company.tier }}</span>
+        </div>
+        <p class="muted" style="margin:0 0 10px;font-size:14px;">{{ company.industry }} · Campus Recruitment Workflow</p>
+        <p style="margin:0;font-size:13px;line-height:1.6;max-width:750px;">{{ company.description }}</p>
+      </div>
+    </div>
+    <div style="background:#f4f6fa;padding:16px 20px;border-radius:10px;border:1px solid var(--line);min-width:220px;">
+      <span class="small muted" style="text-transform:uppercase;font-weight:700;letter-spacing:0.8px;display:block;margin-bottom:6px;">Compensation & Cutoff</span>
+      <strong style="font-size:20px;color:var(--blue);display:block;margin-bottom:4px;">{{ company.salary_range }}</strong>
+      <div class="small" style="margin-bottom:2px;"><span class="muted">CGPA Minimum:</span> <strong>{{ company.eligibility_cgpa }}</strong></div>
+      <div class="small"><span class="muted">Departments:</span> {{ company.eligibility_dept }}</div>
+    </div>
+  </div>
+
+  <div style="margin-top:20px;border-top:1px solid var(--line);padding-top:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+    <span class="small" style="font-weight:700;">Required Skill Stack:</span>
+    {% for s in company.skills_list %}
+    <a href="{{ url_for('practice_drill', topic=s) }}" class="prac-badge-pill" style="text-decoration:none;transition:background 0.15s;" title="Practice {{ s }} questions">
+      ⚡ {{ s }}
+    </a>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Interview Rounds Timeline -->
+<div class="panel" style="margin-bottom:24px;">
+  <div class="section-heading" style="margin-bottom:16px;">
+    <div>
+      <p class="eyebrow">ASSESSMENT PATTERN</p>
+      <h2>Round-Wise Recruitment Process</h2>
+    </div>
+  </div>
+
+  <div class="rounds-timeline">
+    {% for r in rounds %}
+    <div class="round-card">
+      <div class="round-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="round-number">{{ r.round_number }}</span>
+          <div>
+            <h3 style="margin:0;font-size:16px;">{{ r.round_name }}</h3>
+            <span class="small muted">{{ r.format }}</span>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <span class="status {% if r.elimination_rate == 'High' or r.elimination_rate == 'Very High' %}review{% else %}pass{% endif %}" style="font-size:10px;">
+            Elimination: {{ r.elimination_rate }}
+          </span>
+          <span class="small muted" style="display:block;margin-top:2px;">⏱️ {{ r.duration_min }} mins</span>
+        </div>
+      </div>
+      
+      <p style="font-size:13px;line-height:1.6;margin:12px 0 14px;">{{ r.description }}</p>
+
+      {% if r.key_topics %}
+      <div style="background:#f8f9fa;border-radius:6px;padding:8px 12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12px;">
+        <span class="muted">Evaluation Topics:</span>
+        {% for t in r.key_topics %}
+        <span style="font-weight:600;color:var(--ink);">{{ t }}</span>{% if not loop.last %}·{% endif %}
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Frequently Reported Interview Questions -->
+<div class="panel" style="margin-bottom:24px;">
+  <div class="section-heading" style="margin-bottom:8px;">
+    <div>
+      <p class="eyebrow">ACTUAL INTERVIEW QUESTIONS</p>
+      <h2>Reported Technical & HR Questions</h2>
+    </div>
+  </div>
+  <p class="muted small" style="margin:0 0 18px;">Recently compiled interview questions reported from campus recruitment drives for {{ company.name }}:</p>
+
+  <div style="display:flex;flex-direction:column;gap:12px;">
+    {% for q in questions %}
+    <div style="background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;flex-wrap:wrap;gap:8px;">
+        <div style="display:flex;gap:6px;align-items:center;">
+          <span class="prac-badge-pill" style="font-size:10px;">{{ q.topic }}</span>
+          <span class="status {% if q.difficulty == 'easy' %}pass{% else %}review{% endif %}" style="font-size:9px;text-transform:uppercase;">{{ q.difficulty }}</span>
+          <span class="small muted">Round {{ q.round_number }}</span>
+        </div>
+        {% if q.topic %}
+        <a href="{{ url_for('practice_drill', topic=q.topic) }}" class="text-link" style="font-size:11px;">
+          Practice {{ q.topic }} Questions →
+        </a>
+        {% endif %}
+      </div>
+      <strong style="font-size:14px;color:var(--ink);display:block;margin-bottom:6px;">{{ q.question }}</strong>
+      <p class="small muted" style="margin:0;line-height:1.5;">💡 <strong>Key Discussion Points:</strong> {{ q.answer_pointers }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Recommended Preparation Modules -->
+<div class="panel" style="background:#f5f8ff;border-color:#bfcfff;">
+  <div class="section-heading" style="margin-bottom:8px;">
+    <div>
+      <p class="eyebrow" style="color:var(--blue);">PREPARATION ARSENAL</p>
+      <h2>Recommended Modules for {{ company.name }}</h2>
+    </div>
+  </div>
+  <p class="muted small" style="margin:0 0 16px;">Boost your performance in {{ company.name }}'s rounds using the integrated sandbox modules:</p>
+  
+  <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:14px;">
+    {% for s in company.skills_list[:3] %}
+    <div style="background:#fff;padding:14px;border-radius:8px;border:1px solid var(--line);display:flex;flex-direction:column;gap:8px;">
+      <strong style="font-size:14px;">{{ s }} Training</strong>
+      <p class="small muted" style="margin:0;flex:1;">Sharpen your {{ s }} concepts, speed, and accuracy before assessment day.</p>
+      <div style="display:flex;gap:6px;">
+        <a href="{{ url_for('practice_drill', topic=s) }}" class="button" style="font-size:11px;padding:5px 8px;flex:1;text-align:center;">⚡ Drill</a>
+        <a href="{{ url_for('learning_hub', topic=s) }}" class="button secondary" style="font-size:11px;padding:5px 8px;flex:1;text-align:center;">📚 Course</a>
+      </div>
+    </div>
+    {% endfor %}
+    <div style="background:#fff;padding:14px;border-radius:8px;border:1px solid var(--line);display:flex;flex-direction:column;gap:8px;">
+      <strong style="font-size:14px;">Simulated Mock Interview</strong>
+      <p class="small muted" style="margin:0;flex:1;">Take a 5-question multi-topic technical interview simulation with automatic scoring.</p>
+      <a href="{{ url_for('interview') }}" class="button" style="font-size:11px;padding:5px 8px;text-align:center;">Launch Simulation →</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
