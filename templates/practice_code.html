@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+{% block title %}{{ q.title }} · Coding Arena{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+  <div style="display:flex;align-items:center;gap:8px;">
+    <a href="{{ url_for('practice_arena') }}" class="text-link">← Practice Arena</a>
+    <span class="muted">/</span>
+    <a href="{{ url_for('practice_drill', topic=q.topic, type='code') }}" class="text-link">{{ q.topic }}</a>
+    <span class="muted">/</span>
+    <span style="font-weight:700;">{{ q.title }}</span>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <button id="bm-toggle-btn" class="button secondary" style="font-size:12px;padding:6px 12px;" onclick="toggleBookmark({{ q.id }})">
+      {% if bookmarked %}⭐ Bookmarked{% else %}☆ Bookmark{% endif %}
+    </button>
+    <a href="{{ url_for('learning_hub', topic=q.topic) }}" class="button secondary" style="font-size:12px;padding:6px 12px;">
+      📚 Learn {{ q.topic }}
+    </a>
+  </div>
+</div>
+
+<div class="problem-layout" style="grid-template-columns: 1fr 1.3fr; gap:20px;">
+  <!-- Left Column: Problem Description & Test Cases -->
+  <div class="panel" style="padding:24px;">
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <span class="prac-badge-pill">PYTHON</span>
+      <span class="status {% if q.difficulty=='easy' %}pass{% else %}review{% endif %}" style="text-transform:uppercase;font-size:10px;">
+        {{ q.difficulty }}
+      </span>
+      <span class="eyebrow" style="margin:0;">{{ q.nm_track }}</span>
+    </div>
+
+    <h1 style="font-size:24px;margin:0 0 12px;">{{ q.title }}</h1>
+    <div style="font-size:14px;line-height:1.6;margin-bottom:20px;white-space:pre-line;">{{ q.question }}</div>
+
+    <h3 style="font-size:15px;margin:18px 0 8px;">Sample Test Cases</h3>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;">
+      {% for tc in q.test_cases %}
+      <div style="background:#f4f6fa;border-radius:6px;padding:10px 12px;font-family:'DM Mono',monospace;font-size:12px;">
+        <div><span class="muted">Call:</span> <strong>{{ tc.input }}</strong></div>
+        <div style="margin-top:2px;"><span class="muted">Expect:</span> <span style="color:var(--green);">{{ tc.expected }}</span></div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Progressive Hints -->
+    {% if q.hints %}
+    <div style="border-top:1px solid var(--line);padding-top:16px;">
+      <h3 style="font-size:15px;margin:0 0 8px;">Progressive Hints</h3>
+      <p class="small muted" style="margin:0 0 12px;">Unlock clues to overcome obstacles without giving up the solution.</p>
+      
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <button id="hint-btn-1" class="button secondary" style="font-size:11px;padding:6px 10px;" onclick="unlockHint(1)">
+          💡 Hint 1 (-10 pts)
+        </button>
+        {% if q.hints|length > 1 %}
+        <button id="hint-btn-2" class="button secondary" style="font-size:11px;padding:6px 10px;display:none;" onclick="unlockHint(2)">
+          💡 Hint 2 (-20 pts)
+        </button>
+        {% endif %}
+      </div>
+      <div id="hint-view-1" class="prac-hint-box" style="display:none;margin-bottom:8px;">💡 <strong>Hint 1:</strong> {{ q.hints[0] }}</div>
+      {% if q.hints|length > 1 %}
+      <div id="hint-view-2" class="prac-hint-box" style="display:none;margin-bottom:8px;">💡 <strong>Hint 2:</strong> {{ q.hints[1] }}</div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Best Attempt Info -->
+    {% if best %}
+    <div style="margin-top:16px;padding:12px;background:#e3f7ee;border-radius:8px;font-size:12px;color:var(--green);">
+      ✓ Your best recorded score on this challenge is <strong>{{ best.score }}%</strong>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Right Column: Interactive Code Editor & Test Runner -->
+  <div>
+    <div class="panel" style="padding:0;overflow:hidden;border-radius:12px;">
+      <div class="editor-top" style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;">
+        <span>solution.py · Python 3 Sandbox</span>
+        <button class="button secondary" style="font-size:10px;padding:3px 8px;background:rgba(255,255,255,0.1);color:#fff;border:none;" onclick="resetCode()">Reset Code</button>
+      </div>
+      <textarea id="code-editor" class="code-editor" spellcheck="false">{{ q.starter_code or 'def solution():\n    pass' }}</textarea>
+      
+      <div style="padding:14px 18px;background:#1b2436;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #2e3b52;">
+        <span class="small" style="color:#8a9bb8;" id="status-label">Ready to evaluate code</span>
+        <div style="display:flex;gap:10px;">
+          <button class="button" id="run-code-btn" style="background:#087b59;" onclick="runCode()">
+            ▶ Run Test Cases
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Test Case Results -->
+    <div class="panel" id="results-panel" style="margin-top:16px;display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <h3 style="margin:0;font-size:16px;" id="suite-title">Test Suite Output</h3>
+        <span id="suite-badge" class="status pass">0 / 0 Passed</span>
+      </div>
+      <div id="test-runs" style="display:flex;flex-direction:column;gap:8px;"></div>
+      
+      <!-- Full Solution Reveal if passed or requested -->
+      <div id="model-solution-wrap" style="display:none;margin-top:16px;border-top:1px solid var(--line);padding-top:14px;">
+        <strong style="font-size:13px;color:var(--green);">✓ Challenge Solved! Official Model Solution:</strong>
+        <pre style="background:#111a2a;color:#7de0d7;padding:12px;border-radius:6px;font-family:'DM Mono',monospace;font-size:12px;margin:8px 0;">{{ q.correct_answer }}</pre>
+        <p class="small muted" style="margin:0 0 10px;">{{ q.explanation }}</p>
+        <a href="{{ url_for('practice_drill', topic=q.topic, type='code') }}" class="button" style="font-size:12px;">Next {{ q.topic }} Problem →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const QID = {{ q.id }};
+const STARTER = {{ (q.starter_code or '')|tojson|safe }};
+let hintsUsed = 0;
+let codeStartTime = Date.now();
+
+function resetCode() {
+  if (confirm("Reset editor to starter code?")) {
+    document.getElementById('code-editor').value = STARTER;
+  }
+}
+
+function unlockHint(h) {
+  hintsUsed = Math.max(hintsUsed, h);
+  if (h === 1) {
+    document.getElementById('hint-view-1').style.display = 'block';
+    document.getElementById('hint-btn-1').style.display = 'none';
+    const b2 = document.getElementById('hint-btn-2');
+    if (b2) b2.style.display = 'inline-block';
+  } else if (h === 2) {
+    document.getElementById('hint-view-2').style.display = 'block';
+    document.getElementById('hint-btn-2').style.display = 'none';
+  }
+}
+
+function runCode() {
+  const code = document.getElementById('code-editor').value;
+  const runBtn = document.getElementById('run-code-btn');
+  const statusLabel = document.getElementById('status-label');
+  
+  runBtn.disabled = true;
+  runBtn.textContent = 'Executing...';
+  statusLabel.textContent = 'Evaluating sandbox test cases...';
+
+  fetch('/practice/api/run-code', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question_id: QID, code: code })
+  })
+  .then(r => r.json())
+  .then(data => {
+    runBtn.disabled = false;
+    runBtn.textContent = '▶ Run Test Cases';
+    
+    if (!data.ok) {
+      alert("Execution error: " + (data.error || 'Failed to execute code'));
+      statusLabel.textContent = 'Execution failed';
+      return;
+    }
+
+    const panel = document.getElementById('results-panel');
+    panel.style.display = 'block';
+    const container = document.getElementById('test-runs');
+    container.innerHTML = '';
+
+    let passedCount = 0;
+    data.results.forEach((r, idx) => {
+      if (r.passed) passedCount++;
+      const div = document.createElement('div');
+      div.className = 'check-row';
+      div.style.padding = '8px 12px';
+      div.style.background = r.passed ? '#f0fbf5' : '#fff5f5';
+      div.style.borderRadius = '6px';
+      div.innerHTML = `
+        <div>
+          <code style="font-size:12px;">${r.input}</code>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">
+            Expected: <span style="color:var(--green);">${r.expected}</span> · Got: <span>${r.got}</span>
+          </div>
+        </div>
+        <span class="status ${r.passed ? 'pass' : 'review'}" style="${!r.passed ? 'color:#d9534f;background:#fde8e8;' : ''}">
+          ${r.passed ? 'PASS' : 'FAIL'}
+        </span>
+      `;
+      container.appendChild(div);
+    });
+
+    const badge = document.getElementById('suite-badge');
+    badge.textContent = `${passedCount} / ${data.results.length} Passed`;
+    badge.className = 'status ' + (data.all_pass ? 'pass' : 'review');
+    statusLabel.textContent = data.all_pass ? 'All unit tests passed successfully!' : 'Some tests failed';
+
+    // Submit attempt async
+    const timeSpent = Math.max(1, Math.round((Date.now() - codeStartTime) / 1000));
+    fetch('/practice/api/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        question_id: QID,
+        answer: code,
+        hints_used: hintsUsed,
+        time_taken_sec: timeSpent,
+        is_correct: data.all_pass,
+        q_type: 'code'
+      })
+    });
+
+    if (data.all_pass) {
+      document.getElementById('model-solution-wrap').style.display = 'block';
+    }
+  })
+  .catch(err => {
+    runBtn.disabled = false;
+    runBtn.textContent = '▶ Run Test Cases';
+    alert("Network error running code: " + err);
+  });
+}
+
+function toggleBookmark(qid) {
+  fetch('/practice/api/bookmark', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question_id: qid })
+  }).then(r => r.json()).then(d => {
+    if (d.ok) {
+      const btn = document.getElementById('bm-toggle-btn');
+      btn.textContent = d.bookmarked ? '⭐ Bookmarked' : '☆ Bookmark';
+    }
+  });
+}
+</script>
+{% endblock %}

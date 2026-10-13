@@ -8,7 +8,11 @@ import json
 import re
 from functools import wraps
 from contextlib import contextmanager
-from datetime import datetime
+from datetime import datetime, date, timedelta
+import subprocess
+import tempfile as _tempfile
+import sys as _sys
+import uuid
 import requests
 import psycopg
 from psycopg.rows import dict_row
@@ -210,6 +214,9 @@ def init_db():
                                             "Linear In Functional Order", "None"], "answer": 0},
                                {"q": "Which structure uses FIFO?",
                                 "options": ["Stack", "Queue", "Tree", "Graph"], "answer": 1}])))
+
+        # ── Initialize Practice Arena tables and seed questions ──────────────
+        _init_practice_db(conn)
 
 def save_attempt(student_name, attempt_type, topic, score, feedback):
     user = session.get("user", {})
@@ -977,6 +984,782 @@ def admin_delete_lesson(lesson_id):
         conn.execute("DELETE FROM lh_lessons WHERE id=%s", (lesson_id,))
     flash("Lesson deleted.", "info")
     return redirect(url_for("admin_add_lesson", course_id=course_id) if course_id else url_for("admin_learning"))
+
+
+# ── Seed question bank ────────────────────────────────────────────────────────
+_PRAC_SEED = [
+    # ════════════ PYTHON ════════════
+    {"topic":"Python","nm_track":"Software Development","difficulty":"easy","q_type":"mcq",
+     "title":"List append","question":"Which method adds an element to the END of a list in Python?",
+     "options":["list.push()","list.add()","list.append()","list.insert()"],
+     "correct_answer":"list.append()",
+     "explanation":"`list.append(x)` adds a single element to the end. push() is JS, add() is for sets, insert() needs an index.",
+     "hints":["The method name suggests growing the tail of a list.","It starts with 'app-'."],"starter_code":"","test_cases":[]},
+
+    {"topic":"Python","nm_track":"Software Development","difficulty":"easy","q_type":"mcq",
+     "title":"Dictionary key-value","question":"What Python data type stores data as key-value pairs?",
+     "options":["list","tuple","dictionary","set"],
+     "correct_answer":"dictionary",
+     "explanation":"A dictionary (`dict`) maps unique keys to values. Created with `{}` or `dict()`.",
+     "hints":["Think of a real-world dictionary that maps words to meanings.","It uses curly braces {} with colons."],"starter_code":"","test_cases":[]},
+
+    {"topic":"Python","nm_track":"Software Development","difficulty":"medium","q_type":"mcq",
+     "title":"List comprehension","question":"What is the output of `[x**2 for x in range(4)]`?",
+     "options":["[0,1,4,9]","[1,4,9,16]","[0,1,2,3]","[1,2,3,4]"],
+     "correct_answer":"[0,1,4,9]",
+     "explanation":"`range(4)` gives 0,1,2,3. Squaring each gives 0,1,4,9.",
+     "hints":["range(4) produces 0,1,2,3 — four numbers starting from 0.","Square each: 0²=0, 1²=1, 2²=4, 3²=9."],"starter_code":"","test_cases":[]},
+
+    {"topic":"Python","nm_track":"Software Development","difficulty":"medium","q_type":"mcq",
+     "title":"Lambda functions","question":"What does `f = lambda x: x * 2` create?",
+     "options":["A class","An anonymous function","A generator","A decorator"],
+     "correct_answer":"An anonymous function",
+     "explanation":"Lambda creates a small, anonymous (unnamed) function. `f(5)` returns 10.",
+     "hints":["Lambda is Greek for 'nameless'.","It is equivalent to `def f(x): return x * 2`."],"starter_code":"","test_cases":[]},
+
+    {"topic":"Python","nm_track":"Software Development","difficulty":"hard","q_type":"mcq",
+     "title":"*args vs **kwargs","question":"In `def f(*args, **kwargs)`, which correctly calls it?",
+     "options":["f(1,2, name='Alice')","f([1,2], {'name':'Alice'})","f(args=(1,2))","f(*1,**'name')"],
+     "correct_answer":"f(1,2, name='Alice')",
+     "explanation":"`*args` captures positional arguments as a tuple; `**kwargs` captures keyword arguments as a dict.",
+     "hints":["*args collects positional; **kwargs collects keyword arguments.","Pass positional values without names, then keyword=value pairs."],"starter_code":"","test_cases":[]},
+
+    {"topic":"Python","nm_track":"Software Development","difficulty":"easy","q_type":"interview",
+     "title":"Mutable vs Immutable","question":"What is the difference between mutable and immutable types in Python? Give two examples of each.",
+     "options":[],"correct_answer":"Mutable types can be changed after creation (e.g., list, dict, set). Immutable types cannot be changed (e.g., int, str, tuple). Mutable objects are modified in-place; immutable objects create new objects on change.",
+     "explanation":"Understanding mutability helps avoid bugs with shared references and is fundamental to Python memory management.",
+     "hints":["Think about whether you can change the value of a variable vs. replacing it.","str, int, float, tuple are immutable. list, dict, set are mutable."],"starter_code":"","test_cases":[]},
+
+    {"topic":"Python","nm_track":"Software Development","difficulty":"medium","q_type":"interview",
+     "title":"Decorators","question":"Explain what a Python decorator is and write a simple decorator that prints 'Before call' and 'After call' around any function.",
+     "options":[],"correct_answer":"A decorator is a function that takes another function and extends its behaviour without modifying it. Example:\n\n```python\ndef my_dec(func):\n    def wrapper(*args, **kwargs):\n        print('Before call')\n        result = func(*args, **kwargs)\n        print('After call')\n        return result\n    return wrapper\n\n@my_dec\ndef greet():\n    print('Hello')\n```",
+     "explanation":"Decorators use the @syntax as syntactic sugar for `func = decorator(func)`. They are widely used for logging, authentication, caching.",
+     "hints":["A decorator is a higher-order function — it accepts a function and returns a function.","Use *args and **kwargs in the wrapper to handle any function signature."],"starter_code":"","test_cases":[]},
+
+    {"topic":"Python","nm_track":"Software Development","difficulty":"easy","q_type":"code",
+     "title":"Reverse a string","question":"Write a function `reverse_string(s)` that returns the reversed version of the input string.\n\nExample: `reverse_string('hello')` → `'olleh'`",
+     "options":[],"correct_answer":"def reverse_string(s):\n    return s[::-1]",
+     "explanation":"Python slice `s[::-1]` reverses any sequence. Alternatively use `''.join(reversed(s))`.",
+     "hints":["Python slices support a step argument: s[start:stop:step].","A step of -1 traverses the string backwards."],
+     "starter_code":"def reverse_string(s):\n    # Write your solution here\n    pass",
+     "test_cases":[{"input":"reverse_string('hello')","expected":"'olleh'"},{"input":"reverse_string('Python')","expected":"'nohtyP'"},{"input":"reverse_string('a')","expected":"'a'"},{"input":"reverse_string('')","expected":"''"}]},
+
+    {"topic":"Python","nm_track":"Software Development","difficulty":"medium","q_type":"code",
+     "title":"Fibonacci sequence","question":"Write a function `fib(n)` that returns the nth Fibonacci number (0-indexed).\n\n`fib(0)=0, fib(1)=1, fib(6)=8`",
+     "options":[],"correct_answer":"def fib(n):\n    a, b = 0, 1\n    for _ in range(n):\n        a, b = b, a + b\n    return a",
+     "explanation":"Iterative solution runs in O(n) time and O(1) space. Recursive is simpler but O(2^n).",
+     "hints":["Start with two variables: a=0, b=1.","Each step: new_a=b, new_b=a+b."],
+     "starter_code":"def fib(n):\n    # Write your solution here\n    pass",
+     "test_cases":[{"input":"fib(0)","expected":"0"},{"input":"fib(1)","expected":"1"},{"input":"fib(6)","expected":"8"},{"input":"fib(10)","expected":"55"}]},
+
+    # ════════════ JAVA ════════════
+    {"topic":"Java","nm_track":"Software Development","difficulty":"easy","q_type":"mcq",
+     "title":"Inheritance keyword","question":"Which keyword is used to inherit a class in Java?",
+     "options":["implements","inherits","extends","superclass"],
+     "correct_answer":"extends",
+     "explanation":"In Java, a class uses `extends` to inherit from another class. `implements` is used for interfaces.",
+     "hints":["Think of expanding the parent class.","Java uses 'extends' for class inheritance and 'implements' for interfaces."],"starter_code":"","test_cases":[]},
+
+    {"topic":"Java","nm_track":"Software Development","difficulty":"easy","q_type":"mcq",
+     "title":"Access modifier","question":"Which access modifier makes a member accessible ONLY within its own class?",
+     "options":["public","protected","default","private"],
+     "correct_answer":"private",
+     "explanation":"`private` restricts access to the class itself. `protected` allows subclasses. `public` allows everyone.",
+     "hints":["This modifier gives the least visibility.","It rhymes with 'drive it'."],"starter_code":"","test_cases":[]},
+
+    {"topic":"Java","nm_track":"Software Development","difficulty":"medium","q_type":"mcq",
+     "title":"Interface vs Abstract","question":"Which statement about Java interfaces is TRUE?",
+     "options":["Interfaces can have instance variables","A class can implement only one interface","Interfaces support multiple inheritance","Interfaces can be instantiated directly"],
+     "correct_answer":"Interfaces support multiple inheritance",
+     "explanation":"A Java class can implement multiple interfaces, solving the diamond problem. Interfaces cannot have instance variables (only static final constants before Java 8).",
+     "hints":["This is one of the key reasons interfaces exist.","Think about what problem they solve that single inheritance cannot."],"starter_code":"","test_cases":[]},
+
+    {"topic":"Java","nm_track":"Software Development","difficulty":"medium","q_type":"mcq",
+     "title":"String comparison","question":"What is the correct way to compare string content in Java?",
+     "options":["str1 == str2","str1.equals(str2)","str1.compare(str2)","str1 === str2"],
+     "correct_answer":"str1.equals(str2)",
+     "explanation":"`==` compares object references, not content. `.equals()` compares the actual character sequences.",
+     "hints":["In Java, == compares object identity (memory address), not value.","String has a method specifically for value comparison."],"starter_code":"","test_cases":[]},
+
+    {"topic":"Java","nm_track":"Software Development","difficulty":"hard","q_type":"mcq",
+     "title":"Try-with-resources","question":"What does the try-with-resources statement guarantee in Java?",
+     "options":["The resource is garbage collected immediately","The resource's close() is called automatically","The resource is thread-safe","Exceptions are suppressed"],
+     "correct_answer":"The resource's close() is called automatically",
+     "explanation":"Try-with-resources ensures `AutoCloseable.close()` is called when the block exits, preventing resource leaks.",
+     "hints":["It was added in Java 7 to solve a common resource management problem.","Think: what usually goes in the finally block?"],"starter_code":"","test_cases":[]},
+
+    {"topic":"Java","nm_track":"Software Development","difficulty":"easy","q_type":"interview",
+     "title":"OOP Pillars","question":"Name the four pillars of Object-Oriented Programming and briefly explain each one.",
+     "options":[],"correct_answer":"1. Encapsulation: Bundling data and methods, hiding implementation via access modifiers.\n2. Inheritance: A class derives properties/behaviour from a parent class.\n3. Polymorphism: One interface, many implementations (method overriding/overloading).\n4. Abstraction: Hiding complexity, exposing only essential features (abstract classes/interfaces).",
+     "explanation":"These four pillars define OOP. Mastering them is essential for Java development and technical interviews.",
+     "hints":["Remember AIPE or PEIA as a mnemonic.","Each pillar solves a different software engineering problem."],"starter_code":"","test_cases":[]},
+
+    {"topic":"Java","nm_track":"Software Development","difficulty":"medium","q_type":"interview",
+     "title":"Method Overloading vs Overriding","question":"Distinguish between method overloading and method overriding in Java with examples.",
+     "options":[],"correct_answer":"Overloading (compile-time polymorphism): Same method name, different parameter lists in the SAME class.\nExample: `int add(int a, int b)` and `double add(double a, double b)`.\n\nOverriding (runtime polymorphism): Subclass provides its own implementation of a parent class method with the SAME signature.\nExample: Parent has `void speak()` → Child overrides it with different behaviour. Uses @Override annotation.",
+     "explanation":"Overloading is resolved at compile time; overriding at runtime. Overloading does not need inheritance.",
+     "hints":["One is in the SAME class; the other requires PARENT-CHILD classes.","One changes the signature; the other keeps it identical."],"starter_code":"","test_cases":[]},
+
+    # ════════════ DSA ════════════
+    {"topic":"DSA","nm_track":"Software Development","difficulty":"easy","q_type":"mcq",
+     "title":"LIFO structure","question":"Which data structure follows Last In First Out (LIFO) order?",
+     "options":["Queue","Stack","Linked List","Heap"],
+     "correct_answer":"Stack",
+     "explanation":"A stack (like a pile of plates) adds and removes from the top (LIFO). A queue uses FIFO.",
+     "hints":["Think of a pile of plates — you always take from the top.","Its operations are push and pop."],"starter_code":"","test_cases":[]},
+
+    {"topic":"DSA","nm_track":"Software Development","difficulty":"easy","q_type":"mcq",
+     "title":"Binary search complexity","question":"What is the time complexity of binary search?",
+     "options":["O(n)","O(n²)","O(log n)","O(1)"],
+     "correct_answer":"O(log n)",
+     "explanation":"Binary search halves the search space each step, giving O(log n) comparisons on a sorted array.",
+     "hints":["Each step eliminates half the remaining elements.","log base 2 of n steps are needed."],"starter_code":"","test_cases":[]},
+
+    {"topic":"DSA","nm_track":"Software Development","difficulty":"medium","q_type":"mcq",
+     "title":"Hash table collision","question":"Which technique resolves hash collisions using linked lists at each bucket?",
+     "options":["Open addressing","Linear probing","Chaining","Double hashing"],
+     "correct_answer":"Chaining",
+     "explanation":"Chaining stores all elements that hash to the same bucket in a linked list. Open addressing probes for the next empty slot.",
+     "hints":["It chains together colliding elements.","Each bucket holds a list of items."],"starter_code":"","test_cases":[]},
+
+    {"topic":"DSA","nm_track":"Software Development","difficulty":"medium","q_type":"mcq",
+     "title":"Tree traversal","question":"In an inorder traversal of a Binary Search Tree (BST), nodes are visited in:",
+     "options":["Random order","Descending order","Ascending sorted order","Level order"],
+     "correct_answer":"Ascending sorted order",
+     "explanation":"Inorder (Left → Root → Right) of a BST visits nodes in ascending sorted order.",
+     "hints":["BST property: left < root < right.","Inorder: Left, then root, then right."],"starter_code":"","test_cases":[]},
+
+    {"topic":"DSA","nm_track":"Software Development","difficulty":"hard","q_type":"mcq",
+     "title":"Dynamic programming","question":"Which property MUST a problem have to be solvable optimally with dynamic programming?",
+     "options":["Greedy choice property","Optimal substructure","NP-completeness","Balanced binary tree"],
+     "correct_answer":"Optimal substructure",
+     "explanation":"DP requires optimal substructure (optimal solution built from optimal sub-solutions) and overlapping subproblems (reusable computations).",
+     "hints":["DP stores solutions to sub-problems to avoid recomputation.","The optimal solution to the whole problem depends on optimal solutions to subproblems."],"starter_code":"","test_cases":[]},
+
+    {"topic":"DSA","nm_track":"Software Development","difficulty":"easy","q_type":"interview",
+     "title":"Array vs Linked List","question":"Compare arrays and linked lists on: access time, insertion/deletion time, and memory usage.",
+     "options":[],"correct_answer":"Array:\n- Access: O(1) random access via index.\n- Insertion/Deletion: O(n) – elements must shift.\n- Memory: Contiguous, fixed size (static array).\n\nLinked List:\n- Access: O(n) – must traverse from head.\n- Insertion/Deletion at head/tail: O(1) with a pointer.\n- Memory: Non-contiguous; extra space for pointers.",
+     "explanation":"Choose arrays for fast random access; linked lists for frequent insertions/deletions at known positions.",
+     "hints":["Think about how each is stored in memory.","Which one lets you jump to the 5th element instantly?"],"starter_code":"","test_cases":[]},
+
+    {"topic":"DSA","nm_track":"Software Development","difficulty":"medium","q_type":"interview",
+     "title":"BFS vs DFS","question":"Explain Breadth-First Search and Depth-First Search. When would you use each?",
+     "options":[],"correct_answer":"BFS (Breadth-First Search):\n- Explores level by level using a queue.\n- Finds shortest path in unweighted graphs.\n- Use for: shortest path, nearest neighbour.\n\nDFS (Depth-First Search):\n- Explores as deep as possible using a stack (or recursion).\n- Use for: cycle detection, topological sort, maze solving, connected components.\n\nBFS is better for shortest paths; DFS uses less memory for deep narrow graphs.",
+     "explanation":"Both are graph traversal algorithms. BFS guarantees shortest path in unweighted graphs; DFS is simpler recursively.",
+     "hints":["BFS = queue (FIFO), explores neighbours first.","DFS = stack (LIFO), goes deep before backtracking."],"starter_code":"","test_cases":[]},
+
+    {"topic":"DSA","nm_track":"Software Development","difficulty":"easy","q_type":"code",
+     "title":"Two Sum","question":"Write a function `two_sum(nums, target)` that returns the indices of the two numbers that add up to the target.\n\nAssume exactly one solution exists.\n\nExample: `two_sum([2,7,11,15], 9)` → `[0, 1]`",
+     "options":[],"correct_answer":"def two_sum(nums, target):\n    seen = {}\n    for i, num in enumerate(nums):\n        complement = target - num\n        if complement in seen:\n            return [seen[complement], i]\n        seen[num] = i\n    return []",
+     "explanation":"Hash map approach: for each number, check if its complement was seen before. O(n) time, O(n) space.",
+     "hints":["For each number, you need target - number.","A dictionary can store previously seen numbers and their indices."],
+     "starter_code":"def two_sum(nums, target):\n    # O(n) solution using a hash map\n    pass",
+     "test_cases":[{"input":"two_sum([2,7,11,15], 9)","expected":"[0, 1]"},{"input":"two_sum([3,2,4], 6)","expected":"[1, 2]"},{"input":"two_sum([3,3], 6)","expected":"[0, 1]"}]},
+
+    {"topic":"DSA","nm_track":"Software Development","difficulty":"medium","q_type":"code",
+     "title":"Valid parentheses","question":"Write a function `is_valid(s)` that returns True if the string of brackets is valid (every open bracket has a matching close bracket in the right order).\n\nExample: `is_valid('()[]{}')`→ True, `is_valid('(]')` → False",
+     "options":[],"correct_answer":"def is_valid(s):\n    stack = []\n    pairs = {')':'(',']':'[','}':'{'}\n    for ch in s:\n        if ch in '([{':\n            stack.append(ch)\n        elif ch in pairs:\n            if not stack or stack[-1] != pairs[ch]:\n                return False\n            stack.pop()\n    return len(stack) == 0",
+     "explanation":"Use a stack: push opening brackets, pop when a closing bracket matches the top.",
+     "hints":["Use a stack data structure.","When you see a closing bracket, the top of the stack must be its matching open."],
+     "starter_code":"def is_valid(s):\n    # Use a stack to match brackets\n    pass",
+     "test_cases":[{"input":"is_valid('()[]{}')", "expected":"True"},{"input":"is_valid('(]')","expected":"False"},{"input":"is_valid('{[]}')","expected":"True"},{"input":"is_valid('([)]')","expected":"False"}]},
+
+    # ════════════ DBMS ════════════
+    {"topic":"DBMS","nm_track":"Data Science & AI","difficulty":"easy","q_type":"mcq",
+     "title":"SELECT statement","question":"Which SQL command is used to retrieve data from a table?",
+     "options":["UPDATE","INSERT","SELECT","DELETE"],
+     "correct_answer":"SELECT",
+     "explanation":"`SELECT` retrieves rows from one or more tables. DML commands include INSERT, UPDATE, DELETE.",
+     "hints":["It's the most commonly used SQL command.","It 'selects' the data you want to read."],"starter_code":"","test_cases":[]},
+
+    {"topic":"DBMS","nm_track":"Data Science & AI","difficulty":"easy","q_type":"mcq",
+     "title":"Primary key","question":"Which constraint ensures each row in a table is uniquely identifiable?",
+     "options":["FOREIGN KEY","UNIQUE","PRIMARY KEY","NOT NULL"],
+     "correct_answer":"PRIMARY KEY",
+     "explanation":"A PRIMARY KEY uniquely identifies each record. It is both UNIQUE and NOT NULL. A table can have only one primary key.",
+     "hints":["It's used to identify each row uniquely.","It combines two other constraints."],"starter_code":"","test_cases":[]},
+
+    {"topic":"DBMS","nm_track":"Data Science & AI","difficulty":"medium","q_type":"mcq",
+     "title":"INNER JOIN","question":"What does an INNER JOIN return?",
+     "options":["All rows from both tables","Only rows with matching values in both tables","All rows from the left table","Only non-matching rows"],
+     "correct_answer":"Only rows with matching values in both tables",
+     "explanation":"INNER JOIN returns the intersection — only rows where the join condition is satisfied in both tables.",
+     "hints":["Think of it as the overlap in a Venn diagram.","Non-matching rows are excluded."],"starter_code":"","test_cases":[]},
+
+    {"topic":"DBMS","nm_track":"Data Science & AI","difficulty":"medium","q_type":"mcq",
+     "title":"Normalization – 1NF","question":"A table is in First Normal Form (1NF) when:",
+     "options":["All attributes are functionally dependent on the primary key","There are no transitive dependencies","Each column contains atomic (indivisible) values","There are no NULL values"],
+     "correct_answer":"Each column contains atomic (indivisible) values",
+     "explanation":"1NF requires atomic values (no repeating groups, no multi-valued attributes). Each cell must hold a single value.",
+     "hints":["'Atomic' means you can't break it down further.","Example violation: storing 'Math, Science' in one column."],"starter_code":"","test_cases":[]},
+
+    {"topic":"DBMS","nm_track":"Data Science & AI","difficulty":"hard","q_type":"mcq",
+     "title":"ACID properties","question":"In ACID properties, what does 'Isolation' mean?",
+     "options":["Changes are permanent after commit","All operations succeed or all are rolled back","Transactions don't interfere with each other","Data remains accurate and consistent"],
+     "correct_answer":"Transactions don't interfere with each other",
+     "explanation":"Isolation ensures concurrent transactions execute as if sequentially, preventing dirty reads and phantom reads.",
+     "hints":["Think of each transaction as happening in its own bubble.","It prevents one transaction from seeing another's uncommitted changes."],"starter_code":"","test_cases":[]},
+
+    {"topic":"DBMS","nm_track":"Data Science & AI","difficulty":"easy","q_type":"interview",
+     "title":"DDL vs DML","question":"What is the difference between DDL and DML in SQL? Give two examples of each.",
+     "options":[],"correct_answer":"DDL (Data Definition Language): Defines the database schema/structure.\nExamples: CREATE TABLE, ALTER TABLE, DROP TABLE.\n\nDML (Data Manipulation Language): Manipulates the data within tables.\nExamples: SELECT, INSERT, UPDATE, DELETE.\n\nDDL changes are auto-committed; DML changes can be rolled back.",
+     "explanation":"Understanding DDL vs DML is fundamental for database design and SQL interviews.",
+     "hints":["One defines STRUCTURE; the other manipulates DATA.","Think: which one creates or drops tables?"],"starter_code":"","test_cases":[]},
+
+    {"topic":"DBMS","nm_track":"Data Science & AI","difficulty":"medium","q_type":"interview",
+     "title":"Indexing","question":"What is a database index, how does it improve query performance, and what is the trade-off?",
+     "options":[],"correct_answer":"A database index is a data structure (usually a B-tree or hash) that improves SELECT query speed by allowing the database to find rows without scanning the entire table.\n\nHow it helps: Instead of O(n) full table scan, the index enables O(log n) lookup.\n\nTrade-off: Indexes consume additional storage space, and they slow down INSERT/UPDATE/DELETE operations because the index must be maintained whenever data changes.",
+     "explanation":"Indexes are critical for performance tuning. Over-indexing slows writes; under-indexing slows reads.",
+     "hints":["Think of a book's index vs reading the whole book.","What happens when you insert a new row — does the index need updating?"],"starter_code":"","test_cases":[]},
+
+    # ════════════ WEB DEVELOPMENT ════════════
+    {"topic":"Web Development","nm_track":"Full Stack Development","difficulty":"easy","q_type":"mcq",
+     "title":"HTTP methods","question":"Which HTTP method is used to send data to a server to CREATE a resource?",
+     "options":["GET","POST","PUT","DELETE"],
+     "correct_answer":"POST",
+     "explanation":"POST sends data to create a new resource. GET retrieves, PUT updates/replaces, PATCH partially updates, DELETE removes.",
+     "hints":["It submits form data or JSON to the server.","It is not idempotent — calling it twice creates two resources."],"starter_code":"","test_cases":[]},
+
+    {"topic":"Web Development","nm_track":"Full Stack Development","difficulty":"easy","q_type":"mcq",
+     "title":"CSS Box Model","question":"In the CSS box model, which area is OUTERMOST?",
+     "options":["Content","Padding","Border","Margin"],
+     "correct_answer":"Margin",
+     "explanation":"From inside out: Content → Padding → Border → Margin. Margin creates space between elements.",
+     "hints":["Think of layers around the content like an onion.","It's the transparent space outside the border."],"starter_code":"","test_cases":[]},
+
+    {"topic":"Web Development","nm_track":"Full Stack Development","difficulty":"medium","q_type":"mcq",
+     "title":"JavaScript closure","question":"What is a JavaScript closure?",
+     "options":["A way to close browser tabs","A function that retains access to its outer scope after the outer function returns","A method to end a loop","A type of promise"],
+     "correct_answer":"A function that retains access to its outer scope after the outer function returns",
+     "explanation":"Closures allow a function to 'remember' variables from the enclosing scope even after that scope has finished executing.",
+     "hints":["A closure 'closes over' the variables in its surrounding scope.","Counter functions that remember their count use closures."],"starter_code":"","test_cases":[]},
+
+    {"topic":"Web Development","nm_track":"Full Stack Development","difficulty":"medium","q_type":"mcq",
+     "title":"REST API status codes","question":"What HTTP status code means 'Resource Not Found'?",
+     "options":["200","301","404","500"],
+     "correct_answer":"404",
+     "explanation":"404 Not Found means the requested resource doesn't exist. 200=OK, 301=Redirect, 500=Server Error.",
+     "hints":["It's a famous error code you've likely seen on websites.","4xx codes indicate client errors."],"starter_code":"","test_cases":[]},
+
+    {"topic":"Web Development","nm_track":"Full Stack Development","difficulty":"hard","q_type":"mcq",
+     "title":"Event loop","question":"What does JavaScript's event loop do?",
+     "options":["Executes synchronous code on multiple threads","Monitors the call stack and moves tasks from the callback queue when the stack is empty","Manages CSS animations","Handles HTTP requests in parallel"],
+     "correct_answer":"Monitors the call stack and moves tasks from the callback queue when the stack is empty",
+     "explanation":"JS is single-threaded. The event loop enables async behaviour by moving callbacks from the queue to the call stack only when the stack is empty.",
+     "hints":["JavaScript is single-threaded.","It enables async operations like setTimeout, fetch, without blocking."],"starter_code":"","test_cases":[]},
+
+    {"topic":"Web Development","nm_track":"Full Stack Development","difficulty":"easy","q_type":"interview",
+     "title":"GET vs POST","question":"Compare the HTTP GET and POST methods. When should each be used?",
+     "options":[],"correct_answer":"GET:\n- Retrieves data; parameters sent in URL query string.\n- Idempotent (same result if called multiple times).\n- Cached by browsers; can be bookmarked.\n- Use for: search queries, reading data.\n\nPOST:\n- Sends data in the request body.\n- Not idempotent — each call may create a new resource.\n- Not cached; not bookmarkable.\n- Use for: form submissions, creating resources, sending passwords.",
+     "explanation":"Choosing the right HTTP method is fundamental to RESTful API design.",
+     "hints":["Which one puts data in the URL? Which hides it in the body?","Which is safe to repeat without side effects?"],"starter_code":"","test_cases":[]},
+
+    {"topic":"Web Development","nm_track":"Full Stack Development","difficulty":"medium","q_type":"interview",
+     "title":"Responsive design","question":"What is responsive web design and what are three techniques used to achieve it?",
+     "options":[],"correct_answer":"Responsive web design makes web pages look good on all devices (desktop, tablet, mobile) by adapting to the viewport size.\n\nThree techniques:\n1. CSS Media Queries: Apply different styles at different breakpoints (e.g., @media (max-width: 768px)).\n2. Flexible Grid Layouts: Use CSS Flexbox or Grid with relative units (%, fr) instead of fixed pixels.\n3. Fluid Images: Set `max-width: 100%` on images so they scale with their container.",
+     "explanation":"Responsive design is mandatory for modern web development as mobile traffic dominates.",
+     "hints":["Think: how do you change styles based on screen size?","What CSS feature lets you write conditional style rules?"],"starter_code":"","test_cases":[]},
+
+    # ════════════ EXTRA DSA CODE ════════════
+    {"topic":"DSA","nm_track":"Software Development","difficulty":"hard","q_type":"code",
+     "title":"Longest common subsequence length","question":"Write `lcs_length(s1, s2)` that returns the length of the Longest Common Subsequence of two strings.\n\nExample: `lcs_length('ABCBDAB', 'BDCABA')` → 4",
+     "options":[],"correct_answer":"def lcs_length(s1, s2):\n    m, n = len(s1), len(s2)\n    dp = [[0]*(n+1) for _ in range(m+1)]\n    for i in range(1, m+1):\n        for j in range(1, n+1):\n            if s1[i-1] == s2[j-1]:\n                dp[i][j] = dp[i-1][j-1] + 1\n            else:\n                dp[i][j] = max(dp[i-1][j], dp[i][j-1])\n    return dp[m][n]",
+     "explanation":"Classic DP problem. Build a 2D table where dp[i][j] = LCS length of s1[:i] and s2[:j].",
+     "hints":["Build a 2D DP table of size (len(s1)+1) x (len(s2)+1).",
+              "If characters match: dp[i][j] = dp[i-1][j-1] + 1. Else take max of adjacent cells."],
+     "starter_code":"def lcs_length(s1, s2):\n    # Dynamic programming approach\n    pass",
+     "test_cases":[{"input":"lcs_length('ABCBDAB','BDCABA')","expected":"4"},{"input":"lcs_length('abc','abc')","expected":"3"},{"input":"lcs_length('abc','xyz')","expected":"0"}]},
+
+    # ════════════ EXTRA PYTHON CODE ════════════
+    {"topic":"Python","nm_track":"Software Development","difficulty":"hard","q_type":"code",
+     "title":"Count word frequency","question":"Write `word_count(text)` that returns a dictionary of word frequencies (case-insensitive).\n\n`word_count('the cat sat on the mat')` → `{'the':2, 'cat':1, 'sat':1, 'on':1, 'mat':1}`",
+     "options":[],"correct_answer":"def word_count(text):\n    words = text.lower().split()\n    counts = {}\n    for word in words:\n        counts[word] = counts.get(word, 0) + 1\n    return counts",
+     "explanation":"Split, lowercase, then count with a dict. Python's `collections.Counter` does this in one line.",
+     "hints":["Convert to lowercase first.","Use dict.get(key, 0) to handle missing keys."],
+     "starter_code":"def word_count(text):\n    # Return a dict of word:frequency\n    pass",
+     "test_cases":[{"input":"word_count('the cat sat on the mat')","expected":"{'the': 2, 'cat': 1, 'sat': 1, 'on': 1, 'mat': 1}"},{"input":"word_count('Hello hello')","expected":"{'hello': 2}"},{"input":"word_count('')","expected":"{}"}]},
+]
+
+def _init_practice_db(conn):
+    """Create all Practice Module tables and seed question bank."""
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS prac_questions (
+            id               BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+            topic            TEXT NOT NULL,
+            nm_track         TEXT NOT NULL DEFAULT '',
+            difficulty       TEXT NOT NULL DEFAULT 'medium',
+            q_type           TEXT NOT NULL,
+            title            TEXT NOT NULL,
+            question         TEXT NOT NULL,
+            options          JSONB NOT NULL DEFAULT '[]',
+            correct_answer   TEXT NOT NULL DEFAULT '',
+            explanation      TEXT NOT NULL DEFAULT '',
+            hints            JSONB NOT NULL DEFAULT '[]',
+            starter_code     TEXT NOT NULL DEFAULT '',
+            test_cases       JSONB NOT NULL DEFAULT '[]',
+            is_active        BOOLEAN NOT NULL DEFAULT TRUE,
+            created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS prac_attempts (
+            id              BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+            user_id         TEXT NOT NULL,
+            question_id     BIGINT NOT NULL REFERENCES prac_questions(id) ON DELETE CASCADE,
+            session_id      TEXT NOT NULL DEFAULT '',
+            q_type          TEXT NOT NULL,
+            topic           TEXT NOT NULL,
+            difficulty      TEXT NOT NULL,
+            is_correct      BOOLEAN NOT NULL DEFAULT FALSE,
+            answer_given    TEXT NOT NULL DEFAULT '',
+            hints_used      INT NOT NULL DEFAULT 0,
+            time_taken_sec  INT NOT NULL DEFAULT 0,
+            score           DOUBLE PRECISION NOT NULL DEFAULT 0,
+            attempted_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS prac_bookmarks (
+            id          BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+            user_id     TEXT NOT NULL,
+            question_id BIGINT NOT NULL REFERENCES prac_questions(id) ON DELETE CASCADE,
+            created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            UNIQUE(user_id, question_id)
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS prac_streaks (
+            id                  BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+            user_id             TEXT NOT NULL UNIQUE,
+            current_streak      INT NOT NULL DEFAULT 0,
+            longest_streak      INT NOT NULL DEFAULT 0,
+            last_practice_date  DATE,
+            updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        )
+    """)
+    # Seed question bank if empty
+    existing = conn.execute("SELECT COUNT(*) AS c FROM prac_questions").fetchone()
+    if existing and existing["c"] == 0:
+        for q in _PRAC_SEED:
+            conn.execute("""
+                INSERT INTO prac_questions
+                  (topic,nm_track,difficulty,q_type,title,question,options,correct_answer,
+                   explanation,hints,starter_code,test_cases)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            """, (q["topic"], q["nm_track"], q["difficulty"], q["q_type"],
+                  q["title"], q["question"],
+                  json.dumps(q.get("options", [])),
+                  q["correct_answer"], q["explanation"],
+                  json.dumps(q.get("hints", [])),
+                  q.get("starter_code", ""),
+                  json.dumps(q.get("test_cases", []))))
+
+
+def _update_streak(uid, conn):
+    """Update practice streak for user. Returns current streak int."""
+    today = date.today()
+    streak_row = conn.execute(
+        "SELECT * FROM prac_streaks WHERE user_id=%s", (uid,)
+    ).fetchone()
+    if not streak_row:
+        conn.execute("""
+            INSERT INTO prac_streaks (user_id, current_streak, longest_streak, last_practice_date)
+            VALUES (%s,1,1,%s)
+        """, (uid, today))
+        return 1
+    last = streak_row["last_practice_date"]
+    cur = streak_row["current_streak"]
+    longest = streak_row["longest_streak"]
+    if last == today:
+        return cur  # already practiced today
+    if last == today - timedelta(days=1):
+        cur += 1  # consecutive day
+    else:
+        cur = 1   # streak broken
+    longest = max(longest, cur)
+    conn.execute("""
+        UPDATE prac_streaks
+        SET current_streak=%s, longest_streak=%s, last_practice_date=%s, updated_at=NOW()
+        WHERE user_id=%s
+    """, (cur, longest, today, uid))
+    return cur
+
+
+def _run_python_safe(code: str, call_expr: str, timeout: int = 5) -> dict:
+    """
+    Execute `code` then evaluate `call_expr` using a subprocess.
+    Returns {"output": str, "error": str|None, "ok": bool}
+    """
+    full_code = code + f"\n_result = {call_expr}\nprint(repr(_result))\n"
+    try:
+        with _tempfile.NamedTemporaryFile(
+            mode="w", suffix=".py", delete=False, encoding="utf-8"
+        ) as f:
+            f.write(full_code)
+            tmp = f.name
+        proc = subprocess.run(
+            [_sys.executable, tmp],
+            capture_output=True, text=True, timeout=timeout
+        )
+        os.unlink(tmp)
+        if proc.returncode == 0:
+            return {"output": proc.stdout.strip(), "error": None, "ok": True}
+        return {"output": "", "error": proc.stderr.strip()[:400], "ok": False}
+    except subprocess.TimeoutExpired:
+        return {"output": "", "error": "Time limit exceeded (5 s)", "ok": False}
+    except Exception as exc:
+        return {"output": "", "error": str(exc)[:200], "ok": False}
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  PRACTICE MODULE – Routes
+# ══════════════════════════════════════════════════════════════════════════════
+
+TOPIC_ICONS = {
+    "Python": "🐍", "Java": "☕", "DSA": "🌲",
+    "DBMS": "🗄️", "Web Development": "🌐",
+}
+
+@app.route("/practice")
+@login_required
+def practice_arena():
+    uid = session["user"]["id"]
+    with get_db() as conn:
+        # Per-topic stats
+        all_topics = conn.execute(
+            "SELECT DISTINCT topic FROM prac_questions WHERE is_active=TRUE ORDER BY 1"
+        ).fetchall()
+        topics_stats = []
+        for row in all_topics:
+            t = row["topic"]
+            counts = conn.execute("""
+                SELECT
+                  COUNT(*) FILTER (WHERE q_type='mcq')       AS mcq_count,
+                  COUNT(*) FILTER (WHERE q_type='interview') AS interview_count,
+                  COUNT(*) FILTER (WHERE q_type='code')      AS code_count,
+                  COUNT(*) AS total_q
+                FROM prac_questions WHERE topic=%s AND is_active=TRUE
+            """, (t,)).fetchone()
+            my_stats = conn.execute("""
+                SELECT COUNT(*) AS attempts,
+                       COALESCE(AVG(CASE WHEN is_correct THEN 1.0 ELSE 0.0 END)*100,0) AS accuracy
+                FROM prac_attempts WHERE user_id=%s AND topic=%s
+            """, (uid, t)).fetchone()
+            topics_stats.append({
+                "topic": t, "icon": TOPIC_ICONS.get(t, "📚"),
+                "total_q": counts["total_q"],
+                "mcq_count": counts["mcq_count"],
+                "interview_count": counts["interview_count"],
+                "code_count": counts["code_count"],
+                "my_attempts": my_stats["attempts"],
+                "my_accuracy": round(my_stats["accuracy"], 1),
+            })
+
+        # Streak
+        streak_row = conn.execute(
+            "SELECT current_streak FROM prac_streaks WHERE user_id=%s", (uid,)
+        ).fetchone()
+        streak = streak_row["current_streak"] if streak_row else 0
+
+        # Daily challenge: pick a question based on day-of-year mod total
+        total_q = conn.execute(
+            "SELECT COUNT(*) AS c FROM prac_questions WHERE is_active=TRUE"
+        ).fetchone()["c"]
+        daily_challenge = None
+        if total_q > 0:
+            idx = date.today().toordinal() % total_q
+            daily_challenge = conn.execute(
+                "SELECT id,title,topic,difficulty,q_type FROM prac_questions WHERE is_active=TRUE ORDER BY id OFFSET %s LIMIT 1",
+                (idx,)
+            ).fetchone()
+
+        # Recent attempts (last 6)
+        recent_attempts = conn.execute("""
+            SELECT pa.topic, pa.is_correct, pa.attempted_at, pa.q_type, pa.difficulty
+            FROM prac_attempts pa WHERE pa.user_id=%s ORDER BY pa.attempted_at DESC LIMIT 6
+        """, (uid,)).fetchall()
+
+        # Weak topics (accuracy < 60% with >= 3 attempts)
+        weak_topics = [
+            r["topic"] for r in conn.execute("""
+                SELECT topic,
+                       AVG(CASE WHEN is_correct THEN 1.0 ELSE 0.0 END)*100 AS acc,
+                       COUNT(*) AS cnt
+                FROM prac_attempts WHERE user_id=%s
+                GROUP BY topic HAVING COUNT(*) >= 3 AND AVG(CASE WHEN is_correct THEN 1.0 ELSE 0.0 END)*100 < 60
+            """, (uid,)).fetchall()
+        ]
+
+        bookmarks_count = conn.execute(
+            "SELECT COUNT(*) AS c FROM prac_bookmarks WHERE user_id=%s", (uid,)
+        ).fetchone()["c"]
+
+    return render_template("practice_arena.html",
+                           topics_stats=topics_stats, streak=streak,
+                           daily_challenge=daily_challenge,
+                           recent_attempts=recent_attempts,
+                           weak_topics=weak_topics,
+                           bookmarks_count=bookmarks_count,
+                           topic_icons=TOPIC_ICONS)
+
+
+@app.route("/practice/drill")
+@login_required
+def practice_drill():
+    uid  = session["user"]["id"]
+    topic_filter = request.args.get("topic", "")
+    type_filter  = request.args.get("type", "")
+    diff_filter  = request.args.get("difficulty", "")
+    mode         = request.args.get("mode", "normal")  # normal | timed
+    qid_single   = request.args.get("qid", "")
+
+    with get_db() as conn:
+        q_query = "SELECT * FROM prac_questions WHERE is_active=TRUE"
+        params  = []
+        if topic_filter:
+            q_query += " AND topic=%s"; params.append(topic_filter)
+        if type_filter and type_filter != "mixed":
+            q_query += " AND q_type=%s"; params.append(type_filter)
+        if diff_filter:
+            q_query += " AND difficulty=%s"; params.append(diff_filter)
+        if qid_single and qid_single.isdigit():
+            q_query += " AND id=%s"; params.append(int(qid_single))
+        q_query += " ORDER BY RANDOM() LIMIT 10"
+
+        raw = conn.execute(q_query, params).fetchall()
+
+        # Bookmark set for this user
+        bm_ids = {r["question_id"] for r in
+                  conn.execute("SELECT question_id FROM prac_bookmarks WHERE user_id=%s", (uid,)).fetchall()}
+
+    questions = []
+    for r in raw:
+        q = dict(r)
+        q["options"]    = json.loads(q["options"])    if isinstance(q["options"], str)    else q["options"]
+        q["hints"]      = json.loads(q["hints"])      if isinstance(q["hints"], str)      else q["hints"]
+        q["test_cases"] = json.loads(q["test_cases"]) if isinstance(q["test_cases"], str) else q["test_cases"]
+        q["bookmarked"] = q["id"] in bm_ids
+        # Serialize timestamps for JSON
+        q.pop("created_at", None)
+        questions.append(q)
+
+    session_id = str(uuid.uuid4())
+    return render_template("practice_drill.html",
+                           questions=questions,
+                           session_id=session_id,
+                           mode=mode,
+                           topic_filter=topic_filter or "Mixed",
+                           type_filter=type_filter or "mixed",
+                           total_q=len(questions),
+                           topic_icons=TOPIC_ICONS)
+
+
+@app.route("/practice/code/<int:qid>")
+@login_required
+def practice_code_page(qid):
+    uid = session["user"]["id"]
+    with get_db() as conn:
+        q = conn.execute(
+            "SELECT * FROM prac_questions WHERE id=%s AND q_type='code'", (qid,)
+        ).fetchone()
+        if not q:
+            abort(404)
+        q = dict(q)
+        q["hints"]      = json.loads(q["hints"])      if isinstance(q["hints"], str)      else q["hints"]
+        q["test_cases"] = json.loads(q["test_cases"]) if isinstance(q["test_cases"], str) else q["test_cases"]
+        q.pop("created_at", None)
+        bookmarked = bool(conn.execute(
+            "SELECT 1 FROM prac_bookmarks WHERE user_id=%s AND question_id=%s", (uid, qid)
+        ).fetchone())
+        best = conn.execute("""
+            SELECT score, is_correct FROM prac_attempts
+            WHERE user_id=%s AND question_id=%s ORDER BY score DESC LIMIT 1
+        """, (uid, qid)).fetchone()
+        # Related questions (same topic)
+        related = conn.execute("""
+            SELECT id, title, difficulty, q_type FROM prac_questions
+            WHERE topic=%s AND q_type='code' AND id!=%s AND is_active=TRUE LIMIT 4
+        """, (q["topic"], qid)).fetchall()
+
+    return render_template("practice_code.html",
+                           q=q, bookmarked=bookmarked, best=best, related=related)
+
+
+# ── AJAX: Submit answer ───────────────────────────────────────────────────────
+@app.route("/practice/api/submit", methods=["POST"])
+@login_required
+def practice_submit():
+    uid  = session["user"]["id"]
+    data = request.get_json(force=True)
+    qid         = int(data.get("question_id", 0))
+    session_id  = data.get("session_id", "")
+    answer      = data.get("answer", "")
+    hints_used  = int(data.get("hints_used", 0))
+    time_sec    = int(data.get("time_taken_sec", 0))
+    is_correct  = bool(data.get("is_correct", False))
+    q_type      = data.get("q_type", "")
+    if not qid:
+        return jsonify({"ok": False}), 400
+
+    # Score: start 100, deduct 5 per hint
+    score = 100.0 if is_correct else 0.0
+    if is_correct:
+        score = max(50.0, 100.0 - (hints_used * 10))
+
+    with get_db() as conn:
+        q_row = conn.execute(
+            "SELECT topic, difficulty, q_type FROM prac_questions WHERE id=%s", (qid,)
+        ).fetchone()
+        if not q_row:
+            return jsonify({"ok": False}), 404
+        conn.execute("""
+            INSERT INTO prac_attempts
+              (user_id,question_id,session_id,q_type,topic,difficulty,
+               is_correct,answer_given,hints_used,time_taken_sec,score)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        """, (uid, qid, session_id, q_row["q_type"], q_row["topic"],
+              q_row["difficulty"], is_correct, answer[:500],
+              hints_used, time_sec, score))
+        streak = _update_streak(uid, conn)
+
+    return jsonify({"ok": True, "score": score, "streak": streak})
+
+
+# ── AJAX: Run code against test cases ────────────────────────────────────────
+@app.route("/practice/api/run-code", methods=["POST"])
+@login_required
+def practice_run_code():
+    data     = request.get_json(force=True)
+    qid      = int(data.get("question_id", 0))
+    code     = data.get("code", "")
+    if not qid or not code.strip():
+        return jsonify({"ok": False, "error": "No code provided"}), 400
+    if len(code) > 5000:
+        return jsonify({"ok": False, "error": "Code too long"}), 400
+
+    with get_db() as conn:
+        q = conn.execute(
+            "SELECT test_cases, correct_answer FROM prac_questions WHERE id=%s", (qid,)
+        ).fetchone()
+    if not q:
+        return jsonify({"ok": False, "error": "Question not found"}), 404
+
+    test_cases = json.loads(q["test_cases"]) if isinstance(q["test_cases"], str) else q["test_cases"]
+    results = []
+    all_pass = True
+    for tc in test_cases[:4]:  # run max 4 test cases
+        res = _run_python_safe(code, tc["input"])
+        passed = res["ok"] and res["output"] == tc["expected"]
+        if not passed:
+            all_pass = False
+        results.append({
+            "input": tc["input"],
+            "expected": tc["expected"],
+            "got": res["output"] if res["ok"] else f"ERROR: {res['error']}",
+            "passed": passed,
+        })
+
+    return jsonify({"ok": True, "results": results, "all_pass": all_pass})
+
+
+# ── AJAX: Toggle bookmark ─────────────────────────────────────────────────────
+@app.route("/practice/api/bookmark", methods=["POST"])
+@login_required
+def practice_bookmark():
+    uid  = session["user"]["id"]
+    data = request.get_json(force=True)
+    qid  = int(data.get("question_id", 0))
+    if not qid:
+        return jsonify({"ok": False}), 400
+    with get_db() as conn:
+        existing = conn.execute(
+            "SELECT id FROM prac_bookmarks WHERE user_id=%s AND question_id=%s", (uid, qid)
+        ).fetchone()
+        if existing:
+            conn.execute("DELETE FROM prac_bookmarks WHERE user_id=%s AND question_id=%s", (uid, qid))
+            return jsonify({"ok": True, "bookmarked": False})
+        conn.execute(
+            "INSERT INTO prac_bookmarks (user_id,question_id) VALUES (%s,%s) ON CONFLICT DO NOTHING",
+            (uid, qid)
+        )
+    return jsonify({"ok": True, "bookmarked": True})
+
+
+# ── Practice history ──────────────────────────────────────────────────────────
+@app.route("/practice/history")
+@login_required
+def practice_history():
+    uid = session["user"]["id"]
+    with get_db() as conn:
+        topic_stats = conn.execute("""
+            SELECT topic,
+                   COUNT(*) AS total,
+                   SUM(CASE WHEN is_correct THEN 1 ELSE 0 END) AS correct,
+                   ROUND(AVG(CASE WHEN is_correct THEN 1.0 ELSE 0.0 END)*100,1) AS accuracy,
+                   ROUND(AVG(time_taken_sec),0) AS avg_time_sec,
+                   MAX(attempted_at) AS last_practiced
+            FROM prac_attempts WHERE user_id=%s
+            GROUP BY topic ORDER BY topic
+        """, (uid,)).fetchall()
+
+        recent = conn.execute("""
+            SELECT pa.q_type, pa.topic, pa.difficulty, pa.is_correct,
+                   pa.time_taken_sec, pa.score, pa.attempted_at,
+                   pq.title
+            FROM prac_attempts pa
+            JOIN prac_questions pq ON pq.id = pa.question_id
+            WHERE pa.user_id=%s ORDER BY pa.attempted_at DESC LIMIT 20
+        """, (uid,)).fetchall()
+
+        overall = conn.execute("""
+            SELECT COUNT(*) AS total,
+                   ROUND(AVG(CASE WHEN is_correct THEN 1.0 ELSE 0.0 END)*100,1) AS accuracy
+            FROM prac_attempts WHERE user_id=%s
+        """, (uid,)).fetchone()
+
+        streak_row = conn.execute(
+            "SELECT current_streak, longest_streak FROM prac_streaks WHERE user_id=%s", (uid,)
+        ).fetchone()
+
+        weak_topics = [
+            r["topic"] for r in conn.execute("""
+                SELECT topic,
+                       AVG(CASE WHEN is_correct THEN 1.0 ELSE 0.0 END)*100 AS acc
+                FROM prac_attempts WHERE user_id=%s
+                GROUP BY topic HAVING COUNT(*) >= 3 AND AVG(CASE WHEN is_correct THEN 1.0 ELSE 0.0 END)*100 < 60
+            """, (uid,)).fetchall()
+        ]
+
+        best_row = conn.execute("""
+            SELECT topic FROM prac_attempts WHERE user_id=%s
+            GROUP BY topic ORDER BY AVG(CASE WHEN is_correct THEN 1.0 ELSE 0.0 END) DESC LIMIT 1
+        """, (uid,)).fetchone()
+
+    return render_template("practice_history.html",
+                           topic_stats=topic_stats,
+                           recent=recent,
+                           total_attempted=overall["total"] if overall else 0,
+                           overall_accuracy=overall["accuracy"] if overall else 0,
+                           streak=streak_row["current_streak"] if streak_row else 0,
+                           longest_streak=streak_row["longest_streak"] if streak_row else 0,
+                           weak_topics=weak_topics,
+                           best_topic=best_row["topic"] if best_row else None)
+
+
+# ── Bookmarks ─────────────────────────────────────────────────────────────────
+@app.route("/practice/bookmarks")
+@login_required
+def practice_bookmarks():
+    uid = session["user"]["id"]
+    with get_db() as conn:
+        bookmarks = conn.execute("""
+            SELECT pb.id, pb.question_id, pb.created_at,
+                   pq.topic, pq.difficulty, pq.q_type, pq.title, pq.question
+            FROM prac_bookmarks pb
+            JOIN prac_questions pq ON pq.id = pb.question_id
+            WHERE pb.user_id=%s ORDER BY pq.topic, pb.created_at DESC
+        """, (uid,)).fetchall()
+    return render_template("practice_bookmarks.html", bookmarks=bookmarks, topic_icons=TOPIC_ICONS)
 
 
 # Create/upgrade the table on startup so it also works under gunicorn on Render.

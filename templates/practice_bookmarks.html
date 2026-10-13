@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Bookmarked Questions · Practice Arena{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+    <div>
+      <p class="eyebrow">SAVED QUESTIONS</p>
+      <h1>Bookmarked Questions</h1>
+      <p class="muted">Revisit difficult problems, tricky edge cases, and questions you marked for revision.</p>
+    </div>
+    <div>
+      <a href="{{ url_for('practice_arena') }}" class="button">← Practice Arena</a>
+    </div>
+  </div>
+</div>
+
+{% if not bookmarks %}
+<div class="panel" style="text-align:center;padding:48px;">
+  <p style="font-size:36px;margin:0 0 10px;">⭐</p>
+  <h2>No bookmarked questions yet</h2>
+  <p class="muted">Click the star icon (⭐) during any practice drill or coding problem to save it here for review.</p>
+  <a href="{{ url_for('practice_arena') }}" class="button" style="margin-top:14px;">Browse Practice Topics</a>
+</div>
+{% else %}
+<div style="display:flex;flex-direction:column;gap:14px;">
+  {% for bm in bookmarks %}
+  <div class="panel" id="bm-row-{{ bm.question_id }}" style="padding:18px 22px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;">
+      <div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+          <span class="prac-badge-pill">{{ bm.topic }}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:11px;text-transform:uppercase;">{{ bm.q_type }}</span>
+          <span class="status {% if bm.difficulty=='easy' %}pass{% else %}review{% endif %}" style="font-size:10px;">{{ bm.difficulty }}</span>
+          <span class="muted small">Saved {{ bm.created_at.strftime('%d %b %Y') if bm.created_at else '' }}</span>
+        </div>
+        <h3 style="margin:0 0 6px;font-size:17px;">{{ bm.title }}</h3>
+        <p class="small muted" style="margin:0;max-width:750px;">{{ bm.question[:160] }}{% if bm.question|length > 160 %}...{% endif %}</p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        {% if bm.q_type == 'code' %}
+        <a href="{{ url_for('practice_code_page', qid=bm.question_id) }}" class="button" style="font-size:12px;padding:6px 14px;">Solve Code →</a>
+        {% else %}
+        <a href="{{ url_for('practice_drill', qid=bm.question_id) }}" class="button" style="font-size:12px;padding:6px 14px;">Practice →</a>
+        {% endif %}
+        <button class="button secondary" style="font-size:12px;padding:6px 12px;color:#d9534f;" onclick="removeBookmark({{ bm.question_id }})">
+          Remove ✕
+        </button>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<script>
+function removeBookmark(qid) {
+  fetch('/practice/api/bookmark', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question_id: qid })
+  }).then(r => r.json()).then(d => {
+    if (d.ok) {
+      const el = document.getElementById(`bm-row-${qid}`);
+      if (el) el.remove();
+      // If none left, reload to show empty state
+      if (document.querySelectorAll('[id^="bm-row-"]').length === 0) {
+        window.location.reload();
+      }
+    }
+  });
+}
+</script>
+{% endblock %}

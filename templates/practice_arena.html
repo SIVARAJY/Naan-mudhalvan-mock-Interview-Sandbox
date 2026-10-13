@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+{% block title %}Practice Arena · SkillSandbox{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+    <div>
+      <p class="eyebrow">TOPIC-WISE SKILL ARENA</p>
+      <h1>Practice Arena</h1>
+      <p class="muted">Low-pressure practice across key technical tracks. Choose a topic, difficulty, or timed drill to hone your accuracy and speed before formal assessments.</p>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      {% if streak > 0 %}
+      <div class="prac-streak-badge">
+        🔥 <strong>{{ streak }}</strong> Day Streak
+      </div>
+      {% endif %}
+      <a href="{{ url_for('practice_bookmarks') }}" class="button secondary" style="font-size:12px;padding:8px 14px;">
+        ⭐ Bookmarks ({{ bookmarks_count }})
+      </a>
+      <a href="{{ url_for('practice_history') }}" class="button secondary" style="font-size:12px;padding:8px 14px;">
+        📊 History & Analytics
+      </a>
+    </div>
+  </div>
+</div>
+
+{% if weak_topics %}
+<section class="panel" style="border-left:4px solid #d9534f;background:#fff8f8;margin-bottom:24px;">
+  <div class="section-heading" style="margin-bottom:8px;">
+    <div>
+      <p class="eyebrow" style="color:#d9534f;">NEEDS FOCUS</p>
+      <h2 style="font-size:17px;">Targeted Improvement Areas Detected</h2>
+    </div>
+  </div>
+  <p class="muted small" style="margin:0 0 12px;">Based on your recent attempts, your accuracy is below 60% in these skills. Reinforce concepts through structured Learning Hub courses:</p>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;">
+    {% for wt in weak_topics %}
+    <div style="display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid #f5c6cb;border-radius:8px;padding:6px 12px;">
+      <span style="font-weight:700;font-size:13px;color:#721c24;">{{ wt }}</span>
+      <a href="{{ url_for('learning_hub', topic=wt) }}" class="text-link" style="font-size:11px;">📚 Learn Course →</a>
+      <a href="{{ url_for('practice_drill', topic=wt) }}" class="button" style="font-size:10px;padding:4px 8px;">Drill Now</a>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% if daily_challenge %}
+<section class="panel" style="background:linear-gradient(135deg, #14284f 0%, #1e3c72 100%);color:#fff;border:none;margin-bottom:24px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+    <div>
+      <span style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;color:#7de0d7;text-transform:uppercase;">⚡ DAILY CHALLENGE</span>
+      <h2 style="color:#fff;font-size:22px;margin:6px 0 8px;">{{ daily_challenge.title }}</h2>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <span class="score-pill" style="background:rgba(255,255,255,0.15);color:#fff;font-size:11px;">{{ daily_challenge.topic }}</span>
+        <span class="status pass" style="text-transform:uppercase;font-size:10px;">{{ daily_challenge.difficulty }}</span>
+        <span class="status review" style="text-transform:uppercase;font-size:10px;">{{ daily_challenge.q_type }}</span>
+      </div>
+    </div>
+    <div>
+      {% if daily_challenge.q_type == 'code' %}
+      <a href="{{ url_for('practice_code_page', qid=daily_challenge.id) }}" class="button" style="background:#7de0d7;color:#14284f;font-weight:800;">Solve Challenge →</a>
+      {% else %}
+      <a href="{{ url_for('practice_drill', qid=daily_challenge.id) }}" class="button" style="background:#7de0d7;color:#14284f;font-weight:800;">Accept Challenge →</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<div class="section-heading">
+  <div>
+    <p class="eyebrow">EXPLORE BY DOMAIN</p>
+    <h2>Choose a Skill Topic</h2>
+  </div>
+</div>
+
+<div class="prac-topic-grid">
+  {% for item in topics_stats %}
+  <div class="prac-topic-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <span style="font-size:32px;">{{ item.icon }}</span>
+      {% if item.my_attempts > 0 %}
+      <span class="score-pill" style="font-size:11px;">{{ item.my_accuracy }}% Acc</span>
+      {% else %}
+      <span class="small muted">New</span>
+      {% endif %}
+    </div>
+    <h3 style="margin:0 0 4px;font-size:18px;">{{ item.topic }}</h3>
+    <p class="small muted" style="margin:0 0 14px;">{{ item.total_q }} curated problems</p>
+    
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;">
+      <span class="prac-badge-pill">{{ item.mcq_count }} MCQ</span>
+      <span class="prac-badge-pill">{{ item.interview_count }} Q&A</span>
+      <span class="prac-badge-pill">{{ item.code_count }} Code</span>
+    </div>
+
+    {% if item.my_attempts > 0 %}
+    <div style="margin-bottom:14px;">
+      <div class="track" style="height:6px;">
+        <span style="width:{{ item.my_accuracy }}%;background:{% if item.my_accuracy >= 80 %}var(--green){% elif item.my_accuracy >= 60 %}var(--amber){% else %}#d9534f{% endif %};"></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:4px;">
+        <span>{{ item.my_attempts }} completed</span>
+        <span>Target: 80%+</span>
+      </div>
+    </div>
+    {% endif %}
+
+    <div style="display:flex;gap:8px;flex-direction:column;margin-top:auto;">
+      <a href="{{ url_for('practice_drill', topic=item.topic) }}" class="button" style="text-align:center;">Practice Topic →</a>
+      <div style="display:flex;gap:6px;">
+        <a href="{{ url_for('practice_drill', topic=item.topic, type='mcq') }}" class="button secondary" style="flex:1;font-size:11px;padding:6px 0;text-align:center;">MCQ</a>
+        <a href="{{ url_for('practice_drill', topic=item.topic, type='interview') }}" class="button secondary" style="flex:1;font-size:11px;padding:6px 0;text-align:center;">Interview</a>
+        <a href="{{ url_for('learning_hub', topic=item.topic) }}" class="button secondary" style="flex:1;font-size:11px;padding:6px 0;text-align:center;" title="Course in Learning Hub">📚 Course</a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="section-heading" style="margin-top:36px;">
+  <div>
+    <p class="eyebrow">FOCUSED DRILLS</p>
+    <h2>Quick Training Modes</h2>
+  </div>
+</div>
+
+<div class="cards">
+  <div class="feature-card">
+    <span class="card-number">⚡ 01</span>
+    <h3>10-Min Timed Sprint</h3>
+    <p>10 rapid-fire randomized technical challenges with a countdown timer to build interview speed.</p>
+    <a href="{{ url_for('practice_drill', mode='timed') }}" class="button" style="width:100%;text-align:center;margin-top:10px;">Launch Timed Drill →</a>
+  </div>
+
+  <div class="feature-card">
+    <span class="card-number">🎯 02</span>
+    <h3>MCQ Mastery</h3>
+    <p>Objective test questions across Python, Java, DSA, DBMS, and Web Dev with instant answer verification.</p>
+    <a href="{{ url_for('practice_drill', type='mcq') }}" class="button secondary" style="width:100%;text-align:center;margin-top:10px;">Start MCQ Drill →</a>
+  </div>
+
+  <div class="feature-card">
+    <span class="card-number">💻 03</span>
+    <h3>Algorithmic Coding</h3>
+    <p>Hands-on Python function writing executed against unit test suites with progressive hint support.</p>
+    <a href="{{ url_for('practice_drill', type='code') }}" class="button secondary" style="width:100%;text-align:center;margin-top:10px;">Solve Coding Tasks →</a>
+  </div>
+</div>
+
+<div class="panel" style="margin-top:28px;">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">ACTIVITY LOG</p>
+      <h2>Recent Practice Sessions</h2>
+    </div>
+    <a class="text-link" href="{{ url_for('practice_history') }}">Complete History →</a>
+  </div>
+  {% if recent_attempts %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Topic</th>
+          <th>Type</th>
+          <th>Difficulty</th>
+          <th>Outcome</th>
+          <th>Timestamp</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in recent_attempts %}
+        <tr>
+          <td><strong>{{ a.topic }}</strong></td>
+          <td><span style="font-family:'DM Mono',monospace;text-transform:uppercase;font-size:11px;">{{ a.q_type }}</span></td>
+          <td><span class="status {% if a.difficulty=='easy' %}pass{% elif a.difficulty=='medium' %}review{% else %}review{% endif %}" style="font-size:10px;">{{ a.difficulty }}</span></td>
+          <td>
+            {% if a.is_correct %}
+            <span class="status pass">✓ Correct</span>
+            {% else %}
+            <span class="status review" style="color:#d9534f;background:#fde8e8;">✗ Incorrect</span>
+            {% endif %}
+          </td>
+          <td class="muted">{{ a.attempted_at.strftime('%d %b %Y, %H:%M') if a.attempted_at else 'Just now' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="muted">No practice attempts recorded yet. Jump into any skill card above to begin!</p>
+  {% endif %}
+</div>
+{% endblock %}

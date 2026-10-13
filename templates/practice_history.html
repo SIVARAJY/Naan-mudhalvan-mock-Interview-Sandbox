@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}Practice History & Analytics · SkillSandbox{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+    <div>
+      <p class="eyebrow">CONTINUOUS IMPROVEMENT</p>
+      <h1>Practice Analytics & History</h1>
+      <p class="muted">Detailed breakdown of speed, accuracy, and repetition across core skills.</p>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <a href="{{ url_for('practice_arena') }}" class="button">← Practice Arena</a>
+    </div>
+  </div>
+</div>
+
+<section class="stats">
+  <article class="stat">
+    <span>Questions Attempted</span>
+    <strong>{{ total_attempted }}</strong>
+    <small>Across MCQ, Interview & Code</small>
+  </article>
+  <article class="stat">
+    <span>Overall Accuracy</span>
+    <strong>{{ overall_accuracy }}%</strong>
+    <small>{% if overall_accuracy >= 75 %}Strong competency benchmark{% else %}Target: 80% accuracy{% endif %}</small>
+  </article>
+  <article class="stat">
+    <span>Current Streak</span>
+    <strong>🔥 {{ streak }}</strong>
+    <small>Longest streak: {{ longest_streak }} days</small>
+  </article>
+</section>
+
+{% if weak_topics %}
+<section class="panel" style="border-left:4px solid #d9534f;background:#fff8f8;margin-bottom:24px;">
+  <div class="section-heading" style="margin-bottom:8px;">
+    <div>
+      <p class="eyebrow" style="color:#d9534f;">SYSTEM RECOMMENDATION</p>
+      <h2>Identified Improvement Needs (< 60% Accuracy)</h2>
+    </div>
+  </div>
+  <p class="muted small" style="margin:0 0 14px;">The intelligent recommender suggests bridging these skill gaps before taking formal mock interviews:</p>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;">
+    {% for wt in weak_topics %}
+    <div style="background:#fff;border:1px solid #f5c6cb;border-radius:8px;padding:8px 14px;display:flex;align-items:center;gap:10px;">
+      <strong style="color:#721c24;">{{ wt }}</strong>
+      <a href="{{ url_for('learning_hub', topic=wt) }}" class="button" style="font-size:11px;padding:4px 8px;">📚 Take {{ wt }} Course</a>
+      <a href="{{ url_for('practice_drill', topic=wt) }}" class="button secondary" style="font-size:11px;padding:4px 8px;">Drill Topic</a>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<div class="panel">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">TOPIC PROFICIENCY</p>
+      <h2>Performance by Skill Domain</h2>
+    </div>
+  </div>
+  {% if topic_stats %}
+  <div style="display:flex;flex-direction:column;gap:16px;">
+    {% for t in topic_stats %}
+    <div style="background:#f8f9fa;border:1px solid var(--line);border-radius:8px;padding:14px 18px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
+        <div>
+          <strong style="font-size:16px;">{{ t.topic }}</strong>
+          <span class="small muted" style="margin-left:8px;">{{ t.correct }} / {{ t.total }} correct · Avg {{ t.avg_time_sec|int }}s / q</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <span class="score-pill" style="{% if t.accuracy >= 80 %}background:#e3f7ee;color:var(--green);{% elif t.accuracy >= 60 %}background:#fff3d7;color:var(--amber);{% else %}background:#fde8e8;color:#d9534f;{% endif %}">
+            {{ t.accuracy }}% Accuracy
+          </span>
+          <a href="{{ url_for('practice_drill', topic=t.topic) }}" class="text-link" style="font-size:12px;">Drill →</a>
+          <a href="{{ url_for('learning_hub', topic=t.topic) }}" class="text-link" style="font-size:12px;">Course →</a>
+        </div>
+      </div>
+      <div class="track" style="height:8px;">
+        <span style="width:{{ t.accuracy }}%;background:{% if t.accuracy >= 80 %}var(--green){% elif t.accuracy >= 60 %}var(--amber){% else %}#d9534f{% endif %};"></span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="muted">No topic statistics compiled yet. Complete drills in the arena to generate metrics.</p>
+  {% endif %}
+</div>
+
+<div class="panel" style="margin-top:24px;">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">ATTEMPT LOG</p>
+      <h2>Recent 20 Attempts</h2>
+    </div>
+  </div>
+  {% if recent %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Question</th>
+          <th>Topic</th>
+          <th>Type</th>
+          <th>Difficulty</th>
+          <th>Time</th>
+          <th>Result</th>
+          <th>Score</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in recent %}
+        <tr>
+          <td><strong>{{ a.title }}</strong></td>
+          <td>{{ a.topic }}</td>
+          <td><span style="font-family:'DM Mono',monospace;text-transform:uppercase;font-size:11px;">{{ a.q_type }}</span></td>
+          <td><span class="status {% if a.difficulty=='easy' %}pass{% else %}review{% endif %}" style="font-size:10px;">{{ a.difficulty }}</span></td>
+          <td class="muted">{{ a.time_taken_sec }}s</td>
+          <td>
+            {% if a.is_correct %}
+            <span class="status pass">PASS</span>
+            {% else %}
+            <span class="status review" style="color:#d9534f;background:#fde8e8;">FAIL</span>
+            {% endif %}
+          </td>
+          <td><span class="score-pill">{{ a.score|round(0)|int }}%</span></td>
+          <td class="muted small">{{ a.attempted_at.strftime('%d %b %Y, %H:%M') if a.attempted_at else 'Recent' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="muted">No recent practice attempts logged.</p>
+  {% endif %}
+</div>
+{% endblock %}

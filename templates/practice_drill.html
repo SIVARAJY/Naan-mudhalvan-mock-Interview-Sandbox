@@ -1,0 +1,411 @@
+{% extends "base.html" %}
+{% block title %}Practice Drill · SkillSandbox{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+  <div style="display:flex;align-items:center;gap:8px;">
+    <a href="{{ url_for('practice_arena') }}" class="text-link">← Practice Arena</a>
+    <span class="muted">/</span>
+    <span style="font-weight:700;">{{ topic_filter }} Drill</span>
+    <span class="status pass" style="font-size:10px;text-transform:uppercase;">{{ type_filter }}</span>
+    {% if mode == 'timed' %}
+    <span class="status review" style="font-size:10px;background:#ffeaa7;color:#d63031;font-weight:700;">⏱️ Timed Mode</span>
+    {% endif %}
+  </div>
+  <div style="display:flex;align-items:center;gap:14px;">
+    {% if mode == 'timed' %}
+    <div id="drill-timer" style="font-family:'DM Mono',monospace;font-weight:700;font-size:16px;background:#14284f;color:#7de0d7;padding:4px 12px;border-radius:6px;">
+      10:00
+    </div>
+    {% endif %}
+    <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--muted);" id="q-counter">
+      Q 1 / {{ total_q }}
+    </div>
+  </div>
+</div>
+
+<!-- Progress bar -->
+<div class="track" style="height:6px;margin-bottom:20px;">
+  <span id="drill-progress" style="width:0%;transition:width 0.3s ease;"></span>
+</div>
+
+<!-- Drill container -->
+<div id="drill-box">
+  {% if not questions %}
+  <div class="panel" style="text-align:center;padding:40px;">
+    <p style="font-size:36px;margin:0 0 10px;">🔍</p>
+    <h2>No questions found for this selection</h2>
+    <p class="muted">Try adjusting your filters or pick another topic.</p>
+    <a href="{{ url_for('practice_arena') }}" class="button" style="margin-top:12px;">Back to Arena</a>
+  </div>
+  {% else %}
+  <div class="panel prac-q-card" id="q-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <span class="prac-badge-pill" id="q-type-badge">TYPE</span>
+        <span class="status" id="q-diff-badge" style="font-size:10px;text-transform:uppercase;">DIFF</span>
+        <span class="eyebrow" id="q-topic-badge" style="margin:0;">TOPIC</span>
+      </div>
+      <button id="bookmark-btn" class="prac-bookmark-btn" onclick="toggleCurrentBookmark()" title="Bookmark question">
+        ⭐
+      </button>
+    </div>
+
+    <h2 id="q-title" style="font-size:20px;margin:0 0 8px;">Question Title</h2>
+    <div id="q-text" style="font-size:15px;line-height:1.6;margin-bottom:20px;white-space:pre-line;"></div>
+
+    <!-- Interactive area for MCQ -->
+    <div id="mcq-options" style="display:none;margin-bottom:16px;"></div>
+
+    <!-- Interactive area for Interview Q&A -->
+    <div id="interview-area" style="display:none;margin-bottom:16px;">
+      <label class="field-label">Draft your response / thoughts:</label>
+      <textarea id="interview-draft" rows="4" placeholder="Structure your answer, key points, syntax..."></textarea>
+      <div style="display:flex;gap:10px;align-items:center;margin-top:10px;">
+        <button class="button" id="reveal-ans-btn" onclick="revealInterviewAnswer()">Reveal Model Answer & Explanation</button>
+      </div>
+      <div id="interview-self-rate" style="display:none;margin-top:16px;padding:14px;background:#f8f9fa;border-radius:8px;border:1px solid var(--line);">
+        <p style="font-weight:700;margin:0 0 8px;">Self-Assessment: How confident was your answer?</p>
+        <div style="display:flex;gap:8px;">
+          <button class="button" style="background:var(--green);font-size:12px;" onclick="rateInterview(true)">✓ Strong / Correct</button>
+          <button class="button secondary" style="font-size:12px;" onclick="rateInterview(false)">✗ Missed Key Concepts</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive area for Code prompt preview -->
+    <div id="code-quick-area" style="display:none;margin-bottom:16px;">
+      <div style="background:#111a2a;color:#e4edff;padding:14px;border-radius:8px;font-family:'DM Mono',monospace;font-size:12px;margin-bottom:12px;" id="code-starter-view"></div>
+      <a id="code-full-link" href="#" class="button" style="display:inline-block;">Open Full Python IDE & Test Suite →</a>
+      <button class="button secondary" style="margin-left:8px;" onclick="skipCodeQuestion()">Next Drill Item →</button>
+    </div>
+
+    <!-- Hints Section -->
+    <div id="hints-panel" style="margin-top:16px;border-top:1px solid var(--line);padding-top:14px;">
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;" id="hint-buttons-row">
+        <span class="small muted">Need assistance?</span>
+        <button class="button secondary" id="hint-1-btn" style="font-size:11px;padding:5px 10px;" onclick="showHint(1)">💡 Hint 1 (-10 pts)</button>
+        <button class="button secondary" id="hint-2-btn" style="font-size:11px;padding:5px 10px;display:none;" onclick="showHint(2)">💡 Hint 2 (-20 pts)</button>
+      </div>
+      <div id="hint-1-text" class="prac-hint-box" style="display:none;margin-top:10px;"></div>
+      <div id="hint-2-text" class="prac-hint-box" style="display:none;margin-top:10px;"></div>
+    </div>
+
+    <!-- Explanation Box -->
+    <div id="explanation-box" style="display:none;margin-top:18px;padding:16px;border-radius:8px;background:#f0f4fd;border:1px solid #d0deff;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span id="expl-badge" class="status pass">✓</span>
+        <strong style="color:var(--ink);">Explanation & Concept Breakdown:</strong>
+      </div>
+      <p id="expl-text" style="margin:0 0 10px;font-size:13px;line-height:1.6;white-space:pre-line;"></p>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-top:14px;">
+        <a id="learn-topic-btn" href="#" class="text-link" style="font-size:12px;">📚 Learn this in Course →</a>
+        <button class="button" id="next-btn" onclick="nextQuestion()">Next Question →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Card (shown at end) -->
+  <div class="panel" id="summary-card" style="display:none;text-align:center;padding:36px;">
+    <div class="score-ring" style="margin:0 auto 16px;">
+      <strong id="final-pct">0%</strong>
+      <span>Accuracy</span>
+    </div>
+    <h2 id="summary-title" style="font-size:24px;margin:0 0 8px;">Drill Complete!</h2>
+    <p class="muted" id="summary-subtitle" style="margin:0 0 20px;">Great repetition practice. Your progress has been updated in analytics.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:500px;margin:0 auto 24px;">
+      <div class="stat" style="padding:12px;">
+        <span>Correct</span>
+        <strong id="sum-correct" style="font-size:22px;color:var(--green);">0</strong>
+      </div>
+      <div class="stat" style="padding:12px;">
+        <span>Total Questions</span>
+        <strong id="sum-total" style="font-size:22px;">0</strong>
+      </div>
+      <div class="stat" style="padding:12px;">
+        <span>Streak</span>
+        <strong id="sum-streak" style="font-size:22px;color:var(--amber);">🔥 1</strong>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <a href="{{ url_for('practice_drill', topic=topic_filter if topic_filter!='Mixed' else '', mode=mode) }}" class="button">Practice Another Round</a>
+      <a href="{{ url_for('practice_arena') }}" class="button secondary">Return to Arena</a>
+      <a href="{{ url_for('learning_hub') }}" class="button secondary">📚 Explore Courses</a>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+const QUESTIONS = {{ questions|tojson|safe }};
+const SESSION_ID = "{{ session_id }}";
+const MODE = "{{ mode }}";
+let currentIndex = 0;
+let qStartTime = Date.now();
+let hintsUsedThisQ = 0;
+let results = [];
+let drillTimer = null;
+let remainingSec = 600; // 10 minutes
+
+function initDrill() {
+  if (!QUESTIONS || QUESTIONS.length === 0) return;
+  if (MODE === 'timed') {
+    startTimer();
+  }
+  renderQuestion(0);
+}
+
+function startTimer() {
+  const el = document.getElementById('drill-timer');
+  drillTimer = setInterval(() => {
+    remainingSec--;
+    if (remainingSec <= 0) {
+      clearInterval(drillTimer);
+      el.textContent = "00:00";
+      finishDrill();
+      return;
+    }
+    const m = Math.floor(remainingSec / 60);
+    const s = remainingSec % 60;
+    el.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+  }, 1000);
+}
+
+function renderQuestion(idx) {
+  currentIndex = idx;
+  hintsUsedThisQ = 0;
+  qStartTime = Date.now();
+
+  const q = QUESTIONS[idx];
+  document.getElementById('q-counter').textContent = `Q ${idx + 1} / ${QUESTIONS.length}`;
+  const pct = (idx / QUESTIONS.length) * 100;
+  document.getElementById('drill-progress').style.width = `${pct}%`;
+
+  // Reset UI
+  document.getElementById('explanation-box').style.display = 'none';
+  document.getElementById('hint-1-text').style.display = 'none';
+  document.getElementById('hint-2-text').style.display = 'none';
+  document.getElementById('hint-1-btn').style.display = (q.hints && q.hints.length > 0) ? 'inline-block' : 'none';
+  document.getElementById('hint-2-btn').style.display = 'none';
+
+  // Badges & title
+  document.getElementById('q-type-badge').textContent = q.q_type.toUpperCase();
+  const diffEl = document.getElementById('q-diff-badge');
+  diffEl.textContent = q.difficulty;
+  diffEl.className = 'status ' + (q.difficulty === 'easy' ? 'pass' : 'review');
+  document.getElementById('q-topic-badge').textContent = q.topic;
+  document.getElementById('q-title').textContent = q.title;
+  document.getElementById('q-text').textContent = q.question;
+
+  // Bookmark icon
+  const bmBtn = document.getElementById('bookmark-btn');
+  bmBtn.textContent = q.bookmarked ? '⭐' : '☆';
+  bmBtn.style.color = q.bookmarked ? '#f59e0b' : 'var(--muted)';
+
+  // Hide all interactive sections first
+  document.getElementById('mcq-options').style.display = 'none';
+  document.getElementById('interview-area').style.display = 'none';
+  document.getElementById('code-quick-area').style.display = 'none';
+
+  if (q.q_type === 'mcq') {
+    renderMCQ(q);
+  } else if (q.q_type === 'interview') {
+    renderInterview(q);
+  } else if (q.q_type === 'code') {
+    renderCode(q);
+  }
+}
+
+function renderMCQ(q) {
+  const container = document.getElementById('mcq-options');
+  container.innerHTML = '';
+  container.style.display = 'block';
+
+  (q.options || []).forEach((opt, i) => {
+    const btn = document.createElement('div');
+    btn.className = 'prac-option';
+    btn.innerHTML = `<span style="font-family:'DM Mono',monospace;margin-right:8px;font-weight:700;">${String.fromCharCode(65 + i)}.</span> ${opt}`;
+    btn.onclick = () => selectMCQOption(btn, opt, q);
+    container.appendChild(btn);
+  });
+}
+
+function selectMCQOption(clickedEl, selectedOpt, q) {
+  const allOpts = document.querySelectorAll('.prac-option');
+  allOpts.forEach(o => o.style.pointerEvents = 'none'); // disable all
+
+  const isCorrect = (selectedOpt.trim() === q.correct_answer.trim());
+  if (isCorrect) {
+    clickedEl.classList.add('correct');
+  } else {
+    clickedEl.classList.add('wrong');
+    allOpts.forEach(o => {
+      if (o.textContent.includes(q.correct_answer)) {
+        o.classList.add('correct');
+      }
+    });
+  }
+
+  recordAndShowExpl(isCorrect, selectedOpt);
+}
+
+function renderInterview(q) {
+  const container = document.getElementById('interview-area');
+  container.style.display = 'block';
+  document.getElementById('interview-draft').value = '';
+  document.getElementById('reveal-ans-btn').style.display = 'inline-block';
+  document.getElementById('interview-self-rate').style.display = 'none';
+}
+
+function revealInterviewAnswer() {
+  document.getElementById('reveal-ans-btn').style.display = 'none';
+  document.getElementById('interview-self-rate').style.display = 'block';
+  const q = QUESTIONS[currentIndex];
+  showExplanation(true, q.correct_answer + "\n\n" + q.explanation);
+}
+
+function rateInterview(isConfident) {
+  document.getElementById('interview-self-rate').style.display = 'none';
+  const draft = document.getElementById('interview-draft').value;
+  recordAndShowExpl(isConfident, draft, false);
+}
+
+function renderCode(q) {
+  const container = document.getElementById('code-quick-area');
+  container.style.display = 'block';
+  document.getElementById('code-starter-view').textContent = q.starter_code || '# No starter code provided';
+  document.getElementById('code-full-link').href = `/practice/code/${q.id}`;
+}
+
+function skipCodeQuestion() {
+  results.push({ correct: true, topic: QUESTIONS[currentIndex].topic });
+  nextQuestion();
+}
+
+function showHint(lvl) {
+  const q = QUESTIONS[currentIndex];
+  if (!q.hints) return;
+  if (lvl === 1 && q.hints.length >= 1) {
+    hintsUsedThisQ = Math.max(hintsUsedThisQ, 1);
+    document.getElementById('hint-1-text').textContent = "💡 Hint 1: " + q.hints[0];
+    document.getElementById('hint-1-text').style.display = 'block';
+    document.getElementById('hint-1-btn').style.display = 'none';
+    if (q.hints.length >= 2) {
+      document.getElementById('hint-2-btn').style.display = 'inline-block';
+    }
+  } else if (lvl === 2 && q.hints.length >= 2) {
+    hintsUsedThisQ = 2;
+    document.getElementById('hint-2-text').textContent = "💡 Hint 2: " + q.hints[1];
+    document.getElementById('hint-2-text').style.display = 'block';
+    document.getElementById('hint-2-btn').style.display = 'none';
+  }
+}
+
+function recordAndShowExpl(isCorrect, answerGiven, autoShowExpl = true) {
+  const q = QUESTIONS[currentIndex];
+  const timeTaken = Math.max(1, Math.round((Date.now() - qStartTime) / 1000));
+
+  results.push({ correct: isCorrect, topic: q.topic });
+
+  // Post async to server
+  fetch('/practice/api/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      question_id: q.id,
+      session_id: SESSION_ID,
+      answer: String(answerGiven),
+      hints_used: hintsUsedThisQ,
+      time_taken_sec: timeTaken,
+      is_correct: isCorrect,
+      q_type: q.q_type
+    })
+  }).then(r => r.json()).then(data => {
+    if (data.streak) {
+      document.getElementById('sum-streak').textContent = `🔥 ${data.streak}`;
+    }
+  }).catch(e => console.error(e));
+
+  if (autoShowExpl) {
+    showExplanation(isCorrect, q.explanation);
+  }
+}
+
+function showExplanation(isCorrect, text) {
+  const box = document.getElementById('explanation-box');
+  const badge = document.getElementById('expl-badge');
+  badge.textContent = isCorrect ? '✓ Correct' : '✗ Incorrect';
+  badge.className = 'status ' + (isCorrect ? 'pass' : 'review');
+  if (!isCorrect) {
+    badge.style.background = '#fde8e8';
+    badge.style.color = '#d9534f';
+  } else {
+    badge.style.background = '#e3f7ee';
+    badge.style.color = 'var(--green)';
+  }
+
+  document.getElementById('expl-text').textContent = text || 'No additional explanation available.';
+  const q = QUESTIONS[currentIndex];
+  const learnLink = document.getElementById('learn-topic-btn');
+  learnLink.href = `/learning?topic=${encodeURIComponent(q.topic)}`;
+  learnLink.textContent = `📚 Learn ${q.topic} in Course →`;
+
+  box.style.display = 'block';
+}
+
+function nextQuestion() {
+  if (currentIndex + 1 < QUESTIONS.length) {
+    renderQuestion(currentIndex + 1);
+  } else {
+    finishDrill();
+  }
+}
+
+function finishDrill() {
+  if (drillTimer) clearInterval(drillTimer);
+  document.getElementById('q-card').style.display = 'none';
+  document.getElementById('drill-progress').style.width = '100%';
+
+  const summary = document.getElementById('summary-card');
+  summary.style.display = 'block';
+
+  const total = results.length || QUESTIONS.length;
+  const correct = results.filter(r => r.correct).length;
+  const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+  document.getElementById('final-pct').textContent = `${pct}%`;
+  document.getElementById('sum-correct').textContent = correct;
+  document.getElementById('sum-total').textContent = total;
+
+  if (pct >= 80) {
+    document.getElementById('summary-title').textContent = "Excellent Mastery! 🌟";
+    document.getElementById('summary-subtitle').textContent = "Outstanding accuracy across this round. Ready for high-stakes interviews!";
+  } else if (pct >= 60) {
+    document.getElementById('summary-title').textContent = "Solid Practice Session 👍";
+    document.getElementById('summary-subtitle').textContent = "Good progress. Review missed questions to tighten up edge cases.";
+  } else {
+    document.getElementById('summary-title').textContent = "Keep Practicing! 💪";
+    document.getElementById('summary-subtitle').textContent = "Repetition is the mother of skill. Use the Learning Hub courses to reinforce weaker areas.";
+  }
+}
+
+function toggleCurrentBookmark() {
+  const q = QUESTIONS[currentIndex];
+  fetch('/practice/api/bookmark', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question_id: q.id })
+  }).then(r => r.json()).then(d => {
+    if (d.ok) {
+      q.bookmarked = d.bookmarked;
+      const bmBtn = document.getElementById('bookmark-btn');
+      bmBtn.textContent = q.bookmarked ? '⭐' : '☆';
+      bmBtn.style.color = q.bookmarked ? '#f59e0b' : 'var(--muted)';
+    }
+  });
+}
+
+window.addEventListener('DOMContentLoaded', initDrill);
+</script>
+{% endblock %}

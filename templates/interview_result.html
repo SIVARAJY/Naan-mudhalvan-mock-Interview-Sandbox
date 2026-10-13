@@ -20,11 +20,14 @@
   <p class="muted" style="margin:0 0 18px;">You missed questions in these topics. Find matching courses in the Learning Hub to improve:</p>
   <div style="display:flex;gap:10px;flex-wrap:wrap;">
     {% for topic in missed %}
-    <a class="button" href="{{ url_for('learning_hub', topic=topic) }}" style="background:#2859d8;">
-      📚 Learn {{ topic }}
+    <a class="button" href="{{ url_for('practice_drill', topic=topic) }}" style="background:#087b59;">
+      ⚡ Drill {{ topic }}
+    </a>
+    <a class="button secondary" href="{{ url_for('learning_hub', topic=topic) }}">
+      📚 Course: {{ topic }}
     </a>
     {% endfor %}
-    <a class="button secondary" href="{{ url_for('learning_hub') }}">Browse All Courses</a>
+    <a class="button secondary" href="{{ url_for('practice_arena') }}">Practice Arena</a>
   </div>
 </section>
 {% endif %}

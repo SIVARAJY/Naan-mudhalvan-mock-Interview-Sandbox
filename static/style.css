@@ -66,3 +66,20 @@
 @media(max-width:900px){.lh-player-layout{grid-template-columns:1fr}.lh-course-hero{grid-template-columns:1fr}.lh-hero-thumb{min-height:200px}.admin-lesson-layout{grid-template-columns:1fr}}
 @media(max-width:600px){.lh-grid{grid-template-columns:1fr}.cards{grid-template-columns:1fr}}
 
+/* ═══════════════════════════════════════════════════════════
+   PRACTICE ARENA STYLES
+═══════════════════════════════════════════════════════════ */
+.prac-topic-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-bottom:24px}
+.prac-topic-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:22px;display:flex;flex-direction:column;transition:transform .15s,border-color .15s}
+.prac-topic-card:hover{transform:translateY(-3px);border-color:#aabcf0;box-shadow:0 6px 20px rgba(40,89,216,0.08)}
+.prac-badge-pill{font:600 11px "DM Mono",monospace;background:#f0f3fb;color:var(--blue);padding:3px 8px;border-radius:6px;display:inline-block}
+.prac-streak-badge{display:inline-flex;align-items:center;gap:6px;background:#fff3d7;color:#b45309;padding:6px 12px;border-radius:20px;font-weight:700;font-size:13px;border:1px solid #fde68a}
+.prac-q-card{padding:26px;position:relative}
+.prac-bookmark-btn{background:none;border:none;font-size:22px;cursor:pointer;line-height:1;transition:transform .1s}
+.prac-bookmark-btn:hover{transform:scale(1.15)}
+.prac-option{display:flex;align-items:center;border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin:8px 0;cursor:pointer;transition:background .15s,border-color .15s;font-size:14px;background:#fff}
+.prac-option:hover{background:#f8faff;border-color:var(--blue)}
+.prac-option.correct{background:#e3f7ee !important;border-color:var(--green) !important;color:var(--green);font-weight:700}
+.prac-option.wrong{background:#fde8e8 !important;border-color:#d9534f !important;color:#d9534f}
+.prac-hint-box{background:#fff8db;border:1px solid #fce8a6;border-radius:8px;padding:10px 14px;font-size:13px;color:#854d0e;line-height:1.5}
+
