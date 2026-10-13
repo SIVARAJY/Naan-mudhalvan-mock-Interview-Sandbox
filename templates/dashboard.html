@@ -7,11 +7,11 @@
     <h1>Practice. Measure. Improve.</h1>
     <p class="muted">A technical skills practice arena and coding proficiency platform.</p>
     <div class="actions">
-      <a class="button" href="{{ url_for('skill_analysis') }}" style="background:#7de0d7;color:#14284f;font-weight:800;">📊 Skill Diagnostics</a>
-      <a class="button" href="{{ url_for('companies_list') }}" style="background:#fff;color:var(--ink);font-weight:800;">🏢 Company Guide</a>
-      <a class="button" href="{{ url_for('practice_arena') }}" style="background:#2859d8;color:#fff;font-weight:800;">⚡ Practice Arena</a>
+      <a class="button" href="{{ url_for('skill_analysis') }}" style="background:var(--teal);color:#fff;font-weight:700;">📊 Skill Diagnostics</a>
+      <a class="button" href="{{ url_for('companies_list') }}" style="background:var(--mint-light);color:var(--teal);border:1px solid var(--teal);font-weight:700;">🏢 Company Guide</a>
+      <a class="button" href="{{ url_for('practice_arena') }}" style="background:var(--teal);color:#fff;font-weight:700;">⚡ Practice Arena</a>
       <a class="button secondary" href="{{ url_for('coding') }}">Coding challenge</a>
-      <a class="button secondary" href="{{ url_for('learning_hub') }}" style="background:#1b3a6b;color:#fff;">📚 Learning Hub</a>
+      <a class="button secondary" href="{{ url_for('learning_hub') }}" style="background:var(--mint-soft);color:var(--teal);border:1px solid var(--teal);">📚 Learning Hub</a>
     </div>
   </div>
   <div class="hero-mark">01 <span>/ 06</span><small>LEARN BY PRACTICE</small></div>
@@ -23,12 +23,12 @@
 </section>
 <section class="section-heading"><div><p class="eyebrow">YOUR WORKSPACE</p><h2>Choose a practice mode</h2></div></section>
 <section class="cards" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
-  <a class="feature-card" href="{{ url_for('skill_analysis') }}" style="border-color:#7de0d7;background:#f5fffd;"><span class="card-number" style="color:#087b59;">01</span><h3>📊 Skill Analysis</h3><p>Cross-assessment diagnostic: accuracy, weak areas, speed & interview readiness.</p><span class="text-link" style="color:#087b59;">View tracker →</span></a>
-  <a class="feature-card" href="{{ url_for('companies_list') }}" style="border-color:#aabcf0;background:#f8faff;"><span class="card-number" style="color:#2859d8;">02</span><h3>🏢 Company Guide</h3><p>Recruitment patterns, round breakdown, eligibility criteria & real questions.</p><span class="text-link" style="color:#2859d8;">Explore companies →</span></a>
-  <a class="feature-card" href="{{ url_for('practice_arena') }}"><span class="card-number" style="color:#2859d8;">03</span><h3>⚡ Practice Arena</h3><p>Low-pressure skill arena: MCQ drills, interview questions, coding & daily streaks.</p><span class="text-link">Enter arena →</span></a>
-  <a class="feature-card" href="{{ url_for('learning_hub') }}"><span class="card-number">04</span><h3>📚 Learning Hub</h3><p>Video courses aligned with Naan Mudhalvan tracks, notes, quizzes & certificates.</p><span class="text-link">Explore courses →</span></a>
-  <a class="feature-card" href="{{ url_for('coding') }}"><span class="card-number">05</span><h3>Coding sandbox</h3><p>Function-writing benchmark challenge and algorithmic rubric evaluation.</p><span class="text-link">Open challenge →</span></a>
-  <a class="feature-card" href="{{ url_for('history') }}"><span class="card-number">06</span><h3>Progress history</h3><p>Review comprehensive score trajectories, weak spots and feedback.</p><span class="text-link">View history →</span></a>
+  <a class="feature-card" href="{{ url_for('skill_analysis') }}" style="border-color:var(--line);background:var(--card-bg);"><span class="card-number" style="color:var(--green);">01</span><h3>📊 Skill Analysis</h3><p>Cross-assessment diagnostic: accuracy, weak areas, speed & interview readiness.</p><span class="text-link" style="color:var(--green);">View tracker →</span></a>
+  <a class="feature-card" href="{{ url_for('companies_list') }}" style="border-color:var(--line);background:var(--card-bg);"><span class="card-number" style="color:var(--teal);">02</span><h3>🏢 Company Guide</h3><p>Recruitment patterns, round breakdown, eligibility criteria & real questions.</p><span class="text-link" style="color:var(--green);">Explore companies →</span></a>
+  <a class="feature-card" href="{{ url_for('practice_arena') }}" style="border-color:var(--line);background:var(--card-bg);"><span class="card-number" style="color:var(--teal);">03</span><h3>⚡ Practice Arena</h3><p>Low-pressure skill arena: MCQ drills, interview questions, coding & daily streaks.</p><span class="text-link" style="color:var(--green);">Enter arena →</span></a>
+  <a class="feature-card" href="{{ url_for('learning_hub') }}" style="border-color:var(--line);background:var(--card-bg);"><span class="card-number" style="color:var(--teal);">04</span><h3>📚 Learning Hub</h3><p>Video courses aligned with Naan Mudhalvan tracks, notes, quizzes & certificates.</p><span class="text-link" style="color:var(--green);">Explore courses →</span></a>
+  <a class="feature-card" href="{{ url_for('coding') }}" style="border-color:var(--line);background:var(--card-bg);"><span class="card-number" style="color:var(--teal);">05</span><h3>Coding sandbox</h3><p>Function-writing benchmark challenge and algorithmic rubric evaluation.</p><span class="text-link" style="color:var(--green);">Open challenge →</span></a>
+  <a class="feature-card" href="{{ url_for('history') }}" style="border-color:var(--line);background:var(--card-bg);"><span class="card-number" style="color:var(--teal);">06</span><h3>Progress history</h3><p>Review comprehensive score trajectories, weak spots and feedback.</p><span class="text-link" style="color:var(--green);">View history →</span></a>
 </section>
 <section class="panel">
   <div class="section-heading"><div><p class="eyebrow">RECENT ACTIVITY</p><h2>Latest attempts</h2></div><a class="text-link" href="{{ url_for('history') }}">View all →</a></div>

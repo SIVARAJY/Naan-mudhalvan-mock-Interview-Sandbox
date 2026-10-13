@@ -16,25 +16,25 @@
 </div>
 
 <!-- Interview Readiness Index Banner -->
-<div class="panel" style="background:linear-gradient(135deg, #14284f 0%, #1e3c72 100%);color:#fff;border:none;margin-bottom:24px;padding:28px;">
+<div class="panel" style="background:var(--teal);color:#fff;border-bottom:4px solid var(--gold);margin-bottom:24px;padding:28px;">
   <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;">
     <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
-      <div class="score-ring" style="border-color:rgba(255,255,255,0.25);background:rgba(255,255,255,0.06);">
-        <strong style="color:#7de0d7;font-size:32px;">{{ readiness_score }}%</strong>
-        <span style="color:#c7d4f2;font-size:10px;">Readiness</span>
+      <div class="score-ring" style="border-color:var(--gold);background:rgba(255,255,255,0.06);">
+        <strong style="color:var(--gold);font-size:32px;">{{ readiness_score }}%</strong>
+        <span style="color:#FFFFFF;font-size:10px;">Readiness</span>
       </div>
       <div>
         <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
-          <span style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;color:#7de0d7;text-transform:uppercase;">BENCHMARK ASSESSMENT</span>
+          <span style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--gold);text-transform:uppercase;">BENCHMARK ASSESSMENT</span>
           <span class="status pass" style="font-size:10px;text-transform:uppercase;">{{ readiness_status }}</span>
         </div>
         <h2 style="color:#fff;font-size:24px;margin:0 0 6px;">{{ readiness_title }}</h2>
-        <p style="color:#c7d4f2;font-size:13px;line-height:1.5;margin:0;max-width:550px;">{{ readiness_desc }}</p>
+        <p style="color:var(--mint-soft);font-size:13px;line-height:1.5;margin:0;max-width:550px;">{{ readiness_desc }}</p>
       </div>
     </div>
     <div style="display:flex;flex-direction:column;gap:8px;min-width:200px;">
-      <a href="{{ url_for('practice_drill', mode='timed') }}" class="button" style="background:#7de0d7;color:#14284f;font-weight:800;text-align:center;">Take Timed Diagnostic</a>
-      <a href="{{ url_for('companies_list') }}" class="button secondary" style="background:rgba(255,255,255,0.15);color:#fff;border:none;text-align:center;">Company Interview Guide</a>
+      <a href="{{ url_for('practice_drill', mode='timed') }}" class="button" style="background:var(--gold);color:var(--teal);font-weight:800;text-align:center;">Take Timed Diagnostic</a>
+      <a href="{{ url_for('companies_list') }}" class="button secondary" style="background:var(--mint-soft);color:var(--teal);border:none;text-align:center;font-weight:700;">Company Interview Guide</a>
     </div>
   </div>
 </div>
