@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Attempt History · SkillSandbox{% endblock %}
+{% block content %}
+<div class="page-heading"><p class="eyebrow">PROGRESS TRACKER</p><h1>Attempt history</h1><p class="muted">All saved practice attempts on this local installation.</p></div>
+<section class="panel">
+{% if attempts %}<div class="table-wrap"><table><thead><tr><th>Student</th><th>Assessment</th><th>Topic</th><th>Score</th><th>Feedback</th><th>Timestamp</th></tr></thead><tbody>
+{% for a in attempts %}<tr><td>{{ a["student_name"] }}</td><td>{{ a["attempt_type"] }}</td><td>{{ a["topic"] }}</td><td><span class="score-pill">{{ "%.1f"|format(a["score"]) }}%</span></td><td>{{ a["feedback"] }}</td><td>{{ a["created_at"] }}</td></tr>{% endfor %}
+</tbody></table></div>{% else %}<p class="muted">No saved attempts. Complete an interview or coding challenge first.</p>{% endif %}
+</section>
+{% endblock %}

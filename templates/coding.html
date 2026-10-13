@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Coding Sandbox · SkillSandbox{% endblock %}
+{% block content %}
+<div class="page-heading"><p class="eyebrow">MODULE 02</p><h1>Coding sandbox</h1><p class="muted">Read the problem, write a solution, and submit it for prototype rubric feedback.</p></div>
+<section class="problem-layout">
+  <article class="panel problem-card"><p class="eyebrow">CODING CHALLENGE</p><h2>{{ challenge.title }}</h2><p>{{ challenge.description }}</p><div class="example"><span>EXAMPLE</span><code>{{ challenge.example }}</code></div><h3>Hint</h3><p class="muted">{{ challenge.hints }}</p></article>
+  <form method="post" class="panel editor-panel">
+    <label class="field-label" for="student_name">Student name</label><input id="student_name" name="student_name" placeholder="Enter your name">
+    <div class="editor-top"><span>solution.py</span><span>Python 3 · Prototype</span></div>
+    <textarea class="code-editor" name="code" spellcheck="false" required>{{ challenge.starter }}</textarea>
+    <p class="small muted">Prototype note: submitted code is not executed. The current evaluator checks visible code patterns only.</p>
+    <button class="button" type="submit">Evaluate submission</button>
+  </form>
+</section>
+{% endblock %}
