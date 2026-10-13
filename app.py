@@ -1,16 +1,35 @@
-from flask import Flask, render_template, request
+from flask import (Flask, render_template, request, session, redirect,
+                   url_for, flash, abort)
 import os
+import base64
+import hashlib
+import secrets
+from functools import wraps
 from contextlib import contextmanager
 from datetime import datetime
+import requests
 import psycopg
 from psycopg.rows import dict_row
 from dotenv import load_dotenv
 from pathlib import Path
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 load_dotenv(Path(__file__).with_name(".env"))
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "local-demo-change-me")
+# Render (and most hosts) sit behind a proxy: this makes url_for(_external=True) use https.
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
+
 DATABASE_URL = os.getenv("DATABASE_URL")
+SUPABASE_URL = (os.getenv("SUPABASE_URL") or "").rstrip("/")
+SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
+IS_PRODUCTION = os.getenv("FLASK_ENV", "development") == "production"
+
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+    SESSION_COOKIE_SECURE=IS_PRODUCTION,
+)
 
 QUESTIONS = [
     {"id": 1, "topic": "Python", "question": "Which Python data type stores key-value pairs?",
@@ -37,6 +56,7 @@ CHALLENGE = {
     "hints": "Consider using max(numbers) or comparing values in a loop.",
 }
 
+# ---------------------------------------------------------------- database
 @contextmanager
 def get_db():
     if not DATABASE_URL:
@@ -61,28 +81,124 @@ def init_db():
                 created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
             )
         """)
+        # NEW: link every attempt to the Google account that made it
+        conn.execute("ALTER TABLE attempts ADD COLUMN IF NOT EXISTS user_id TEXT")
+        conn.execute("ALTER TABLE attempts ADD COLUMN IF NOT EXISTS user_email TEXT")
 
 def save_attempt(student_name, attempt_type, topic, score, feedback):
+    user = session.get("user", {})
     with get_db() as conn:
         conn.execute(
-            """INSERT INTO attempts (student_name, attempt_type, topic, score, feedback, created_at)
-               VALUES (%s, %s, %s, %s, %s, %s)""",
-            (student_name, attempt_type, topic, score, feedback, datetime.now().astimezone())
+            """INSERT INTO attempts (student_name, attempt_type, topic, score, feedback,
+                                     created_at, user_id, user_email)
+               VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
+            (student_name, attempt_type, topic, score, feedback,
+             datetime.now().astimezone(), user.get("id"), user.get("email"))
         )
 
+# -------------------------------------------------------------------- auth
+def login_required(view):
+    @wraps(view)
+    def wrapped(*args, **kwargs):
+        if "user" not in session:
+            return redirect(url_for("login"))
+        return view(*args, **kwargs)
+    return wrapped
+
+def _pkce_pair():
+    verifier = secrets.token_urlsafe(64)
+    digest = hashlib.sha256(verifier.encode("ascii")).digest()
+    challenge = base64.urlsafe_b64encode(digest).rstrip(b"=").decode("ascii")
+    return verifier, challenge
+
+@app.context_processor
+def inject_user():
+    return {"current_user": session.get("user")}
+
+@app.route("/login")
+def login():
+    if "user" in session:
+        return redirect(url_for("dashboard"))
+    return render_template("login.html")
+
+@app.route("/auth/google")
+def auth_google():
+    """Send the student to Google (through Supabase) using the PKCE flow."""
+    if not SUPABASE_URL or not SUPABASE_ANON_KEY:
+        flash("Login is not configured. Set SUPABASE_URL and SUPABASE_ANON_KEY.")
+        return redirect(url_for("login"))
+    verifier, challenge = _pkce_pair()
+    session["pkce_verifier"] = verifier
+    callback = url_for("auth_callback", _external=True)
+    authorize_url = (
+        f"{SUPABASE_URL}/auth/v1/authorize?provider=google"
+        f"&redirect_to={requests.utils.quote(callback, safe='')}"
+        f"&code_challenge={challenge}&code_challenge_method=s256"
+    )
+    return redirect(authorize_url)
+
+@app.route("/auth/callback")
+def auth_callback():
+    """Supabase sends the student back here with ?code=... ; we exchange it for a verified user."""
+    if request.args.get("error"):
+        flash("Google sign-in was cancelled or failed. Please try again.")
+        return redirect(url_for("login"))
+    code = request.args.get("code")
+    verifier = session.pop("pkce_verifier", None)
+    if not code or not verifier:
+        flash("Sign-in session expired. Please click Continue with Google again.")
+        return redirect(url_for("login"))
+    try:
+        resp = requests.post(
+            f"{SUPABASE_URL}/auth/v1/token?grant_type=pkce",
+            headers={"apikey": SUPABASE_ANON_KEY, "Content-Type": "application/json"},
+            json={"auth_code": code, "code_verifier": verifier},
+            timeout=10,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        user = data["user"]
+    except (requests.RequestException, KeyError, ValueError):
+        flash("Could not complete sign-in with Supabase. Please try again.")
+        return redirect(url_for("login"))
+
+    meta = user.get("user_metadata") or {}
+    email = user.get("email") or meta.get("email") or ""
+    session.clear()
+    session["user"] = {
+        "id": user["id"],
+        "email": email,
+        "name": meta.get("full_name") or meta.get("name") or email.split("@")[0],
+        "avatar": meta.get("avatar_url") or meta.get("picture"),
+    }
+    return redirect(url_for("dashboard"))
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("You have been signed out.")
+    return redirect(url_for("login"))
+
+# ------------------------------------------------------------------ routes
 @app.route("/")
+@login_required
 def dashboard():
+    uid = session["user"]["id"]
     with get_db() as conn:
-        attempts = conn.execute("SELECT * FROM attempts ORDER BY id DESC LIMIT 8").fetchall()
+        attempts = conn.execute(
+            "SELECT * FROM attempts WHERE user_id = %s ORDER BY id DESC LIMIT 8", (uid,)).fetchall()
         summary = conn.execute("""
-            SELECT COUNT(*) AS count, COALESCE(AVG(score), 0) AS average FROM attempts
-        """).fetchone()
+            SELECT COUNT(*) AS count, COALESCE(AVG(score), 0) AS average
+            FROM attempts WHERE user_id = %s
+        """, (uid,)).fetchone()
     return render_template("dashboard.html", attempts=attempts, summary=summary)
 
 @app.route("/interview", methods=["GET", "POST"])
+@login_required
 def interview():
     if request.method == "POST":
-        student_name = request.form.get("student_name", "").strip() or "Demo Student"
+        student_name = (request.form.get("student_name", "").strip()
+                        or session["user"]["name"] or "Demo Student")
         correct = sum(
             request.form.get(f"q{q['id']}", "").strip().lower() == q["answer"].lower()
             for q in QUESTIONS
@@ -104,9 +220,11 @@ def interview():
     return render_template("interview.html", questions=QUESTIONS)
 
 @app.route("/coding", methods=["GET", "POST"])
+@login_required
 def coding():
     if request.method == "POST":
-        student_name = request.form.get("student_name", "").strip() or "Demo Student"
+        student_name = (request.form.get("student_name", "").strip()
+                        or session["user"]["name"] or "Demo Student")
         code = request.form.get("code", "")
         checks = {
             "Defines a function": "def " in code,
@@ -123,11 +241,19 @@ def coding():
     return render_template("coding.html", challenge=CHALLENGE)
 
 @app.route("/history")
+@login_required
 def history():
     with get_db() as conn:
-        attempts = conn.execute("SELECT * FROM attempts ORDER BY id DESC").fetchall()
+        attempts = conn.execute(
+            "SELECT * FROM attempts WHERE user_id = %s ORDER BY id DESC",
+            (session["user"]["id"],)).fetchall()
     return render_template("history.html", attempts=attempts)
 
-if __name__ == "__main__":
+# Create/upgrade the table on startup so it also works under gunicorn on Render.
+try:
     init_db()
-    app.run(debug=True)
+except Exception as exc:  # don't crash the import if the DB is briefly unreachable
+    print(f"[init_db] skipped: {exc}")
+
+if __name__ == "__main__":
+    app.run(debug=not IS_PRODUCTION)
