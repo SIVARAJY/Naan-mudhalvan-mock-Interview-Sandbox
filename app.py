@@ -37,23 +37,6 @@ app.config.update(
     SESSION_COOKIE_SECURE=IS_PRODUCTION,
 )
 
-QUESTIONS = [
-    {"id": 1, "topic": "Python", "question": "Which Python data type stores key-value pairs?",
-     "options": ["list", "tuple", "dictionary", "set"], "answer": "dictionary",
-     "explanation": "A dictionary stores data as key-value pairs."},
-    {"id": 2, "topic": "OOP", "question": "Which concept allows one interface to have multiple implementations?",
-     "options": ["Encapsulation", "Polymorphism", "Compilation", "Indexing"], "answer": "Polymorphism",
-     "explanation": "Polymorphism allows the same interface to represent different implementations."},
-    {"id": 3, "topic": "DBMS", "question": "Which SQL command retrieves rows from a table?",
-     "options": ["UPDATE", "SELECT", "ALTER", "INSERT"], "answer": "SELECT",
-     "explanation": "SELECT retrieves data from one or more tables."},
-    {"id": 4, "topic": "Data Structures", "question": "Which data structure follows LIFO order?",
-     "options": ["Queue", "Stack", "Graph", "Linked list"], "answer": "Stack",
-     "explanation": "A stack follows Last In, First Out."},
-    {"id": 5, "topic": "Java", "question": "Which keyword is used to inherit a class in Java?",
-     "options": ["implements", "inherits", "extends", "superclass"], "answer": "extends",
-     "explanation": "A Java class uses extends to inherit from another class."},
-]
 CHALLENGE = {
     "title": "Find the maximum",
     "description": "Write a function that returns the largest number in a non-empty list.",
@@ -484,32 +467,6 @@ def dashboard():
             FROM attempts WHERE user_id = %s
         """, (uid,)).fetchone()
     return render_template("dashboard.html", attempts=attempts, summary=summary)
-
-@app.route("/interview", methods=["GET", "POST"])
-@login_required
-def interview():
-    if request.method == "POST":
-        student_name = (request.form.get("student_name", "").strip()
-                        or session["user"]["name"] or "Demo Student")
-        correct = sum(
-            request.form.get(f"q{q['id']}", "").strip().lower() == q["answer"].lower()
-            for q in QUESTIONS
-        )
-        total = len(QUESTIONS)
-        missed_topics = [
-            q["topic"] for q in QUESTIONS
-            if request.form.get(f"q{q['id']}", "").strip().lower() != q["answer"].lower()
-        ]
-        correctness = correct / total * 100
-        completion = 100
-        reflection = 100 if request.form.get("reflection", "").strip() else 50
-        final_score = round(0.70 * correctness + 0.20 * completion + 0.10 * reflection, 1)
-        feedback = f"{correct}/{total} answers correct. Review: {', '.join(missed_topics) if missed_topics else 'No weak topics detected in this attempt'}."
-        save_attempt(student_name, "Mock Interview", "Mixed Technical", final_score, feedback)
-        return render_template("interview_result.html", student_name=student_name, correct=correct,
-            total=total, correctness=round(correctness, 1), completion=completion, reflection=reflection,
-            final_score=final_score, feedback=feedback, questions=QUESTIONS, submitted=request.form)
-    return render_template("interview.html", questions=QUESTIONS)
 
 @app.route("/coding", methods=["GET", "POST"])
 @login_required
@@ -2414,15 +2371,6 @@ def skill_analysis():
                 "link": url_for("practice_drill", topic=weak_top),
                 "cta": f"Drill {weak_top}"
             })
-
-        recommendations.append({
-            "type": "Mock Simulation",
-            "priority": "Medium",
-            "title": "Complete Full Technical Interview",
-            "description": "Simulate 5 technical questions under strict exam conditions to update your placement readiness index.",
-            "link": url_for("interview"),
-            "cta": "Start Mock Interview"
-        })
 
         recommendations.append({
             "type": "Company Guide",
