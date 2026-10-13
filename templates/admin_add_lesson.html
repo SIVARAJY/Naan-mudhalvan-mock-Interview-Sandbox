@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Add Lessons · {{ course.title }}{% endblock %}
+{% block content %}
+<div style="display:flex;gap:8px;align-items:center;margin-bottom:20px;flex-wrap:wrap;">
+  <a href="{{ url_for('admin_learning') }}" class="text-link">← Admin Panel</a>
+  <span class="muted">/</span>
+  <a href="{{ url_for('course_detail', course_id=course.id) }}" class="text-link">{{ course.title }}</a>
+  <span class="muted">/</span><span>Add Lessons</span>
+</div>
+<div class="page-heading"><p class="eyebrow">ADMIN · {{ course.skill_topic }}</p><h1>{{ course.title }}</h1></div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;" class="admin-lesson-layout">
+  <!-- Form -->
+  <div class="panel">
+    <h2 style="font-size:18px;margin:0 0 18px;">Add a Lesson</h2>
+    <form method="post">
+      <label class="field-label">Lesson Title *</label>
+      <input type="text" name="title" placeholder="e.g. Variables and Data Types" required>
+
+      <label class="field-label">YouTube URL * <span class="small muted">(paste any YouTube link)</span></label>
+      <input type="text" name="youtube_url" id="yt-url-input" placeholder="https://www.youtube.com/watch?v=..." required
+        oninput="previewThumb(this.value)">
+      <div id="yt-preview" style="display:none;margin:-8px 0 12px;border-radius:8px;overflow:hidden;aspect-ratio:16/9;background:#000;">
+        <img id="yt-thumb" src="" style="width:100%;height:100%;object-fit:cover;">
+      </div>
+
+      <label class="field-label">Duration (minutes)</label>
+      <input type="number" name="duration_min" placeholder="e.g. 45" min="0">
+
+      <div style="border-top:1px solid var(--line);padding-top:16px;margin-top:8px;">
+        <h3 style="font-size:14px;margin:0 0 4px;">Quiz Questions <span class="small muted">(optional, up to 5)</span></h3>
+        <p class="small muted" style="margin:0 0 16px;">Add MCQ questions for this lesson. Set the correct answer index (0 = first option).</p>
+
+        {% for qi in range(1, 4) %}
+        <div class="lh-quiz-builder" id="qb-{{ qi }}" {% if qi > 1 %}style="display:none;"{% endif %}>
+          <p class="eyebrow" style="margin:0 0 6px;">Question {{ qi }}</p>
+          <input type="text" name="q{{ qi }}" placeholder="Question text…">
+          {% for oi in range(1, 5) %}
+          <input type="text" name="q{{ qi }}_o{{ oi }}" placeholder="Option {{ oi }}">
+          {% endfor %}
+          <label class="field-label">Correct answer (0=Option1, 1=Option2…)</label>
+          <input type="number" name="q{{ qi }}_ans" min="0" max="3" value="0" style="width:80px;">
+          {% if qi < 3 %}
+          <div style="text-align:right;margin-top:8px;">
+            <button type="button" class="button secondary" style="font-size:11px;padding:6px 10px;"
+              onclick="document.getElementById('qb-{{ qi+1 }}').style.display='block';this.closest('.lh-quiz-builder').querySelector('button')?.remove()">
+              + Add Another Question
+            </button>
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+
+      <button class="button" type="submit" style="margin-top:16px;">Add Lesson</button>
+    </form>
+  </div>
+
+  <!-- Existing lessons -->
+  <div class="panel">
+    <h2 style="font-size:18px;margin:0 0 18px;">Current Lessons <span class="small muted">({{ lessons|length }})</span></h2>
+    {% if lessons %}
+    {% for lesson in lessons %}
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);">
+      <span style="font:11px 'DM Mono',monospace;color:var(--blue);min-width:24px;">{{ lesson.lesson_order }}</span>
+      <div style="flex:1;min-width:0;">
+        <strong style="font-size:13px;">{{ lesson.title }}</strong><br>
+        <span class="small muted">
+          {{ lesson.duration_min }} min ·
+          {% set qd = lesson.quiz_data %}
+          {% if qd and qd != '[]' %}Quiz{% else %}No quiz{% endif %}
+        </span>
+      </div>
+      <a href="https://www.youtube.com/watch?v={{ lesson.video_id }}" target="_blank" class="text-link" style="font-size:11px;">▶ Watch</a>
+      <form method="post" action="{{ url_for('admin_delete_lesson', lesson_id=lesson.id) }}"
+            onsubmit="return confirm('Delete this lesson?')" style="margin:0;">
+        <button type="submit" style="background:none;border:none;color:#d43;cursor:pointer;font-size:11px;font-weight:700;">Del</button>
+      </form>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p class="muted">No lessons yet. Add your first one.</p>
+    {% endif %}
+    <div style="margin-top:16px;">
+      <a href="{{ url_for('course_detail', course_id=course.id) }}" class="text-link">Preview course page →</a>
+    </div>
+  </div>
+</div>
+
+<script>
+function previewThumb(url) {
+  const m = url.match(/(?:v=|youtu\.be\/|\/embed\/)([A-Za-z0-9_-]{11})/);
+  if (m) {
+    document.getElementById('yt-thumb').src = `https://img.youtube.com/vi/${m[1]}/hqdefault.jpg`;
+    document.getElementById('yt-preview').style.display = 'block';
+  } else {
+    document.getElementById('yt-preview').style.display = 'none';
+  }
+}
+</script>
+{% endblock %}

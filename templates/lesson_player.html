@@ -1,0 +1,299 @@
+{% extends "base.html" %}
+{% block title %}{{ lesson.title }} · SkillSandbox{% endblock %}
+{% block content %}
+{% set ns = namespace(lesson_num=1) %}
+{% for l in all_lessons %}{% if l.id == lesson.id %}{% set ns.lesson_num = loop.index %}{% endif %}{% endfor %}
+<div style="display:flex;gap:8px;align-items:center;margin-bottom:20px;flex-wrap:wrap;">
+  <a href="{{ url_for('learning_hub') }}" class="text-link">Learning Hub</a>
+  <span class="muted">/</span>
+  <a href="{{ url_for('course_detail', course_id=course.id) }}" class="text-link">{{ course.title }}</a>
+  <span class="muted">/</span>
+  <span>{{ lesson.title }}</span>
+</div>
+
+<div class="lh-player-layout">
+  <!-- ── Left: Video + Controls ── -->
+  <div class="lh-player-main">
+    <div class="lh-video-wrap" id="player-wrap">
+      <div id="yt-player"></div>
+    </div>
+
+    <div class="panel" style="margin-top:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <div>
+          <p class="eyebrow" style="margin:0;">{{ course.title }}</p>
+          <h2 style="font-size:20px;margin:4px 0;">{{ lesson.title }}</h2>
+          <p class="small muted" style="margin:0;">
+            {% if lesson.duration_min %}{{ lesson.duration_min }} min · {% endif %}
+            Lesson {{ ns.lesson_num }} of {{ all_lessons|length }}
+          </p>
+        </div>
+        <div style="display:flex;gap:8px;">
+          {% if prev_lesson %}
+          <a class="button secondary" href="{{ url_for('lesson_player', lesson_id=prev_lesson.id) }}">← Prev</a>
+          {% endif %}
+          {% if next_lesson %}
+          <a class="button" href="{{ url_for('lesson_player', lesson_id=next_lesson.id) }}">Next →</a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Lesson status -->
+      <div id="lesson-status" style="margin-top:16px;padding:12px;background:#f4f6fa;border-radius:8px;display:flex;align-items:center;gap:12px;">
+        {% if progress and progress.completed %}
+        <span style="color:var(--green);font-weight:700;">✓ Lesson completed</span>
+        {% else %}
+        <span class="muted small" id="watch-status">Watch the video to track your progress.</span>
+        {% endif %}
+        <button id="mark-complete-btn" class="button" style="margin-left:auto;{% if progress and progress.completed %}display:none{% endif %}" onclick="markComplete()">Mark as Complete</button>
+      </div>
+    </div>
+
+    <!-- ── Quiz section ── -->
+    {% if quiz %}
+    <div class="panel" style="margin-top:14px;" id="quiz-section">
+      <div class="section-heading"><div><p class="eyebrow">LESSON QUIZ</p><h2>Test Your Understanding</h2></div></div>
+      {% if quiz_attempt %}
+      <div style="background:{% if quiz_attempt.score >= 60 %}#e3f7ee{% else %}#fff3d7{% endif %};padding:12px 16px;border-radius:8px;margin-bottom:16px;">
+        <strong>Last score: {{ quiz_attempt.score }}%</strong>
+        <span class="muted small"> · Attempted {{ quiz_attempt.attempted_at.strftime('%d %b %Y') }}</span>
+        {% if quiz_attempt.score < 60 %}<span class="muted small"> — Score 60% or above to complete the lesson.</span>{% endif %}
+      </div>
+      {% endif %}
+      <form id="quiz-form" onsubmit="submitQuiz(event)">
+        {% for q in quiz %}
+        <fieldset class="question" style="border:0;border-top:1px solid var(--line);padding:16px 0;margin:0;">
+          <legend style="font-weight:700;font-size:14px;">
+            <span class="q-number">{{ loop.index }}</span>{{ q.q }}
+          </legend>
+          {% for opt in q.options %}
+          <label class="option">
+            <input type="radio" name="q{{ loop.index0 }}_parent{{ loop.revindex }}" data-qi="{{ loop.index0 - loop.index0 }}" value="{{ loop.index0 }}"
+              onchange="recordAnswer({{ loop.index0 - loop.index0 }}, {{ loop.index0 }})">
+            {{ opt }}
+          </label>
+          {% endfor %}
+        </fieldset>
+        {% endfor %}
+        <div id="quiz-result" style="display:none;margin:16px 0;padding:14px;border-radius:8px;"></div>
+        <button type="submit" class="button" style="margin-top:12px;" id="quiz-submit-btn">Submit Quiz</button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ── Right: Sidebar ── -->
+  <div class="lh-player-sidebar">
+    <!-- Lesson list -->
+    <div class="panel" style="margin-bottom:14px;">
+      <p class="eyebrow" style="margin:0 0 12px;">COURSE LESSONS</p>
+      {% for l in all_lessons %}
+      <a href="{{ url_for('lesson_player', lesson_id=l.id) }}"
+         class="lh-sidebar-lesson {% if l.id == lesson.id %}lh-sidebar-active{% endif %}">
+        <span class="lh-sidebar-num">{{ loop.index }}</span>
+        <span class="lh-sidebar-title">{{ l.title }}</span>
+      </a>
+      {% endfor %}
+    </div>
+
+    <!-- Notes panel -->
+    <div class="panel">
+      <div class="section-heading" style="margin-bottom:12px;">
+        <div><p class="eyebrow" style="margin:0;">TIMESTAMPED NOTES</p></div>
+        <button class="button secondary" style="font-size:11px;padding:6px 10px;" onclick="addNote()">+ Add Note</button>
+      </div>
+      <div id="notes-list">
+        {% for note in notes %}
+        <div class="lh-note" id="note-{{ note.id }}">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <button class="lh-ts-btn" onclick="seekTo({{ note.timestamp_s }})">▶ {{ '%d:%02d'|format(note.timestamp_s//60, note.timestamp_s%60) }}</button>
+            <button onclick="deleteNote({{ note.id }})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;">✕</button>
+          </div>
+          <p style="margin:6px 0 0;font-size:12px;">{{ note.note_text }}</p>
+        </div>
+        {% else %}
+        <p class="small muted" id="no-notes-msg">No notes yet. Add a note while watching.</p>
+        {% endfor %}
+      </div>
+
+      <!-- Add note form (hidden) -->
+      <div id="add-note-form" style="display:none;margin-top:12px;border-top:1px solid var(--line);padding-top:12px;">
+        <p class="small muted" id="note-ts-display">At: 0:00</p>
+        <textarea id="note-text-input" placeholder="Type your note…"
+          style="width:100%;border:1px solid var(--line);border-radius:8px;padding:10px;font:13px Manrope,Arial;resize:vertical;min-height:80px;"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <button class="button" style="font-size:12px;padding:8px 14px;" onclick="saveNote()">Save Note</button>
+          <button class="button secondary" style="font-size:12px;padding:8px 14px;" onclick="cancelNote()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── YouTube IFrame API ────────────────────────────────────────────────────────
+const VIDEO_ID   = "{{ lesson.video_id }}";
+const LESSON_ID  = {{ lesson.id }};
+const RESUME_SEC = {{ resume_sec }};
+let player, currentSec = RESUME_SEC;
+let quizAnswers = {};
+let progressSaved = false;
+
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player('yt-player', {
+    height: '100%', width: '100%',
+    videoId: VIDEO_ID,
+    playerVars: { rel: 0, modestbranding: 1, start: RESUME_SEC },
+    events: {
+      onReady: (e) => { if (RESUME_SEC > 0) e.target.seekTo(RESUME_SEC, true); },
+      onStateChange: onPlayerStateChange,
+    }
+  });
+}
+
+function onPlayerStateChange(e) {
+  if (e.data === YT.PlayerState.PLAYING) {
+    startProgressTimer();
+  }
+}
+
+let _timer;
+function startProgressTimer() {
+  clearInterval(_timer);
+  _timer = setInterval(() => {
+    if (!player) return;
+    currentSec = Math.floor(player.getCurrentTime());
+    const dur   = Math.floor(player.getDuration());
+    const pct   = dur > 0 ? (currentSec / dur) * 100 : 0;
+    document.getElementById('watch-status').textContent =
+      `Watched ${Math.floor(pct)}% · ${fmt(currentSec)} / ${fmt(dur)}`;
+    // Auto-save every 30 s
+    if (currentSec % 30 === 0 && currentSec > 0) {
+      saveProgress(pct >= 90);
+    }
+    if (pct >= 90 && !progressSaved) {
+      saveProgress(true);
+      progressSaved = true;
+    }
+  }, 1000);
+}
+
+function fmt(s) {
+  return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0');
+}
+
+function saveProgress(completed) {
+  fetch('/learning/api/progress', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ lesson_id: LESSON_ID, watch_seconds: currentSec, completed: completed })
+  });
+}
+
+function markComplete() {
+  saveProgress(true);
+  document.getElementById('mark-complete-btn').textContent = '✓ Marked Complete';
+  document.getElementById('mark-complete-btn').disabled = true;
+  document.getElementById('watch-status').textContent = '✓ Lesson marked as complete';
+}
+
+function seekTo(sec) {
+  if (player) { player.seekTo(sec, true); player.playVideo(); }
+}
+
+// ── Notes ────────────────────────────────────────────────────────────────────
+let noteTs = 0;
+
+function addNote() {
+  noteTs = player ? Math.floor(player.getCurrentTime()) : 0;
+  document.getElementById('note-ts-display').textContent = `At: ${fmt(noteTs)}`;
+  document.getElementById('add-note-form').style.display = 'block';
+  document.getElementById('note-text-input').focus();
+}
+
+function cancelNote() {
+  document.getElementById('add-note-form').style.display = 'none';
+  document.getElementById('note-text-input').value = '';
+}
+
+function saveNote() {
+  const text = document.getElementById('note-text-input').value.trim();
+  if (!text) return;
+  fetch('/learning/api/note', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ lesson_id: LESSON_ID, timestamp_s: noteTs, note_text: text })
+  }).then(r => r.json()).then(d => {
+    if (d.ok) {
+      document.getElementById('no-notes-msg') && (document.getElementById('no-notes-msg').style.display='none');
+      const n = d.note;
+      const div = document.createElement('div');
+      div.className = 'lh-note';
+      div.id = `note-${n.id}`;
+      div.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <button class="lh-ts-btn" onclick="seekTo(${n.timestamp_s})">▶ ${fmt(n.timestamp_s)}</button>
+          <button onclick="deleteNote(${n.id})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;">✕</button>
+        </div>
+        <p style="margin:6px 0 0;font-size:12px;">${n.note_text}</p>`;
+      document.getElementById('notes-list').appendChild(div);
+      cancelNote();
+    }
+  });
+}
+
+function deleteNote(id) {
+  fetch(`/learning/api/note/${id}`, { method: 'DELETE' })
+    .then(r => r.json())
+    .then(d => { if (d.ok) document.getElementById(`note-${id}`)?.remove(); });
+}
+
+// ── Quiz ─────────────────────────────────────────────────────────────────────
+function recordAnswer(qi, chosen) {
+  quizAnswers[qi] = chosen;
+}
+
+function submitQuiz(e) {
+  e.preventDefault();
+  // Collect selected radio values
+  const total = {{ quiz|length }};
+  const ans = {};
+  for (let i = 0; i < total; i++) {
+    const sel = document.querySelector(`input[name^="q${i}_"]:checked`);
+    if (sel) ans[i] = parseInt(sel.value);
+  }
+  document.getElementById('quiz-submit-btn').disabled = true;
+  document.getElementById('quiz-submit-btn').textContent = 'Submitting…';
+  fetch('/learning/api/quiz', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ lesson_id: LESSON_ID, answers: ans })
+  }).then(r => r.json()).then(d => {
+    const box = document.getElementById('quiz-result');
+    const pass = d.score >= 60;
+    box.style.display = 'block';
+    box.style.background = pass ? '#e3f7ee' : '#fff3d7';
+    box.innerHTML = `<strong>${pass ? '✓ Passed' : '✗ Not quite'}: ${d.score}%</strong>
+      &nbsp; ${d.correct}/${d.total} correct.
+      ${pass ? ' Lesson marked complete!' : ' Score 60%+ to pass.'}`;
+    document.getElementById('quiz-submit-btn').textContent = 'Retake Quiz';
+    document.getElementById('quiz-submit-btn').disabled = false;
+
+    // Highlight correct/wrong
+    d.results && d.results.forEach((r, i) => {
+      const opts = document.querySelectorAll(`input[name^="q${i}_"]`);
+      opts.forEach(o => {
+        const lbl = o.closest('label');
+        if (parseInt(o.value) === r.answer) lbl.style.borderColor = 'var(--green)';
+        else if (o.checked && !r.correct) lbl.style.borderColor = '#d43';
+      });
+    });
+  });
+}
+
+// Load YT API
+const tag = document.createElement('script');
+tag.src = 'https://www.youtube.com/iframe_api';
+document.head.appendChild(tag);
+</script>
+{% endblock %}

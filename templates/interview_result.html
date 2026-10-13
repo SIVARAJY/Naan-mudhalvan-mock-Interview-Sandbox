@@ -11,4 +11,22 @@
 <section class="panel"><h2>Answer review</h2>
 {% for q in questions %}<div class="review-item"><strong>{{ loop.index }}. {{ q.question }}</strong><p>Your answer: {{ submitted.get("q" ~ q.id, "Not answered") }}</p><p>Expected answer: <strong>{{ q.answer }}</strong></p><p class="muted">{{ q.explanation }}</p></div>{% endfor %}
 </section>
+
+{% set missed = [] %}
+{% for q in questions %}{% if submitted.get("q" ~ q.id, "") != q.answer %}{% if q.topic not in missed %}{% set _ = missed.append(q.topic) %}{% endif %}{% endif %}{% endfor %}
+{% if missed %}
+<section class="panel" style="border-color:#bfcfff;background:#f5f7ff;">
+  <div class="section-heading"><div><p class="eyebrow" style="color:#2859d8;">📚 LEARNING RECOMMENDATIONS</p><h2>Strengthen your weak areas</h2></div></div>
+  <p class="muted" style="margin:0 0 18px;">You missed questions in these topics. Find matching courses in the Learning Hub to improve:</p>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;">
+    {% for topic in missed %}
+    <a class="button" href="{{ url_for('learning_hub', topic=topic) }}" style="background:#2859d8;">
+      📚 Learn {{ topic }}
+    </a>
+    {% endfor %}
+    <a class="button secondary" href="{{ url_for('learning_hub') }}">Browse All Courses</a>
+  </div>
+</section>
+{% endif %}
 {% endblock %}
+

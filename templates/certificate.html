@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Certificate · {{ course.title }}{% endblock %}
+{% block content %}
+<div style="text-align:center;padding:24px 0;">
+  <a href="{{ url_for('course_detail', course_id=course.id) }}" class="text-link">← Back to Course</a>
+</div>
+
+<div class="lh-cert" id="certificate">
+  <div class="lh-cert-border">
+    <div class="lh-cert-header">
+      <p class="lh-cert-eyebrow">NAAN MUDHALVAN · SKILLSANDBOX</p>
+      <h1 class="lh-cert-title">Certificate of Completion</h1>
+    </div>
+    <div class="lh-cert-body">
+      <p class="lh-cert-presents">This certifies that</p>
+      <h2 class="lh-cert-name">{{ user.name }}</h2>
+      <p class="lh-cert-presents">has successfully completed the course</p>
+      <h3 class="lh-cert-course">{{ course.title }}</h3>
+      <div class="lh-cert-meta">
+        <span><strong>Skill:</strong> {{ course.skill_topic }}</span>
+        <span><strong>Track:</strong> {{ course.nm_track }}</span>
+        <span><strong>Date:</strong> {{ enrollment.enrolled_at.strftime('%d %B %Y') }}</span>
+      </div>
+    </div>
+    <div class="lh-cert-footer">
+      <div class="lh-cert-seal">🎓</div>
+      <div>
+        <p style="margin:0;font-size:10px;color:#8a9bb8;letter-spacing:1px;text-transform:uppercase;">Issued by SkillSandbox</p>
+        <p style="margin:2px 0 0;font-size:11px;color:#536079;">BIT Mini Project · Naan Mudhalvan Programme</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="text-align:center;margin-top:24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+  <button class="button" onclick="window.print()">🖨 Print / Save as PDF</button>
+  <a class="button secondary" href="{{ url_for('learning_hub') }}">Browse More Courses</a>
+</div>
+
+<style>
+@media print {
+  header, footer, nav, .topbar, .notice, a.button, button { display:none !important; }
+  .container { margin:0 !important; width:100% !important; }
+  #certificate { box-shadow:none !important; }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Add Course · Admin{% endblock %}
+{% block content %}
+<div style="display:flex;gap:8px;align-items:center;margin-bottom:20px;">
+  <a href="{{ url_for('admin_learning') }}" class="text-link">← Admin Panel</a>
+  <span class="muted">/</span><span>Add Course</span>
+</div>
+<div class="page-heading"><p class="eyebrow">ADMIN</p><h1>Create a New Course</h1></div>
+
+<div class="form-panel panel">
+  <form method="post">
+    <label class="field-label">Course Title *</label>
+    <input type="text" name="title" placeholder="e.g. Python Fundamentals" required>
+
+    <label class="field-label">Description</label>
+    <textarea name="description" rows="3" placeholder="Briefly describe what students will learn…"
+      style="width:100%;border:1px solid var(--line);border-radius:8px;padding:12px;font:13px Manrope,Arial;resize:vertical;margin-bottom:12px;"></textarea>
+
+    <label class="field-label">Skill Topic * <span class="small muted">(used for recommendations)</span></label>
+    <input type="text" name="skill_topic" placeholder="e.g. Python, Java, DBMS, Data Structures" required>
+
+    <label class="field-label">Naan Mudhalvan Track</label>
+    <select name="nm_track" style="width:100%;border:1px solid var(--line);border-radius:8px;padding:12px;font:13px Manrope,Arial;background:#fff;color:var(--ink);margin-bottom:12px;">
+      <option value="Software Development">Software Development</option>
+      <option value="Data Science & AI">Data Science & AI</option>
+      <option value="Cloud Computing">Cloud Computing</option>
+      <option value="Cyber Security">Cyber Security</option>
+      <option value="Full Stack Development">Full Stack Development</option>
+      <option value="Embedded Systems">Embedded Systems</option>
+      <option value="Other">Other</option>
+    </select>
+
+    <label class="field-label">Thumbnail URL <span class="small muted">(optional – leave blank to auto-use YouTube thumbnail)</span></label>
+    <input type="text" name="thumbnail" placeholder="https://img.youtube.com/vi/VIDEO_ID/hqdefault.jpg">
+
+    <button class="button" type="submit">Create Course & Add Lessons →</button>
+  </form>
+</div>
+{% endblock %}

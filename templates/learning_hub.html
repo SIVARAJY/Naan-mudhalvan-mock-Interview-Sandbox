@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Learning Hub · SkillSandbox{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <p class="eyebrow">NAAN MUDHALVAN ALIGNED</p>
+  <h1>Learning Hub</h1>
+  <p class="muted">Structured video courses to build your technical skills. Enroll, watch, take notes, quiz yourself, and earn a certificate.</p>
+</div>
+
+<!-- Filters -->
+<form method="get" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;align-items:flex-end;">
+  <div>
+    <label class="field-label" style="margin-bottom:4px;">Skill Topic</label>
+    <select name="topic" style="border:1px solid var(--line);border-radius:8px;padding:10px 12px;font:13px Manrope,Arial;background:#fff;color:var(--ink);">
+      <option value="">All Topics</option>
+      {% for t in topics %}<option value="{{ t }}" {% if topic_filter==t %}selected{% endif %}>{{ t }}</option>{% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="field-label" style="margin-bottom:4px;">NM Track</label>
+    <select name="track" style="border:1px solid var(--line);border-radius:8px;padding:10px 12px;font:13px Manrope,Arial;background:#fff;color:var(--ink);">
+      <option value="">All Tracks</option>
+      {% for t in tracks %}<option value="{{ t }}" {% if track_filter==t %}selected{% endif %}>{{ t }}</option>{% endfor %}
+    </select>
+  </div>
+  <button type="submit" class="button">Filter</button>
+  {% if topic_filter or track_filter %}<a href="{{ url_for('learning_hub') }}" class="button secondary">Clear</a>{% endif %}
+</form>
+
+{% if not courses %}
+<div class="panel" style="text-align:center;padding:48px;">
+  <p style="font-size:32px;margin:0 0 8px;">📚</p>
+  <p class="muted">No courses found. {% if topic_filter or track_filter %}Try clearing the filters.{% endif %}</p>
+  <a href="{{ url_for('admin_add_course') }}" class="button" style="margin-top:16px;">Add First Course</a>
+</div>
+{% else %}
+<div class="lh-grid">
+  {% for course in courses %}
+  {% set prog = progress_map[course.id] %}
+  {% set enrolled = course.id in enrolled_ids %}
+  <div class="lh-course-card">
+    <div class="lh-thumb" style="background-image:url('{{ course.thumbnail or 'https://img.youtube.com/vi/default/hqdefault.jpg' }}')">
+      <span class="lh-badge">{{ course.skill_topic }}</span>
+    </div>
+    <div class="lh-card-body">
+      <p class="lh-track-tag">{{ course.nm_track }}</p>
+      <h3 class="lh-card-title">{{ course.title }}</h3>
+      <p class="lh-card-desc">{{ course.description[:100] }}{% if course.description|length > 100 %}…{% endif %}</p>
+      {% if enrolled %}
+        {% if prog.pct == 100 %}
+        <div class="lh-prog-bar"><div class="lh-prog-fill" style="width:100%;background:var(--green)"></div></div>
+        <p class="small" style="color:var(--green);margin:4px 0 12px;">✓ Completed · {{ prog.done }}/{{ prog.total }} lessons</p>
+        {% else %}
+        <div class="lh-prog-bar"><div class="lh-prog-fill" style="width:{{ prog.pct }}%"></div></div>
+        <p class="small muted" style="margin:4px 0 12px;">{{ prog.pct }}% · {{ prog.done }}/{{ prog.total }} lessons done</p>
+        {% endif %}
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <a class="button" href="{{ url_for('course_detail', course_id=course.id) }}">
+            {% if prog.pct == 100 %}View Course{% elif prog.done > 0 %}Resume{% else %}Start Learning{% endif %}
+          </a>
+          {% if prog.pct == 100 %}
+          <a class="button secondary" href="{{ url_for('certificate', course_id=course.id) }}">🎓 Certificate</a>
+          {% endif %}
+        </div>
+      {% else %}
+        <p class="small muted" style="margin:0 0 12px;">{{ prog.total }} lesson{% if prog.total != 1 %}s{% endif %}</p>
+        <a class="button" href="{{ url_for('course_detail', course_id=course.id) }}">View Course</a>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div style="margin-top:32px;text-align:right;">
+  <a href="{{ url_for('admin_learning') }}" class="text-link">⚙ Manage courses (Admin) →</a>
+</div>
+{% endblock %}

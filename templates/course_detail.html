@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}{{ course.title }} · Learning Hub{% endblock %}
+{% block content %}
+
+{% if rec_topic %}
+<div class="notice" style="background:#e8f4ff;border-left:4px solid var(--blue);">
+  💡 This course was recommended because you scored low on <strong>{{ rec_topic }}</strong> in your last assessment.
+</div>
+{% endif %}
+
+<div style="display:flex;gap:8px;align-items:center;margin-bottom:16px;">
+  <a href="{{ url_for('learning_hub') }}" class="text-link">← Learning Hub</a>
+  <span class="muted">/</span>
+  <span>{{ course.title }}</span>
+</div>
+
+<div class="lh-course-hero">
+  <div class="lh-hero-thumb" style="background-image:url('{{ course.thumbnail or '' }}')"></div>
+  <div class="lh-hero-info">
+    <p class="eyebrow">{{ course.nm_track }}</p>
+    <h1 style="font-size:28px;letter-spacing:-1px;margin:4px 0 10px;">{{ course.title }}</h1>
+    <p class="muted" style="margin:0 0 16px;">{{ course.description }}</p>
+    <div style="display:flex;gap:24px;flex-wrap:wrap;margin-bottom:20px;">
+      <span class="small"><strong>{{ lessons|length }}</strong> lessons</span>
+      <span class="small"><strong>{{ course.skill_topic }}</strong> skill</span>
+      {% if enrollment %}
+        <span class="small" style="color:var(--green);">✓ Enrolled</span>
+      {% endif %}
+    </div>
+
+    {% if enrollment %}
+      <!-- Progress bar -->
+      <div style="margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;">
+          <span>Course Progress</span><strong>{{ pct }}%</strong>
+        </div>
+        <div class="track"><span style="width:{{ pct }}%"></span></div>
+        <p class="small muted" style="margin:4px 0 0;">{{ done }} / {{ total }} lessons completed</p>
+      </div>
+      {% if pct == 100 %}
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <span style="color:var(--green);font-weight:700;">🎉 Course Complete!</span>
+        <a class="button" href="{{ url_for('certificate', course_id=course.id) }}">🎓 Get Certificate</a>
+      </div>
+      {% endif %}
+    {% else %}
+      <form method="post" action="{{ url_for('enroll_course', course_id=course.id) }}">
+        <button class="button" type="submit">Enroll Now – It's Free</button>
+      </form>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Lesson list -->
+<div class="panel" style="margin-top:24px;">
+  <div class="section-heading"><div><p class="eyebrow">CURRICULUM</p><h2>Lessons</h2></div></div>
+  {% if lessons %}
+  <div class="lh-lesson-list">
+    {% for lesson in lessons %}
+    {% set prog = progress_map.get(lesson.id) %}
+    {% set is_done = prog and prog.completed %}
+    <div class="lh-lesson-row {% if is_done %}lh-lesson-done{% endif %}">
+      <div class="lh-lesson-num">
+        {% if is_done %}
+          <span style="color:var(--green);font-size:18px;">✓</span>
+        {% else %}
+          <span>{{ loop.index }}</span>
+        {% endif %}
+      </div>
+      <div class="lh-lesson-info">
+        <strong>{{ lesson.title }}</strong>
+        <p class="small muted" style="margin:2px 0 0;">
+          {% if lesson.duration_min > 0 %}{{ lesson.duration_min }} min · {% endif %}
+          {% set quiz = lesson.quiz_data %}
+          {% if quiz and quiz != '[]' %}Quiz included{% endif %}
+          {% if prog %}· Last watched {{ prog.last_watched.strftime('%d %b %Y') }}{% endif %}
+        </p>
+      </div>
+      <div>
+        {% if enrollment %}
+          <a class="button {% if is_done %}secondary{% endif %}" href="{{ url_for('lesson_player', lesson_id=lesson.id) }}">
+            {% if is_done %}Review{% elif prog %}Resume{% else %}Watch{% endif %}
+          </a>
+        {% else %}
+          <span class="small muted">Enroll to watch</span>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="muted">No lessons added yet.</p>
+  {% endif %}
+</div>
+{% endblock %}
