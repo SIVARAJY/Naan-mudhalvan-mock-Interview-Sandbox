@@ -2255,6 +2255,197 @@ def company_detail(slug):
                            questions=questions)
 
 
+# ══════════════════════════════════════════════════════════════════════════════
+#  INTELLIGENT SKILL ANALYSIS & PERSONALIZED IMPROVEMENT TRACKER
+# ══════════════════════════════════════════════════════════════════════════════
+
+@app.route("/analytics")
+@login_required
+def skill_analysis():
+    uid = session["user"]["id"]
+    with get_db() as conn:
+        # 1. Gather formal attempts (mock interview & coding sandbox)
+        formal_attempts = conn.execute("""
+            SELECT * FROM attempts WHERE user_id = %s ORDER BY created_at DESC
+        """, (uid,)).fetchall()
+
+        # 2. Gather practice arena attempts
+        prac_attempts = conn.execute("""
+            SELECT pa.*, pq.title, pq.difficulty AS q_diff
+            FROM prac_attempts pa
+            JOIN prac_questions pq ON pq.id = pa.question_id
+            WHERE pa.user_id = %s ORDER BY pa.attempted_at DESC
+        """, (uid,)).fetchall()
+
+        # 3. Overall counts & statistics
+        interview_cnt = sum(1 for a in formal_attempts if a["attempt_type"] == "Mock Interview")
+        coding_cnt    = sum(1 for a in formal_attempts if a["attempt_type"] == "Coding Sandbox")
+        drill_cnt     = len(prac_attempts)
+        total_evals   = len(formal_attempts) + drill_cnt
+
+        # Calculate Practice Accuracy
+        prac_correct = sum(1 for p in prac_attempts if p["is_correct"])
+        overall_accuracy = round((prac_correct / drill_cnt * 100), 1) if drill_cnt > 0 else (
+            round(sum(a["score"] for a in formal_attempts) / len(formal_attempts), 1) if formal_attempts else 0.0
+        )
+
+        # Average Speed
+        speeds = [p["time_taken_sec"] for p in prac_attempts if p["time_taken_sec"] > 0]
+        avg_speed = round(sum(speeds) / len(speeds)) if speeds else 45
+
+        overall = {
+            "total_assessments": total_evals,
+            "interview_attempts": interview_cnt,
+            "coding_attempts": coding_cnt,
+            "drill_attempts": drill_cnt,
+            "overall_accuracy": overall_accuracy,
+            "avg_speed_sec": avg_speed
+        }
+
+        # 4. Topic-wise Matrix across 5 primary skills: Python, Java, DSA, DBMS, Web Development
+        core_topics = [
+            {"name": "Python", "icon": "🐍"},
+            {"name": "Java", "icon": "☕"},
+            {"name": "DSA", "icon": "🌲"},
+            {"name": "DBMS", "icon": "🗄️"},
+            {"name": "Web Development", "icon": "🌐"}
+        ]
+
+        topic_matrix = []
+        strengths = []
+        weaknesses = []
+
+        for ct in core_topics:
+            tname = ct["name"]
+            # Filter practice attempts
+            t_prac = [p for p in prac_attempts if p["topic"] == tname]
+            # Check formal attempts
+            t_formal = [a for a in formal_attempts if tname.lower() in a["topic"].lower()]
+
+            t_total = len(t_prac) + len(t_formal)
+            t_correct = sum(1 for p in t_prac if p["is_correct"]) + sum(1 for a in t_formal if a["score"] >= 65)
+
+            if t_total > 0:
+                acc = round((t_correct / t_total) * 100, 1)
+            else:
+                acc = 50.0  # baseline readiness before testing
+
+            if acc >= 75:
+                level = "Advanced"
+                if t_total >= 2:
+                    strengths.append({"topic": tname, "accuracy": acc, "attempts": t_total})
+            elif acc >= 55:
+                level = "Intermediate"
+            else:
+                level = "Foundational"
+                weaknesses.append({"topic": tname, "accuracy": acc, "attempts": t_total})
+
+            topic_matrix.append({
+                "name": tname,
+                "icon": ct["icon"],
+                "total": t_total,
+                "correct": t_correct,
+                "attempts": t_total,
+                "accuracy": acc,
+                "level": level
+            })
+
+        # 5. Composite Interview Readiness Index (0 - 100)
+        # Weighted: Formal Assessments (40%), Practice Drills Accuracy (40%), Experience Volume (20%)
+        formal_avg = (sum(a["score"] for a in formal_attempts) / len(formal_attempts)) if formal_attempts else 45.0
+        volume_factor = min(100.0, (total_evals / 10.0) * 100.0)
+        readiness_score = round(0.40 * formal_avg + 0.40 * overall_accuracy + 0.20 * volume_factor, 1)
+        readiness_score = min(100.0, max(15.0, readiness_score))
+
+        if readiness_score >= 80:
+            readiness_status = "Interview Ready"
+            readiness_title = "Placement Ready Standard"
+            readiness_desc = "Strong conceptual grasp and execution speed. Your scores align well with Tier-1 product and consulting technical bars."
+        elif readiness_score >= 60:
+            readiness_status = "Good Progress"
+            readiness_title = "Intermediate Competency"
+            readiness_desc = "Good foundational knowledge. Hone problem-solving speed and edge cases on weaker topics to achieve interview mastery."
+        else:
+            readiness_status = "Needs Preparation"
+            readiness_title = "Foundational Phase"
+            readiness_desc = "Focus on targeted drills and watch fundamental video lessons in the Learning Hub before sitting for formal drives."
+
+        # 6. Combined Chronological Timeline (Last 10)
+        combined_events = []
+        for a in formal_attempts:
+            combined_events.append({
+                "source": a["attempt_type"],
+                "title": f"{a['topic']} Assessment",
+                "score": round(a["score"], 1),
+                "speed": "Standard timed",
+                "date": a["created_at"].strftime("%d %b %Y, %H:%M") if a["created_at"] else "Recent",
+                "dt": a["created_at"]
+            })
+        for p in prac_attempts[:10]:
+            combined_events.append({
+                "source": f"Practice ({p['q_type'].upper()})",
+                "title": p["title"],
+                "score": round(p["score"], 1),
+                "speed": f"{p['time_taken_sec']}s",
+                "date": p["attempted_at"].strftime("%d %b %Y, %H:%M") if p["attempted_at"] else "Recent",
+                "dt": p["attempted_at"]
+            })
+
+        combined_events.sort(key=lambda x: x["dt"] if x["dt"] else datetime.min, reverse=True)
+        timeline = combined_events[:10]
+
+        # 7. Personalized Next Action Plan Recommendations
+        recommendations = []
+        if weaknesses:
+            weak_top = weaknesses[0]["topic"]
+            recommendations.append({
+                "type": "Targeted Course",
+                "priority": "High",
+                "title": f"Master {weak_top} Concepts",
+                "description": f"Your current accuracy on {weak_top} is {weaknesses[0]['accuracy']}%. Watch video lessons and take notes in the Learning Hub.",
+                "link": url_for("learning_hub", topic=weak_top),
+                "cta": f"Open {weak_top} Course"
+            })
+            recommendations.append({
+                "type": "Skill Practice",
+                "priority": "High",
+                "title": f"Drill 10 {weak_top} Questions",
+                "description": f"Reinforce core patterns with instant feedback and step-by-step explanations.",
+                "link": url_for("practice_drill", topic=weak_top),
+                "cta": f"Drill {weak_top}"
+            })
+
+        recommendations.append({
+            "type": "Mock Simulation",
+            "priority": "Medium",
+            "title": "Complete Full Technical Interview",
+            "description": "Simulate 5 technical questions under strict exam conditions to update your placement readiness index.",
+            "link": url_for("interview"),
+            "cta": "Start Mock Interview"
+        })
+
+        recommendations.append({
+            "type": "Company Guide",
+            "priority": "Medium",
+            "title": "Review Target Recruiter Rounds",
+            "description": "Examine round patterns and actual interview questions for TCS, Zoho, and Amazon.",
+            "link": url_for("companies_list"),
+            "cta": "Explore Company Guides"
+        })
+
+    return render_template("skill_analysis.html",
+                           overall=overall,
+                           readiness_score=readiness_score,
+                           readiness_status=readiness_status,
+                           readiness_title=readiness_title,
+                           readiness_desc=readiness_desc,
+                           strengths=strengths,
+                           weaknesses=weaknesses,
+                           topic_matrix=topic_matrix,
+                           timeline=timeline,
+                           recommendations=recommendations)
+
+
 # Create/upgrade the table on startup so it also works under gunicorn on Render.
 try:
     init_db()

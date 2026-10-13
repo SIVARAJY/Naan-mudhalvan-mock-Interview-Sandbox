@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+{% block title %}Skill Analysis & Improvement Tracker · SkillSandbox{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+    <div>
+      <p class="eyebrow">INTELLIGENT PERFORMANCE DIAGNOSTICS</p>
+      <h1>Skill Analysis & Improvement Tracker</h1>
+      <p class="muted">Automated cross-module diagnostics analyzing your performance across coding challenges, mock interviews, and technical practice drills to gauge your campus interview readiness.</p>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <a href="{{ url_for('practice_arena') }}" class="button" style="font-size:12px;">⚡ Practice Arena</a>
+      <a href="{{ url_for('learning_hub') }}" class="button secondary" style="font-size:12px;">📚 Learning Hub</a>
+    </div>
+  </div>
+</div>
+
+<!-- Interview Readiness Index Banner -->
+<div class="panel" style="background:linear-gradient(135deg, #14284f 0%, #1e3c72 100%);color:#fff;border:none;margin-bottom:24px;padding:28px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;">
+    <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
+      <div class="score-ring" style="border-color:rgba(255,255,255,0.25);background:rgba(255,255,255,0.06);">
+        <strong style="color:#7de0d7;font-size:32px;">{{ readiness_score }}%</strong>
+        <span style="color:#c7d4f2;font-size:10px;">Readiness</span>
+      </div>
+      <div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+          <span style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;color:#7de0d7;text-transform:uppercase;">BENCHMARK ASSESSMENT</span>
+          <span class="status pass" style="font-size:10px;text-transform:uppercase;">{{ readiness_status }}</span>
+        </div>
+        <h2 style="color:#fff;font-size:24px;margin:0 0 6px;">{{ readiness_title }}</h2>
+        <p style="color:#c7d4f2;font-size:13px;line-height:1.5;margin:0;max-width:550px;">{{ readiness_desc }}</p>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;min-width:200px;">
+      <a href="{{ url_for('interview') }}" class="button" style="background:#7de0d7;color:#14284f;font-weight:800;text-align:center;">Launch Mock Interview</a>
+      <a href="{{ url_for('practice_drill', mode='timed') }}" class="button secondary" style="background:rgba(255,255,255,0.15);color:#fff;border:none;text-align:center;">Take Timed Diagnostic</a>
+    </div>
+  </div>
+</div>
+
+<!-- High-Level Metric Tiles -->
+<section class="stats">
+  <article class="stat">
+    <span>Total Evaluations</span>
+    <strong>{{ overall.total_assessments }}</strong>
+    <small>{{ overall.interview_attempts }} interviews · {{ overall.coding_attempts }} coding · {{ overall.drill_attempts }} drills</small>
+  </article>
+  <article class="stat">
+    <span>Overall Accuracy</span>
+    <strong>{{ overall.overall_accuracy }}%</strong>
+    <small>Calculated across all validated practice tasks</small>
+  </article>
+  <article class="stat">
+    <span>Avg Problem Solving Speed</span>
+    <strong>{{ overall.avg_speed_sec }}s</strong>
+    <small>Average time taken per technical question</small>
+  </article>
+</section>
+
+<!-- Strengths vs Weak-Area Detection -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;" class="admin-lesson-layout">
+  <!-- Key Strengths -->
+  <div class="panel" style="border-left:4px solid var(--green);">
+    <div class="section-heading" style="margin-bottom:8px;">
+      <div>
+        <p class="eyebrow" style="color:var(--green);">IDENTIFIED STRENGTHS</p>
+        <h2 style="font-size:18px;">Proficient Domains (≥70%)</h2>
+      </div>
+    </div>
+    {% if strengths %}
+    <p class="muted small" style="margin:0 0 14px;">You have demonstrated solid conceptual grasp and consistent correctness in:</p>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      {% for s in strengths %}
+      <div style="background:#f0fbf5;border:1px solid #c3e6cb;border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <strong style="color:var(--green);font-size:14px;">{{ s.topic }}</strong>
+          <span class="small muted" style="display:block;">{{ s.accuracy }}% accuracy · {{ s.attempts }} assessments</span>
+        </div>
+        <span class="status pass" style="font-size:10px;">READY</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="muted small">Complete additional drills and mock interviews to validate your core strength areas.</p>
+    {% endif %}
+  </div>
+
+  <!-- Weak-Area Detection -->
+  <div class="panel" style="border-left:4px solid #d9534f;">
+    <div class="section-heading" style="margin-bottom:8px;">
+      <div>
+        <p class="eyebrow" style="color:#d9534f;">CRITICAL WEAK-AREAS</p>
+        <h2 style="font-size:18px;">Targeted Improvement Needed (<60%)</h2>
+      </div>
+    </div>
+    {% if weaknesses %}
+    <p class="muted small" style="margin:0 0 14px;">Repeated mistakes detected. Focus deliberate practice here to prevent interview eliminations:</p>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      {% for w in weaknesses %}
+      <div style="background:#fff5f5;border:1px solid #f5c6cb;border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+        <div>
+          <strong style="color:#721c24;font-size:14px;">{{ w.topic }}</strong>
+          <span class="small muted" style="display:block;">{{ w.accuracy }}% accuracy · Needs reinforcement</span>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <a href="{{ url_for('practice_drill', topic=w.topic) }}" class="button" style="font-size:10px;padding:5px 9px;">⚡ Drill</a>
+          <a href="{{ url_for('learning_hub', topic=w.topic) }}" class="button secondary" style="font-size:10px;padding:5px 9px;">📚 Course</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="muted small" style="color:var(--green);">✓ No critical weakness below 60% detected at this time!</p>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Topic-Wise Performance Radar / Tracking -->
+<div class="panel" style="margin-bottom:24px;">
+  <div class="section-heading" style="margin-bottom:12px;">
+    <div>
+      <p class="eyebrow">CORE SYLLABUS BREAKDOWN</p>
+      <h2>Topic-Wise Skill Proficiency Matrix</h2>
+    </div>
+  </div>
+  <p class="muted small" style="margin:0 0 18px;">Detailed evaluation across the 5 primary Naan Mudhalvan technical placement tracks:</p>
+
+  <div style="display:flex;flex-direction:column;gap:16px;">
+    {% for topic in topic_matrix %}
+    <div style="background:#f8f9fa;border:1px solid var(--line);border-radius:10px;padding:16px 20px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:24px;">{{ topic.icon }}</span>
+          <div>
+            <strong style="font-size:16px;">{{ topic.name }}</strong>
+            <span class="small muted" style="margin-left:8px;">
+              {{ topic.correct }} / {{ topic.total }} tasks correct · {{ topic.attempts }} evaluated
+            </span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="score-pill" style="{% if topic.accuracy >= 75 %}background:#e3f7ee;color:var(--green);{% elif topic.accuracy >= 55 %}background:#fff3d7;color:var(--amber);{% else %}background:#fde8e8;color:#d9534f;{% endif %}">
+            {{ topic.accuracy }}% Proficiency
+          </span>
+          <span class="status {% if topic.level == 'Advanced' %}pass{% elif topic.level == 'Intermediate' %}review{% else %}review{% endif %}" style="font-size:10px;">
+            {{ topic.level }}
+          </span>
+          <a href="{{ url_for('practice_drill', topic=topic.name) }}" class="text-link" style="font-size:12px;">Practice Drill →</a>
+          <a href="{{ url_for('learning_hub', topic=topic.name) }}" class="text-link" style="font-size:12px;">Video Course →</a>
+        </div>
+      </div>
+      <div class="track" style="height:8px;">
+        <span style="width:{{ topic.accuracy }}%;background:{% if topic.accuracy >= 75 %}var(--green){% elif topic.accuracy >= 55 %}var(--amber){% else %}#d9534f{% endif %};"></span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Continuous Reassessment & Longitudinal Score Trajectory -->
+<div class="panel" style="margin-bottom:24px;">
+  <div class="section-heading" style="margin-bottom:8px;">
+    <div>
+      <p class="eyebrow">CONTINUOUS REASSESSMENT</p>
+      <h2>Progress Monitoring & Score Trajectory</h2>
+    </div>
+  </div>
+  <p class="muted small" style="margin:0 0 16px;">Chronological progression over your latest formal assessments and practice milestones:</p>
+
+  {% if timeline %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Module Type</th>
+          <th>Assessment Scope</th>
+          <th>Score / Result</th>
+          <th>Speed</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in timeline %}
+        <tr>
+          <td><span style="font-family:'DM Mono',monospace;font-size:11px;text-transform:uppercase;">{{ item.source }}</span></td>
+          <td><strong>{{ item.title }}</strong></td>
+          <td>
+            <span class="score-pill" style="{% if item.score >= 70 %}background:#e3f7ee;color:var(--green);{% else %}background:#fff3d7;color:var(--amber);{% endif %}">
+              {{ item.score }}%
+            </span>
+          </td>
+          <td class="muted">{{ item.speed }}</td>
+          <td class="muted small">{{ item.date }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="muted">No chronological assessment timeline generated yet. Attempt mock interviews or coding sandboxes to populate your score trajectory.</p>
+  {% endif %}
+</div>
+
+<!-- Personalized Recommended Action Plan -->
+<div class="panel" style="background:#f5f8ff;border-color:#bfcfff;">
+  <div class="section-heading" style="margin-bottom:8px;">
+    <div>
+      <p class="eyebrow" style="color:var(--blue);">RECOMMENDED ACTION PLAN</p>
+      <h2>Next Recommended Milestones</h2>
+    </div>
+  </div>
+  <p class="muted small" style="margin:0 0 18px;">Based on your current skill diagnostic, complete these prioritized actions to raise your interview readiness:</p>
+  
+  <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:16px;">
+    {% for rec in recommendations %}
+    <div style="background:#fff;padding:16px;border-radius:10px;border:1px solid var(--line);display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="prac-badge-pill" style="font-size:10px;">{{ rec.type }}</span>
+        <span class="status review" style="font-size:9px;text-transform:uppercase;">Priority: {{ rec.priority }}</span>
+      </div>
+      <strong style="font-size:14px;color:var(--ink);">{{ rec.title }}</strong>
+      <p class="small muted" style="margin:0;flex:1;line-height:1.5;">{{ rec.description }}</p>
+      <a href="{{ rec.link }}" class="button" style="font-size:11px;padding:6px 12px;text-align:center;margin-top:6px;">
+        {{ rec.cta }} →
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
