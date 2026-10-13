@@ -115,11 +115,106 @@ def _pkce_pair():
 def inject_user():
     return {"current_user": session.get("user")}
 
+def _start_session(user):
+    """Store the verified Supabase user in the Flask session."""
+    meta = user.get("user_metadata") or {}
+    email = user.get("email") or meta.get("email") or ""
+    session.clear()
+    session["user"] = {
+        "id": user["id"],
+        "email": email,
+        "name": meta.get("full_name") or meta.get("name") or email.split("@")[0],
+        "avatar": meta.get("avatar_url") or meta.get("picture"),
+    }
+
+def _csrf_token():
+    if "csrf" not in session:
+        session["csrf"] = secrets.token_urlsafe(32)
+    return session["csrf"]
+
+def _check_csrf():
+    sent = request.form.get("csrf", "")
+    if not sent or not secrets.compare_digest(sent, session.get("csrf", "")):
+        abort(400)
+
+AUTH_ERRORS = {
+    "invalid_credentials": "Incorrect email or password.",
+    "email_not_confirmed": "Please confirm your email first. Check your inbox for the link.",
+    "user_already_exists": "An account with this email already exists. Please sign in.",
+    "weak_password": "That password is too weak. Use at least 8 characters with letters and numbers.",
+    "over_email_send_rate_limit": "Too many emails were sent. Please wait a few minutes and try again.",
+    "over_request_rate_limit": "Too many attempts. Please wait a few minutes and try again.",
+}
+
+def _supabase_auth(path, payload):
+    """Call Supabase Auth. Returns (data, error_message)."""
+    if not SUPABASE_URL or not SUPABASE_ANON_KEY:
+        return None, "Login is not configured. Set SUPABASE_URL and SUPABASE_ANON_KEY."
+    try:
+        resp = requests.post(
+            f"{SUPABASE_URL}/auth/v1/{path}",
+            headers={"apikey": SUPABASE_ANON_KEY, "Content-Type": "application/json"},
+            json=payload, timeout=10,
+        )
+        data = resp.json()
+    except (requests.RequestException, ValueError):
+        return None, "Could not reach the sign-in service. Please try again."
+    if resp.status_code >= 400:
+        code = data.get("error_code") or data.get("code")
+        return None, AUTH_ERRORS.get(code) or data.get("msg") or data.get("message") or "Sign-in failed."
+    return data, None
+
 @app.route("/login")
 def login():
     if "user" in session:
         return redirect(url_for("dashboard"))
-    return render_template("login.html")
+    mode = "signup" if request.args.get("mode") == "signup" else "signin"
+    return render_template("login.html", mode=mode, csrf=_csrf_token())
+
+@app.route("/auth/signin", methods=["POST"])
+def auth_signin():
+    _check_csrf()
+    email = request.form.get("email", "").strip().lower()
+    password = request.form.get("password", "")
+    if not email or not password:
+        flash("Enter your email and password.", "error")
+        return redirect(url_for("login"))
+    data, err = _supabase_auth("token?grant_type=password", {"email": email, "password": password})
+    if err or not data or "user" not in data:
+        flash(err or "Sign-in failed.", "error")
+        return redirect(url_for("login"))
+    _start_session(data["user"])
+    return redirect(url_for("dashboard"))
+
+@app.route("/auth/signup", methods=["POST"])
+def auth_signup():
+    _check_csrf()
+    name = request.form.get("name", "").strip()
+    email = request.form.get("email", "").strip().lower()
+    password = request.form.get("password", "")
+    confirm = request.form.get("confirm", "")
+    back = url_for("login", mode="signup")
+    if not name or not email or "@" not in email:
+        flash("Enter your name and a valid email address.", "error")
+        return redirect(back)
+    if len(password) < 8:
+        flash("Password must be at least 8 characters.", "error")
+        return redirect(back)
+    if password != confirm:
+        flash("The two passwords do not match.", "error")
+        return redirect(back)
+    data, err = _supabase_auth("signup", {
+        "email": email, "password": password, "data": {"full_name": name},
+    })
+    if err:
+        flash(err, "error")
+        return redirect(back)
+    if data.get("access_token") and data.get("user"):
+        # Email confirmation is switched off in Supabase: sign in straight away.
+        _start_session(data["user"])
+        return redirect(url_for("dashboard"))
+    flash("Account created. Check your email for a confirmation link, then sign in.", "info")
+    return redirect(url_for("login"))
 
 @app.route("/auth/google")
 def auth_google():
@@ -162,15 +257,7 @@ def auth_callback():
         flash("Could not complete sign-in with Supabase. Please try again.")
         return redirect(url_for("login"))
 
-    meta = user.get("user_metadata") or {}
-    email = user.get("email") or meta.get("email") or ""
-    session.clear()
-    session["user"] = {
-        "id": user["id"],
-        "email": email,
-        "name": meta.get("full_name") or meta.get("name") or email.split("@")[0],
-        "avatar": meta.get("avatar_url") or meta.get("picture"),
-    }
+    _start_session(user)
     return redirect(url_for("dashboard"))
 
 @app.route("/logout")
