@@ -42,6 +42,8 @@
     .primary:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
     .divider{display:flex;align-items:center;gap:.75rem;color:var(--muted);font-size:.85rem;margin:1.25rem 0}
     .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+    .forgot{margin:-.4rem 0 1rem;text-align:right;font-size:.88rem}
+    .forgot a{color:var(--accent);font-weight:600}
     .switch{margin:1.25rem 0 0;font-size:.92rem;color:var(--muted);text-align:center}
     .switch a{color:var(--accent);font-weight:600}
     .info{background:#EEF3FF;border:1px solid #BCCBF5;color:#1B2F7A;border-radius:8px;
@@ -61,6 +63,12 @@
       {% if mode == 'signup' %}
       <h2 id="signin-title">Create your account</h2>
       <p>Register with your email, or continue with Google.</p>
+      {% elif mode == 'forgot' %}
+      <h2 id="signin-title">Reset your password</h2>
+      <p>Enter your email and we will send you a reset link.</p>
+      {% elif mode == 'reset' %}
+      <h2 id="signin-title">Choose a new password</h2>
+      <p>Use at least 8 characters.</p>
       {% else %}
       <h2 id="signin-title">Sign in</h2>
       <p>Welcome back. Your attempts and scores stay linked to your account.</p>
@@ -81,15 +89,31 @@
         <label class="field"><span>Confirm password</span><input type="password" name="confirm" minlength="8" autocomplete="new-password" required></label>
         <button class="primary" type="submit">Create account</button>
       </form>
+      {% elif mode == 'forgot' %}
+      <form method="post" action="{{ url_for('forgot') }}">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <label class="field"><span>Email</span><input type="email" name="email" autocomplete="email" required></label>
+        <button class="primary" type="submit">Send reset link</button>
+      </form>
+      <p class="switch"><a href="{{ url_for('login') }}">Back to sign in</a></p>
+      {% elif mode == 'reset' %}
+      <form method="post" action="{{ url_for('reset_password') }}">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <label class="field"><span>New password</span><input type="password" name="password" minlength="8" autocomplete="new-password" required></label>
+        <label class="field"><span>Confirm new password</span><input type="password" name="confirm" minlength="8" autocomplete="new-password" required></label>
+        <button class="primary" type="submit">Update password</button>
+      </form>
       {% else %}
       <form method="post" action="{{ url_for('auth_signin') }}">
         <input type="hidden" name="csrf" value="{{ csrf }}">
         <label class="field"><span>Email</span><input type="email" name="email" autocomplete="email" required></label>
         <label class="field"><span>Password</span><input type="password" name="password" autocomplete="current-password" required></label>
+        <p class="forgot"><a href="{{ url_for('forgot') }}">Forgot password?</a></p>
         <button class="primary" type="submit">Sign in</button>
       </form>
       {% endif %}
 
+      {% if mode in ('signin', 'signup') %}
       <div class="divider">or</div>
 
       <a class="google" href="{{ url_for('auth_google') }}">
@@ -106,6 +130,7 @@
         {% if mode == 'signup' %}Already have an account? <a href="{{ url_for('login') }}">Sign in</a>
         {% else %}New here? <a href="{{ url_for('login', mode='signup') }}">Create an account</a>{% endif %}
       </p>
+      {% endif %}
       <p class="note">Sign-in is handled by Supabase. This site never stores your password.</p>
     </section>
   </main>

@@ -141,20 +141,23 @@ AUTH_ERRORS = {
     "invalid_credentials": "Incorrect email or password.",
     "email_not_confirmed": "Please confirm your email first. Check your inbox for the link.",
     "user_already_exists": "An account with this email already exists. Please sign in.",
+    "same_password": "Your new password must be different from the old one.",
     "weak_password": "That password is too weak. Use at least 8 characters with letters and numbers.",
     "over_email_send_rate_limit": "Too many emails were sent. Please wait a few minutes and try again.",
     "over_request_rate_limit": "Too many attempts. Please wait a few minutes and try again.",
 }
 
-def _supabase_auth(path, payload):
+def _supabase_auth(path, payload, method="POST", bearer=None):
     """Call Supabase Auth. Returns (data, error_message)."""
     if not SUPABASE_URL or not SUPABASE_ANON_KEY:
         return None, "Login is not configured. Set SUPABASE_URL and SUPABASE_ANON_KEY."
+    headers = {"apikey": SUPABASE_ANON_KEY, "Content-Type": "application/json"}
+    if bearer:
+        headers["Authorization"] = f"Bearer {bearer}"
     try:
-        resp = requests.post(
-            f"{SUPABASE_URL}/auth/v1/{path}",
-            headers={"apikey": SUPABASE_ANON_KEY, "Content-Type": "application/json"},
-            json=payload, timeout=10,
+        resp = requests.request(
+            method, f"{SUPABASE_URL}/auth/v1/{path}",
+            headers=headers, json=payload, timeout=10,
         )
         data = resp.json()
     except (requests.RequestException, ValueError):
@@ -214,6 +217,72 @@ def auth_signup():
         _start_session(data["user"])
         return redirect(url_for("dashboard"))
     flash("Account created. Check your email for a confirmation link, then sign in.", "info")
+    return redirect(url_for("login"))
+
+@app.route("/forgot", methods=["GET", "POST"])
+def forgot():
+    if request.method == "GET":
+        return render_template("login.html", mode="forgot", csrf=_csrf_token())
+    _check_csrf()
+    email = request.form.get("email", "").strip().lower()
+    if not email or "@" not in email:
+        flash("Enter the email address you registered with.", "error")
+        return redirect(url_for("forgot"))
+    verifier, challenge = _pkce_pair()
+    session["reset_verifier"] = verifier
+    callback = url_for("reset_callback", _external=True)
+    data, err = _supabase_auth(
+        f"recover?redirect_to={requests.utils.quote(callback, safe='')}",
+        {"email": email, "code_challenge": challenge, "code_challenge_method": "s256"},
+    )
+    if err:
+        flash(err, "error")
+        return redirect(url_for("forgot"))
+    # Same message whether or not the email has an account (avoids revealing who is registered).
+    flash("If an account exists for that email, a reset link has been sent. "
+          "Open the link in this same browser.", "info")
+    return redirect(url_for("login"))
+
+@app.route("/auth/reset-callback")
+def reset_callback():
+    """The emailed link lands here with ?code=... ; trade it for a short-lived reset token."""
+    code = request.args.get("code")
+    verifier = session.pop("reset_verifier", None)
+    if not code or not verifier:
+        flash("That reset link is invalid or has expired. Request a new one "
+              "and open it in the same browser.", "error")
+        return redirect(url_for("forgot"))
+    data, err = _supabase_auth("token?grant_type=pkce",
+                               {"auth_code": code, "code_verifier": verifier})
+    if err or not data or not data.get("access_token"):
+        flash("That reset link is invalid or has expired. Request a new one.", "error")
+        return redirect(url_for("forgot"))
+    session["reset_token"] = data["access_token"]   # lets the student set a password; not a login
+    return redirect(url_for("reset_password"))
+
+@app.route("/reset-password", methods=["GET", "POST"])
+def reset_password():
+    token = session.get("reset_token")
+    if not token:
+        flash("Start by requesting a password reset link.", "error")
+        return redirect(url_for("forgot"))
+    if request.method == "GET":
+        return render_template("login.html", mode="reset", csrf=_csrf_token())
+    _check_csrf()
+    password = request.form.get("password", "")
+    confirm = request.form.get("confirm", "")
+    if len(password) < 8:
+        flash("Password must be at least 8 characters.", "error")
+        return redirect(url_for("reset_password"))
+    if password != confirm:
+        flash("The two passwords do not match.", "error")
+        return redirect(url_for("reset_password"))
+    data, err = _supabase_auth("user", {"password": password}, method="PUT", bearer=token)
+    if err:
+        flash(err, "error")
+        return redirect(url_for("reset_password"))
+    session.pop("reset_token", None)
+    flash("Password updated. Please sign in with your new password.", "info")
     return redirect(url_for("login"))
 
 @app.route("/auth/google")
