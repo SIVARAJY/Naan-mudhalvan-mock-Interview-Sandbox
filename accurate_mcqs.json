@@ -1,0 +1,4994 @@
+{
+  "Web Development": [
+    {
+      "q": "What does HTML stand for?",
+      "options": [
+        "Hyper Text Markup Language",
+        "High Text Machine Language",
+        "Hyper Transfer Markup Language",
+        "Home Tool Markup Language"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which tag is used to create a hyperlink in HTML?",
+      "options": [
+        "<link>",
+        "<a>",
+        "<href>",
+        "<url>"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which HTML tag is used to display an image?",
+      "options": [
+        "<picture>",
+        "<image>",
+        "<img>",
+        "<src>"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which tag creates the largest heading by default?",
+      "options": [
+        "<h6>",
+        "<head>",
+        "<heading>",
+        "<h1>"
+      ],
+      "answer": 3
+    },
+    {
+      "q": "Which attribute specifies an image's location?",
+      "options": [
+        "href",
+        "src",
+        "alt",
+        "link"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which tag is used to create an unordered list?",
+      "options": [
+        "<ol>",
+        "<li>",
+        "<ul>",
+        "<list>"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which tag defines a paragraph?",
+      "options": [
+        "<p>",
+        "<para>",
+        "<text>",
+        "<pg>"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which attribute provides alternative text for an image?",
+      "options": [
+        "title",
+        "src",
+        "alt",
+        "name"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which HTML tag creates a table row?",
+      "options": [
+        "<td>",
+        "<th>",
+        "<table-row>",
+        "<tr>"
+      ],
+      "answer": 3
+    },
+    {
+      "q": "Which input type hides the entered characters?",
+      "options": [
+        "text",
+        "password",
+        "hidden-text",
+        "secure"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which tag inserts a line break?",
+      "options": [
+        "<break>",
+        "<lb>",
+        "<br>",
+        "<hr>"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which HTML tag is used to create a form?",
+      "options": [
+        "<form>",
+        "<input>",
+        "<fieldset>",
+        "<submit>"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which attribute makes a form field mandatory?",
+      "options": [
+        "validate",
+        "required",
+        "mandatory",
+        "must"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which semantic HTML element represents the main content of a page?",
+      "options": [
+        "<footer>",
+        "<aside>",
+        "<main>",
+        "<nav>"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which declaration specifies an HTML5 document?",
+      "options": [
+        "<html5>",
+        "<!DOCTYPE html>",
+        "<doctype html5>",
+        "<!HTML>"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What does CSS stand for?",
+      "options": [
+        "Computer Style Sheets",
+        "Creative Style System",
+        "Cascading Style Sheets",
+        "Colorful Style Sheets"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which property changes the text color?",
+      "options": [
+        "font-color",
+        "color",
+        "text-color",
+        "foreground"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which CSS property changes the background color?",
+      "options": [
+        "background-color",
+        "color-background",
+        "bgcolor",
+        "background-style"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which symbol selects an element by its ID in CSS?",
+      "options": [
+        ".",
+        "*",
+        "#",
+        "@"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which symbol selects elements by class?",
+      "options": [
+        "#",
+        ".",
+        "$",
+        "&"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which property controls text size?",
+      "options": [
+        "font-style",
+        "text-height",
+        "font-size",
+        "text-size"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which CSS property makes text bold?",
+      "options": [
+        "font-weight",
+        "text-bold",
+        "font-style",
+        "text-weight"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which property adds space inside an element's border?",
+      "options": [
+        "margin",
+        "padding",
+        "outline",
+        "spacing"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which property adds space outside an element's border?",
+      "options": [
+        "padding",
+        "border-spacing",
+        "margin",
+        "gap"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which CSS layout system is designed primarily for one-dimensional layouts?",
+      "options": [
+        "Flexbox",
+        "CSS Grid",
+        "Float",
+        "Positioning"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which CSS system is especially useful for two-dimensional layouts?",
+      "options": [
+        "Flexbox",
+        "CSS Grid",
+        "Inline layout",
+        "Float"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which property rounds an element's corners?",
+      "options": [
+        "corner-style",
+        "border-radius",
+        "border-round",
+        "radius-style"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which CSS rule is commonly used for responsive design at different screen widths?",
+      "options": [
+        "@font-face",
+        "@keyframes",
+        "@media",
+        "@import-only"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which property controls the stacking order of positioned elements?",
+      "options": [
+        "position-index",
+        "layer",
+        "z-index",
+        "stack-order"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which CSS unit is relative to the root element's font size?",
+      "options": [
+        "px",
+        "rem",
+        "cm",
+        "pt"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is JavaScript mainly used for in web development?",
+      "options": [
+        "Styling web pages",
+        "Making web pages interactive",
+        "Storing files only",
+        "Creating database tables only"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which keyword declares a block-scoped variable that can be reassigned?",
+      "options": [
+        "const",
+        "fixed",
+        "let",
+        "static"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which keyword declares a variable that cannot be reassigned?",
+      "options": [
+        "const",
+        "var",
+        "let",
+        "change"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which operator checks both value and type equality?",
+      "options": [
+        "=",
+        "==",
+        "===",
+        "!="
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which function displays a message in the browser's console?",
+      "options": [
+        "print()",
+        "console.log()",
+        "display()",
+        "echo()"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which symbol is used for single-line comments in JavaScript?",
+      "options": [
+        "<!-- -->",
+        "##",
+        "//",
+        "**"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which method selects an element by its ID?",
+      "options": [
+        "document.getElementById()",
+        "document.getClass()",
+        "document.selectId()",
+        "document.find()"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which method adds an event listener to an element?",
+      "options": [
+        "addEvent()",
+        "attach()",
+        "addEventListener()",
+        "listenEvent()"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which event occurs when a user clicks an element?",
+      "options": [
+        "change",
+        "click",
+        "hover",
+        "load"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which JavaScript data type represents a true or false value?",
+      "options": [
+        "String",
+        "Number",
+        "Boolean",
+        "Object"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which array method adds an element to the end of an array?",
+      "options": [
+        "pop()",
+        "push()",
+        "shift()",
+        "remove()"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which array method removes the last element?",
+      "options": [
+        "push()",
+        "shift()",
+        "pop()",
+        "slice()"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which keyword defines a function in JavaScript?",
+      "options": [
+        "function",
+        "method",
+        "define",
+        "func"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What does DOM stand for?",
+      "options": [
+        "Data Object Model",
+        "Document Object Model",
+        "Digital Ordinance Model",
+        "Document Oriented Method"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which operator is used for logical AND?",
+      "options": [
+        "||",
+        "!",
+        "&&",
+        "&="
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which statement handles errors using a catch block?",
+      "options": [
+        "if-else",
+        "try-catch",
+        "for-loop",
+        "switch-case"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What does JSON stand for?",
+      "options": [
+        "Java Standard Object Notation",
+        "JavaScript Object Notation",
+        "Java Source Open Network",
+        "JavaScript Online Network"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which method converts a JSON string into a JavaScript object?",
+      "options": [
+        "JSON.stringify()",
+        "JSON.parse()",
+        "JSON.convert()",
+        "JSON.object()"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which JavaScript feature is commonly used to handle asynchronous operations?",
+      "options": [
+        "Promises",
+        "CSS selectors",
+        "HTML attributes",
+        "Table rows"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which keyword is commonly used to wait for a Promise inside an async function?",
+      "options": [
+        "wait",
+        "pause",
+        "await",
+        "delay"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "What is frontend development?",
+      "options": [
+        "Developing the user-facing part of a website",
+        "Managing hardware components",
+        "Installing operating systems",
+        "Designing database servers only"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which of the following is a frontend JavaScript library?",
+      "options": [
+        "MySQL",
+        "React",
+        "Node.js",
+        "MongoDB"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the main purpose of React components?",
+      "options": [
+        "Store passwords",
+        "Build reusable UI parts",
+        "Configure network cables",
+        "Replace the database"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is JSX in React?",
+      "options": [
+        "A database language",
+        "A CSS framework",
+        "A syntax extension that lets you write HTML-like markup in JavaScript",
+        "A web server"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which React hook is used to manage local component state?",
+      "options": [
+        "useState",
+        "useRoute",
+        "useStyle",
+        "useHTML"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which React hook is commonly used for side effects?",
+      "options": [
+        "useCSS",
+        "useEffect",
+        "usePage",
+        "useClass"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is responsive web design?",
+      "options": [
+        "A website that works only on desktops",
+        "A website that adapts to different screen sizes",
+        "A website without CSS",
+        "A website that requires a separate page for every device"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which HTML attribute helps make a page responsive on mobile devices?",
+      "options": [
+        "charset",
+        "alt",
+        "viewport through the name attribute of a meta tag",
+        "target"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which tool helps developers inspect HTML, CSS, and JavaScript in a browser?",
+      "options": [
+        "Browser Developer Tools",
+        "Calculator",
+        "File Explorer only",
+        "Paint"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is the primary purpose of a CSS framework such as Bootstrap?",
+      "options": [
+        "Manage database records",
+        "Speed up interface development using reusable styles and components",
+        "Host websites",
+        "Execute SQL queries"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is backend development?",
+      "options": [
+        "Designing only page colors",
+        "Building server-side logic and data handling",
+        "Writing image captions",
+        "Creating website logos only"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which of the following is a JavaScript runtime used for backend development?",
+      "options": [
+        "HTML",
+        "CSS",
+        "Node.js",
+        "Bootstrap"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which framework is commonly used with Node.js to build web servers?",
+      "options": [
+        "Express.js",
+        "Bootstrap",
+        "React",
+        "Tailwind CSS"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is the primary role of a web server?",
+      "options": [
+        "Draw pictures",
+        "Receive requests and return responses",
+        "Design CSS styles",
+        "Edit documents"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What does API stand for?",
+      "options": [
+        "Application Programming Interface",
+        "Advanced Program Installation",
+        "Automated Page Internet",
+        "Application Process Integration"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which HTTP method is commonly used to retrieve data?",
+      "options": [
+        "POST",
+        "GET",
+        "DELETE",
+        "PATCH"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which HTTP method is commonly used to submit data to create a resource?",
+      "options": [
+        "GET",
+        "TRACE",
+        "POST",
+        "OPTIONS"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "What is middleware in a web framework?",
+      "options": [
+        "A function that processes requests and responses during the request-response cycle",
+        "A type of monitor",
+        "A database table",
+        "A CSS property"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is authentication?",
+      "options": [
+        "Determining what a user is allowed to do",
+        "Verifying a user's identity",
+        "Compressing website images",
+        "Formatting a web page"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is authorization?",
+      "options": [
+        "Checking a user's permissions to access a resource",
+        "Creating a new username",
+        "Styling a login page",
+        "Registering a domain name"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is the primary purpose of a database in a web application?",
+      "options": [
+        "Style web pages",
+        "Store and manage data",
+        "Render animations",
+        "Compile CSS"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which of the following is a relational database management system?",
+      "options": [
+        "React",
+        "Express.js",
+        "MySQL",
+        "HTML"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which of the following is a NoSQL database?",
+      "options": [
+        "MongoDB",
+        "CSS",
+        "JavaScript",
+        "Bootstrap"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What does SQL stand for?",
+      "options": [
+        "Structured Query Language",
+        "Simple Question List",
+        "System Quality Logic",
+        "Standard Quick Link"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which SQL command retrieves records from a table?",
+      "options": [
+        "UPDATE",
+        "SELECT",
+        "DELETE",
+        "CREATE"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is a primary key?",
+      "options": [
+        "A column that uniquely identifies each record in a table",
+        "A password for a database server",
+        "A duplicate row",
+        "A CSS class"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is the purpose of a foreign key?",
+      "options": [
+        "To change a web page's font",
+        "To link records between related tables",
+        "To encrypt every database field automatically",
+        "To create HTML forms"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is a REST API?",
+      "options": [
+        "An API designed around resource-oriented interactions and HTTP conventions",
+        "A CSS layout system",
+        "A programming language",
+        "An image format"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is an API endpoint?",
+      "options": [
+        "A database password",
+        "A specific URL or address where an API resource or operation can be accessed",
+        "A CSS selector",
+        "A browser extension"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which HTTP status code commonly indicates a successful request?",
+      "options": [
+        "404",
+        "500",
+        "200",
+        "403"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "What does HTTP stand for?",
+      "options": [
+        "Hypertext Transfer Protocol",
+        "High Transfer Text Program",
+        "Hyper Tool Transmission Process",
+        "Home Text Transfer Protocol"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is the main difference between HTTP and HTTPS?",
+      "options": [
+        "HTTPS uses TLS to secure communication",
+        "HTTP is used only for images",
+        "HTTPS cannot transfer data",
+        "HTTP always requires a password"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What does the HTTP status code 404 mean?",
+      "options": [
+        "Request successful",
+        "Resource not found",
+        "Server error",
+        "Access granted"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What does HTTP status code 500 indicate?",
+      "options": [
+        "Internal server error",
+        "Page permanently moved",
+        "Request successful",
+        "Resource not found"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a domain name?",
+      "options": [
+        "A human-readable address used to access a website",
+        "A database table",
+        "A JavaScript function",
+        "A CSS property"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is web hosting?",
+      "options": [
+        "Creating website colors",
+        "Providing server resources to make a website accessible online",
+        "Writing HTML comments",
+        "Designing a database query"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What does DNS do?",
+      "options": [
+        "Converts domain names into corresponding IP addresses and other DNS records",
+        "Creates HTML files",
+        "Encrypts all passwords",
+        "Formats CSS files"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a cookie in web development?",
+      "options": [
+        "A small piece of data stored by the browser for a website",
+        "A database server",
+        "An image editor",
+        "A programming framework"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a session commonly used for?",
+      "options": [
+        "Maintaining user-related state across multiple requests",
+        "Changing font size",
+        "Compressing images",
+        "Creating domain names"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a CDN?",
+      "options": [
+        "Content Delivery Network",
+        "Computer Data Number",
+        "Central Design Node",
+        "Code Development Name"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What does XSS stand for?",
+      "options": [
+        "Extra Secure System",
+        "Cross-Site Scripting",
+        "External Server Storage",
+        "Cross-System Software"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is SQL injection?",
+      "options": [
+        "A database backup method",
+        "An attack that manipulates SQL queries through untrusted input",
+        "A CSS technique",
+        "A type of web hosting"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which is a recommended way to store user passwords?",
+      "options": [
+        "Store them as plain text",
+        "Store them in a public file",
+        "Hash them with a suitable password-hashing algorithm and a unique salt",
+        "Store them in the page's HTML"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "What is the purpose of input validation?",
+      "options": [
+        "Ensure input meets expected rules before processing it",
+        "Change website colors",
+        "Increase image size",
+        "Automatically create accounts"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is Git commonly used for?",
+      "options": [
+        "Version control",
+        "Database hosting",
+        "CSS styling",
+        "Image compression only"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which Git command creates a local copy of an existing repository?",
+      "options": [
+        "git push",
+        "git clone",
+        "git delete",
+        "git style"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the purpose of testing a web application?",
+      "options": [
+        "Identify bugs and verify expected behavior",
+        "Remove all HTML",
+        "Replace the backend",
+        "Increase the number of pages"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What does accessibility in web development mean?",
+      "options": [
+        "Making websites usable by people with different abilities",
+        "Allowing only developers to use a website",
+        "Making every page private",
+        "Removing all images"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is lazy loading?",
+      "options": [
+        "Loading resources only when they are needed or approaching use",
+        "Preventing a website from opening",
+        "Loading all resources twice",
+        "Disabling JavaScript"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which practice generally improves website performance?",
+      "options": [
+        "Using unnecessarily large images",
+        "Loading every script synchronously",
+        "Optimizing images and reducing unnecessary code",
+        "Duplicating all resources"
+      ],
+      "answer": 2
+    }
+  ],
+  "Java": [
+    {
+      "q": "Who developed Java?",
+      "options": [
+        "Dennis Ritchie",
+        "James Gosling",
+        "Guido van Rossum",
+        "Bjarne Stroustrup"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which company originally developed Java?",
+      "options": [
+        "Microsoft",
+        "Apple",
+        "Sun Microsystems",
+        "IBM"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which extension is used for Java source files?",
+      "options": [
+        ".py",
+        ".class",
+        ".java",
+        ".js"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which method is the usual entry point of a standalone Java application?",
+      "options": [
+        "start()",
+        "main()",
+        "run()",
+        "init()"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which keyword is used to define a class in Java?",
+      "options": [
+        "define",
+        "struct",
+        "class",
+        "object"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "What does JVM stand for?",
+      "options": [
+        "Java Variable Method",
+        "Java Virtual Machine",
+        "Java Verified Mode",
+        "Java Visual Model"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What does JDK stand for?",
+      "options": [
+        "Java Development Kit",
+        "Java Design Keyword",
+        "Java Deployment Kernel",
+        "Java Data Kit"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What does JRE stand for?",
+      "options": [
+        "Java Runtime Environment",
+        "Java Reading Engine",
+        "Java Remote Execution",
+        "Java Resource Editor"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which command compiles a Java source file?",
+      "options": [
+        "java",
+        "javac",
+        "compile",
+        "jvm"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which command is commonly used to run a compiled Java class?",
+      "options": [
+        "javac",
+        "java",
+        "runjava",
+        "execute"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which of the following is a primitive data type in Java?",
+      "options": [
+        "String",
+        "Array",
+        "int",
+        "Scanner"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which data type stores a single 16-bit Unicode character?",
+      "options": [
+        "char",
+        "String",
+        "boolean",
+        "byte"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which data type stores true or false values?",
+      "options": [
+        "int",
+        "boolean",
+        "char",
+        "double"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which data type is commonly used to store decimal values with double precision?",
+      "options": [
+        "int",
+        "boolean",
+        "double",
+        "char"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "What is the size of an int in Java?",
+      "options": [
+        "8 bits",
+        "16 bits",
+        "32 bits",
+        "64 bits"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which keyword declares a variable whose value cannot be reassigned after initialization?",
+      "options": [
+        "static",
+        "final",
+        "constant",
+        "fixed"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which of the following is a valid Java variable name?",
+      "options": [
+        "2value",
+        "my-value",
+        "myValue",
+        "class"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "What is the default value of an instance variable of type int?",
+      "options": [
+        "1",
+        "-1",
+        "0",
+        "null"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which data type can store the largest range of integer values among these options?",
+      "options": [
+        "byte",
+        "short",
+        "int",
+        "long"
+      ],
+      "answer": 3
+    },
+    {
+      "q": "Which keyword is used to create an object in Java?",
+      "options": [
+        "class",
+        "new",
+        "this",
+        "object"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which operator is used for addition?",
+      "options": [
+        "*",
+        "+",
+        "%",
+        "//"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the output of System.out.println(10 / 3);?",
+      "options": [
+        "3.33",
+        "3",
+        "4",
+        "1"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the output of System.out.println(10 % 3);?",
+      "options": [
+        "3",
+        "0",
+        "1",
+        "10"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which operator checks equality between primitive values?",
+      "options": [
+        "=",
+        "==",
+        "!=",
+        ":="
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which operator means logical AND?",
+      "options": [
+        "||",
+        "!",
+        "&&",
+        "&="
+      ],
+      "answer": 2
+    },
+    {
+      "q": "What is the output of System.out.println(5 > 3);?",
+      "options": [
+        "5",
+        "3",
+        "true",
+        "false"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which operator increments a variable by one?",
+      "options": [
+        "--",
+        "++",
+        "**",
+        "//"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the output of System.out.println(2 + 3 * 4);?",
+      "options": [
+        "20",
+        "14",
+        "24",
+        "11"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which operator represents logical OR?",
+      "options": [
+        "&&",
+        "!",
+        "||",
+        "=="
+      ],
+      "answer": 2
+    },
+    {
+      "q": "What is the output of System.out.println(5 != 5);?",
+      "options": [
+        "true",
+        "false",
+        "5",
+        "Error"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which statement executes code when a condition is true?",
+      "options": [
+        "if",
+        "import",
+        "class",
+        "package"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which keyword provides an alternative condition after if?",
+      "options": [
+        "otherwise",
+        "elseif",
+        "else if",
+        "then"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which loop is commonly used when the number of iterations is known?",
+      "options": [
+        "for",
+        "switch",
+        "if",
+        "try"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which loop checks its condition before each iteration?",
+      "options": [
+        "do-while only",
+        "while",
+        "Neither while nor for",
+        "switch"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which loop executes its body at least once?",
+      "options": [
+        "for",
+        "while",
+        "do-while",
+        "Enhanced for only"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which keyword terminates the nearest enclosing loop?",
+      "options": [
+        "skip",
+        "stop",
+        "break",
+        "exitloop"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which keyword skips the current iteration of a loop?",
+      "options": [
+        "break",
+        "continue",
+        "return",
+        "pass"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which statement is commonly used to select among multiple cases based on one expression?",
+      "options": [
+        "switch",
+        "while",
+        "try",
+        "extends"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is the output of the following code?",
+      "options": [
+        "for (int i = 0; i < 3; i++) {"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "How many times does while (false) execute its body?",
+      "options": [
+        "Once",
+        "Twice",
+        "Zero times",
+        "Infinitely"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which syntax correctly declares an integer array?",
+      "options": [
+        "int arr;",
+        "int[] arr;",
+        "array int arr;",
+        "arr int[];"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the index of the first element in a Java array?",
+      "options": [
+        "0",
+        "1",
+        "-1",
+        "2"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which property returns the length of an array?",
+      "options": [
+        "size()",
+        "length()",
+        "length",
+        "count()"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "What is the output of the following code?",
+      "options": [
+        "int[] a = {10, 20, 30};"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which class represents strings in Java?",
+      "options": [
+        "Text",
+        "String",
+        "CharArray",
+        "Sentence"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Are Java String objects mutable?",
+      "options": [
+        "Yes",
+        "No",
+        "Only numbers in strings are mutable",
+        "Only empty strings are mutable"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which method returns the number of characters in a string?",
+      "options": [
+        "size()",
+        "length()",
+        "count()",
+        "capacity()"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which method compares the contents of two strings?",
+      "options": [
+        "==",
+        "compare()",
+        "equals()",
+        "same()"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "What is the output of \"Java\".charAt(0)?",
+      "options": [
+        "J",
+        "a",
+        "v",
+        "Java"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which class is suitable for building a mutable string efficiently?",
+      "options": [
+        "String",
+        "StringBuilder",
+        "Integer",
+        "Character"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What does OOP stand for?",
+      "options": [
+        "Object-Oriented Programming",
+        "Online Operating Program",
+        "Object Output Processing",
+        "Ordered Operation Protocol"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which keyword defines a class in Java?",
+      "options": [
+        "object",
+        "class",
+        "define",
+        "struct"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is an object?",
+      "options": [
+        "An instance of a class",
+        "A loop",
+        "A package only",
+        "A data type keyword"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which method has the same name as its class and no return type?",
+      "options": [
+        "Main method",
+        "Constructor",
+        "Static method",
+        "Abstract method"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which keyword refers to the current object?",
+      "options": [
+        "super",
+        "this",
+        "self",
+        "current"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which keyword is used for class inheritance?",
+      "options": [
+        "implements",
+        "inherits",
+        "extends",
+        "superclass"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which keyword is used when a class implements an interface?",
+      "options": [
+        "extends",
+        "implements",
+        "interface",
+        "inherits"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which OOP concept hides internal implementation details and exposes a controlled interface?",
+      "options": [
+        "Encapsulation",
+        "Iteration",
+        "Compilation",
+        "Recursion"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is method overloading?",
+      "options": [
+        "Defining methods with the same name but different parameter lists",
+        "Defining methods only in different classes",
+        "Deleting a method",
+        "Calling a method repeatedly"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is method overriding?",
+      "options": [
+        "A subclass providing its own implementation of an inherited method",
+        "Declaring two variables with the same name in one scope",
+        "Creating multiple constructors only",
+        "Calling a static method"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which access modifier makes a member accessible from anywhere, subject to module and other language-access rules?",
+      "options": [
+        "private",
+        "protected",
+        "public",
+        "Default access"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which access modifier restricts direct access to the declaring class?",
+      "options": [
+        "public",
+        "private",
+        "protected",
+        "static"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which keyword prevents a class from being subclassed?",
+      "options": [
+        "static",
+        "final",
+        "private",
+        "void"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which keyword refers to the superclass's members or constructor?",
+      "options": [
+        "this",
+        "parent",
+        "super",
+        "base"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Can a Java class directly extend more than one class?",
+      "options": [
+        "Yes, any number",
+        "Yes, exactly two",
+        "No",
+        "Only if both classes are abstract"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Can a Java class implement multiple interfaces?",
+      "options": [
+        "Yes",
+        "No",
+        "Only one",
+        "Only if it is abstract"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which keyword declares an interface?",
+      "options": [
+        "implements",
+        "interface",
+        "extends",
+        "abstract"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which keyword declares an abstract class?",
+      "options": [
+        "abstract",
+        "virtual",
+        "interface",
+        "static"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is polymorphism in OOP?",
+      "options": [
+        "One interface or reference supporting different implementations or behaviors",
+        "Restricting all methods to private",
+        "Storing only integers",
+        "Preventing inheritance"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is encapsulation commonly achieved through?",
+      "options": [
+        "Combining data and methods in a class and controlling access",
+        "Using loops only",
+        "Deleting constructors",
+        "Avoiding all objects"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which keyword begins an exception-handling block?",
+      "options": [
+        "catch",
+        "try",
+        "throw",
+        "error"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which block handles an exception?",
+      "options": [
+        "catch",
+        "final",
+        "throws",
+        "break"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which block is generally used for cleanup code?",
+      "options": [
+        "try",
+        "catch",
+        "finally",
+        "throw"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which keyword explicitly throws an exception?",
+      "options": [
+        "throws",
+        "throw",
+        "catch",
+        "error"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which keyword declares exceptions a method may pass to its caller?",
+      "options": [
+        "throw",
+        "throws",
+        "catch",
+        "final"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which exception is commonly raised when an integer is divided by zero?",
+      "options": [
+        "IOException",
+        "ArithmeticException",
+        "NullPointerException",
+        "ClassNotFoundException"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which exception can occur when accessing a method or field through a null reference?",
+      "options": [
+        "ArithmeticException",
+        "NullPointerException",
+        "IOException",
+        "NumberFormatException"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which of the following is a checked exception?",
+      "options": [
+        "NullPointerException",
+        "ArithmeticException",
+        "IOException",
+        "ArrayIndexOutOfBoundsException"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which superclass is the root of Java's exception and error hierarchy?",
+      "options": [
+        "Object",
+        "Exception",
+        "Throwable",
+        "RuntimeException"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which block can be used to handle multiple different exception types?",
+      "options": [
+        "Multiple catch blocks",
+        "Multiple main methods only",
+        "Multiple constructors only",
+        "Multiple packages"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which interface represents an ordered collection that can contain duplicates?",
+      "options": [
+        "List",
+        "Set",
+        "Map",
+        "Queue only"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which collection does not permit duplicate elements?",
+      "options": [
+        "ArrayList",
+        "LinkedList",
+        "HashSet",
+        "Vector"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which collection stores key-value pairs?",
+      "options": [
+        "List",
+        "Map",
+        "Set",
+        "Iterator"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which class provides a resizable array implementation of List?",
+      "options": [
+        "HashMap",
+        "ArrayList",
+        "HashSet",
+        "TreeMap"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which class implements a doubly linked list and the List interface?",
+      "options": [
+        "ArrayList",
+        "LinkedList",
+        "HashMap",
+        "TreeSet"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which collection stores elements in sorted order according to their natural ordering or a comparator?",
+      "options": [
+        "HashSet",
+        "TreeSet",
+        "ArrayList",
+        "Stack"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which interface is commonly used to traverse elements in a collection?",
+      "options": [
+        "Iterator",
+        "Scanner",
+        "Runnable",
+        "Comparable only"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which method adds an element to an ArrayList?",
+      "options": [
+        "insertItem()",
+        "append()",
+        "add()",
+        "pushItem()"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which class commonly implements a hash-table-based map?",
+      "options": [
+        "HashMap",
+        "ArrayList",
+        "TreeSet",
+        "LinkedList"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which interface represents a collection designed for holding elements before processing, often in FIFO order?",
+      "options": [
+        "Queue",
+        "Map",
+        "Set",
+        "Comparable"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a thread?",
+      "options": [
+        "A lightweight unit of execution within a process",
+        "A database table",
+        "A Java package only",
+        "A variable type"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which method contains the code executed by a typical Java thread?",
+      "options": [
+        "start()",
+        "run()",
+        "mainThread()",
+        "executeNow()"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which method starts a new thread of execution when called on a Thread instance?",
+      "options": [
+        "run()",
+        "start()",
+        "init()",
+        "begin()"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which keyword helps control access to a critical section for an object monitor?",
+      "options": [
+        "volatile",
+        "synchronized",
+        "transient",
+        "native"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which interface is commonly implemented to define a task for a thread?",
+      "options": [
+        "Serializable",
+        "Runnable",
+        "Comparable",
+        "Cloneable"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which package contains many fundamental Java classes, including String and System?",
+      "options": [
+        "java.io",
+        "java.util",
+        "java.lang",
+        "java.net"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which class can read user input from the keyboard?",
+      "options": [
+        "Scanner",
+        "StringBuilder",
+        "Thread",
+        "FileWriter"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which statement correctly prints text followed by a newline?",
+      "options": [
+        "System.print(\"Hello\");",
+        "System.out.println(\"Hello\");",
+        "Console.display(\"Hello\");",
+        "print.System(\"Hello\");"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the output of the following code?",
+      "options": [
+        "int x = 5;"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is the output of the following code?",
+      "options": [
+        "String s = \"Java\";"
+      ],
+      "answer": 0
+    }
+  ],
+  "DBMS": [
+    {
+      "q": "What is the full form of DBMS?",
+      "options": [
+        "Data Backup Management System",
+        "Database Management System",
+        "Digital Base Management Software",
+        "Database Monitoring Service"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the main purpose of a DBMS?",
+      "options": [
+        "To create animations",
+        "To manage and organize data",
+        "To design websites only",
+        "To compile programs"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which of the following is an example of a DBMS?",
+      "options": [
+        "MySQL",
+        "HTML",
+        "CSS",
+        "JavaScript"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a database?",
+      "options": [
+        "A collection of organized data",
+        "A programming language",
+        "An operating system",
+        "A computer network"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which of the following is a relational DBMS?",
+      "options": [
+        "MySQL",
+        "MS Paint",
+        "Notepad",
+        "PowerPoint"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What does RDBMS stand for?",
+      "options": [
+        "Remote Database Management System",
+        "Relational Database Management System",
+        "Rapid Data Backup Management System",
+        "Random Database Monitoring System"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "In a relational database, data is mainly organized into:",
+      "options": [
+        "Tables",
+        "Images",
+        "Slides",
+        "Programs"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a row in a database table called?",
+      "options": [
+        "Attribute",
+        "Record",
+        "Column",
+        "Schema"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is a column in a database table called?",
+      "options": [
+        "Tuple",
+        "Record",
+        "Attribute",
+        "Database"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which language is commonly used to interact with relational databases?",
+      "options": [
+        "SQL",
+        "HTML",
+        "CSS",
+        "XML"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What does SQL stand for?",
+      "options": [
+        "Structured Query Language",
+        "Simple Question Language",
+        "Standard Queue Language",
+        "System Query Logic"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which SQL command retrieves data from a table?",
+      "options": [
+        "INSERT",
+        "SELECT",
+        "UPDATE",
+        "DELETE"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which command inserts new records into a table?",
+      "options": [
+        "ADD",
+        "INSERT",
+        "CREATE",
+        "ALTER"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which command modifies existing records?",
+      "options": [
+        "UPDATE",
+        "SELECT",
+        "DROP",
+        "CREATE"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which command removes selected records from a table?",
+      "options": [
+        "REMOVE",
+        "DROP",
+        "DELETE",
+        "CLEAR"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which SQL clause filters rows based on a condition?",
+      "options": [
+        "ORDER BY",
+        "WHERE",
+        "GROUP BY",
+        "SELECT"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which clause sorts query results?",
+      "options": [
+        "SORT",
+        "ORDER BY",
+        "GROUP BY",
+        "ARRANGE"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which keyword removes duplicate rows from query results?",
+      "options": [
+        "UNIQUE",
+        "DISTINCT",
+        "DIFFERENT",
+        "REMOVE"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which function counts the number of rows?",
+      "options": [
+        "SUM()",
+        "AVG()",
+        "COUNT()",
+        "TOTAL()"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which SQL clause groups rows with matching values?",
+      "options": [
+        "GROUP BY",
+        "ORDER BY",
+        "WHERE",
+        "DISTINCT"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a primary key?",
+      "options": [
+        "A key that uniquely identifies each row",
+        "A key that allows duplicate values",
+        "A key used only for sorting",
+        "A key that stores passwords only"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Can a primary key contain NULL values?",
+      "options": [
+        "Yes, always",
+        "No",
+        "Only one NULL value",
+        "Only in large tables"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is a foreign key used for?",
+      "options": [
+        "To connect related tables",
+        "To delete an entire database",
+        "To sort rows",
+        "To encrypt all data"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which key can contain more than one attribute to uniquely identify a row?",
+      "options": [
+        "Composite key",
+        "Foreign key only",
+        "Duplicate key",
+        "Null key"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a candidate key?",
+      "options": [
+        "An attribute or set of attributes that can uniquely identify a row",
+        "A key that always contains NULL",
+        "A key used only for sorting",
+        "A key that permits duplicate identifiers"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a super key?",
+      "options": [
+        "Any set of attributes that uniquely identifies a row",
+        "A key that cannot identify rows",
+        "A key that always contains two columns",
+        "A key used only in sorting"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is an alternate key?",
+      "options": [
+        "A candidate key not selected as the primary key",
+        "A foreign key with NULL values",
+        "A duplicate key",
+        "A key used only for encryption"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which constraint ensures that values in a column are unique?",
+      "options": [
+        "CHECK",
+        "UNIQUE",
+        "DEFAULT",
+        "NOT NULL"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which key establishes a relationship with a key in another table?",
+      "options": [
+        "Primary key",
+        "Foreign key",
+        "Alternate key",
+        "Super key only"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which constraint prevents a column from storing NULL values?",
+      "options": [
+        "UNIQUE",
+        "DEFAULT",
+        "NOT NULL",
+        "CHECK"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which SQL command creates a new table?",
+      "options": [
+        "MAKE TABLE",
+        "CREATE TABLE",
+        "NEW TABLE",
+        "INSERT TABLE"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which command changes the structure of an existing table?",
+      "options": [
+        "UPDATE",
+        "ALTER",
+        "SELECT",
+        "INSERT"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which command removes a table and its definition?",
+      "options": [
+        "DELETE",
+        "DROP",
+        "UPDATE",
+        "SELECT"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which command removes all rows from a table while keeping its structure?",
+      "options": [
+        "DROP",
+        "TRUNCATE",
+        "ALTER",
+        "CREATE"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which constraint checks whether values satisfy a condition?",
+      "options": [
+        "CHECK",
+        "DEFAULT",
+        "UNIQUE",
+        "ORDER"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which constraint provides a value when none is specified during insertion?",
+      "options": [
+        "NOT NULL",
+        "DEFAULT",
+        "UNIQUE",
+        "PRIMARY KEY"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which SQL command is used to give a user database permissions?",
+      "options": [
+        "GRANT",
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which SQL command removes granted permissions?",
+      "options": [
+        "DELETE",
+        "REVOKE",
+        "DROP",
+        "REMOVE"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which command changes the values of existing rows?",
+      "options": [
+        "ALTER",
+        "UPDATE",
+        "CREATE",
+        "GRANT"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which command is used to retrieve every column from a table?",
+      "options": [
+        "SELECT ALL FROM table;",
+        "SELECT * FROM table;",
+        "GET * FROM table;",
+        "DISPLAY table;"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is normalization?",
+      "options": [
+        "Organizing database tables to reduce redundancy and anomalies",
+        "Encrypting database records",
+        "Sorting rows alphabetically",
+        "Deleting every duplicate row manually"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What does 1NF stand for?",
+      "options": [
+        "First Normal Form",
+        "First Network Function",
+        "File Normal Format",
+        "First Numeric Form"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which normal form requires each field to contain a single value in the relational model?",
+      "options": [
+        "1NF",
+        "2NF",
+        "3NF",
+        "4NF"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which normal form eliminates partial functional dependency on a candidate key?",
+      "options": [
+        "1NF",
+        "2NF",
+        "3NF",
+        "4NF"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which normal form addresses transitive dependencies of non-key attributes on keys?",
+      "options": [
+        "1NF",
+        "2NF",
+        "3NF",
+        "5NF"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "What is database redundancy?",
+      "options": [
+        "Unnecessary duplication of data",
+        "Data encryption",
+        "Data backup",
+        "Data sorting"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which problem can result from storing repeated data in a poorly designed table?",
+      "options": [
+        "Update anomaly",
+        "Faster compilation",
+        "Better encryption",
+        "Automatic indexing"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is denormalization?",
+      "options": [
+        "Deliberately introducing redundancy to improve certain read-performance needs",
+        "Removing all database tables",
+        "Converting SQL into Python",
+        "Deleting all indexes"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which normal form deals with multivalued dependencies?",
+      "options": [
+        "1NF",
+        "2NF",
+        "3NF",
+        "4NF"
+      ],
+      "answer": 3
+    },
+    {
+      "q": "What is the main goal of normalization?",
+      "options": [
+        "Reduce unnecessary redundancy and improve data integrity",
+        "Increase duplicate data",
+        "Remove all relationships",
+        "Prevent database queries"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a JOIN in SQL?",
+      "options": [
+        "An operation that combines related rows from tables",
+        "A command that deletes tables",
+        "A database backup operation",
+        "A type of constraint"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which JOIN returns only rows that satisfy the join condition in both tables?",
+      "options": [
+        "INNER JOIN",
+        "LEFT JOIN",
+        "CROSS JOIN",
+        "FULL OUTER JOIN"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which JOIN returns all rows from the left table and matching rows from the right table?",
+      "options": [
+        "INNER JOIN",
+        "LEFT JOIN",
+        "CROSS JOIN",
+        "SELF JOIN"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which JOIN produces combinations of rows from both tables?",
+      "options": [
+        "INNER JOIN",
+        "LEFT JOIN",
+        "CROSS JOIN",
+        "RIGHT JOIN"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "What is a SELF JOIN?",
+      "options": [
+        "Joining a table with itself",
+        "Joining a table with a file",
+        "Joining two databases without a condition",
+        "Deleting duplicate tables"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which relationship connects one record in a table to many records in another table?",
+      "options": [
+        "One-to-one",
+        "One-to-many",
+        "Many-to-none",
+        "Zero-to-zero"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which relationship allows many records in one table to relate to many records in another?",
+      "options": [
+        "One-to-one",
+        "One-to-many",
+        "Many-to-many",
+        "One-to-zero"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "What is a common way to implement a many-to-many relationship in a relational database?",
+      "options": [
+        "Use a junction table",
+        "Remove all primary keys",
+        "Store all data in one cell",
+        "Use only a CHECK constraint"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a RIGHT JOIN designed to return?",
+      "options": [
+        "All rows from the right table and matching rows from the left",
+        "Only unmatched rows from both tables",
+        "All rows from the left table only",
+        "Only identical table definitions"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is an alias in SQL?",
+      "options": [
+        "A temporary name for a table or column in a query",
+        "A permanent database backup",
+        "A type of primary key",
+        "A command to delete a column"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a database transaction?",
+      "options": [
+        "A logical unit of database work",
+        "A table column",
+        "A database password",
+        "A sorting method"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What does ACID stand for?",
+      "options": [
+        "Atomicity, Consistency, Isolation, Durability",
+        "Accuracy, Control, Integrity, Data",
+        "Access, Consistency, Indexing, Deletion",
+        "Atomicity, Calculation, Input, Design"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What does atomicity mean?",
+      "options": [
+        "A transaction happens completely or not at all",
+        "A transaction must always run slowly",
+        "Data must always be sorted",
+        "Every table must have two keys"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What does consistency ensure?",
+      "options": [
+        "Transactions preserve database rules and valid states",
+        "Every query returns identical rows",
+        "All data is stored in one table",
+        "Every transaction must be read-only"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What does isolation help prevent?",
+      "options": [
+        "Interference between concurrent transactions",
+        "Table creation",
+        "Data retrieval",
+        "Database backups"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What does durability mean?",
+      "options": [
+        "Committed changes persist despite subsequent failures covered by the system's guarantees",
+        "Data is automatically deleted after each query",
+        "Transactions cannot be committed",
+        "Tables cannot be modified"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which SQL command saves a transaction's changes?",
+      "options": [
+        "ROLLBACK",
+        "COMMIT",
+        "REVOKE",
+        "DROP"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which command undoes uncommitted transaction changes?",
+      "options": [
+        "COMMIT",
+        "GRANT",
+        "ROLLBACK",
+        "SELECT"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which command can establish a named point within a transaction to roll back to later?",
+      "options": [
+        "SAVEPOINT",
+        "CHECKPOINT TABLE",
+        "CREATE INDEX",
+        "GROUP BY"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is concurrency control?",
+      "options": [
+        "Managing simultaneous database operations to preserve correctness",
+        "Deleting all concurrent users",
+        "Converting tables into images",
+        "Sorting every query result"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a database index used for?",
+      "options": [
+        "Speeding up data retrieval for suitable queries",
+        "Encrypting every record",
+        "Deleting duplicate tables",
+        "Replacing all primary keys"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which data structure is commonly used to implement database indexes?",
+      "options": [
+        "B-tree or B+ tree",
+        "Stack only",
+        "Queue only",
+        "Graph coloring"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a disadvantage of creating too many indexes?",
+      "options": [
+        "They can increase storage use and slow writes",
+        "They always delete data",
+        "They prevent SELECT queries",
+        "They remove foreign keys"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a database schema?",
+      "options": [
+        "The logical structure or definition of a database",
+        "A single row in a table",
+        "A database password",
+        "A backup file only"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is metadata?",
+      "options": [
+        "Data that describes other data",
+        "Data that has no meaning",
+        "Only image data",
+        "Deleted database records"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which component is responsible for processing SQL queries in a DBMS?",
+      "options": [
+        "Query processor",
+        "Keyboard driver",
+        "Web browser",
+        "Image editor"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a database view?",
+      "options": [
+        "A virtual table defined by a query",
+        "A physical monitor screen",
+        "A database backup",
+        "A type of transaction log only"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a distributed database?",
+      "options": [
+        "A database whose data is stored across multiple connected locations or systems",
+        "A database with only one row",
+        "A database without tables",
+        "A database that cannot communicate over a network"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a database administrator (DBA) responsible for?",
+      "options": [
+        "Managing database security, maintenance, access, and performance",
+        "Designing posters only",
+        "Writing operating systems only",
+        "Replacing every database table daily"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which architecture separates the user interface, application logic, and database into three layers?",
+      "options": [
+        "Two-tier architecture",
+        "Three-tier architecture",
+        "Single-file architecture",
+        "Flat-file architecture"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What does ER stand for in database design?",
+      "options": [
+        "Entity Relationship",
+        "External Record",
+        "Electronic Retrieval",
+        "Entry Reference"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is an entity?",
+      "options": [
+        "A distinguishable real-world object or concept about which data is stored",
+        "A SQL command",
+        "A database password",
+        "A sorting operation"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is an attribute in an ER model?",
+      "options": [
+        "A property of an entity",
+        "A database transaction",
+        "A complete database server",
+        "A relationship diagram only"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "In a standard ER diagram, which shape represents an entity?",
+      "options": [
+        "Rectangle",
+        "Diamond",
+        "Oval",
+        "Triangle"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "In a standard ER diagram, which shape represents a relationship?",
+      "options": [
+        "Circle",
+        "Diamond",
+        "Rectangle",
+        "Hexagon"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is a tuple in the relational model?",
+      "options": [
+        "A row in a relation",
+        "A column name only",
+        "A database user",
+        "A query plan"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is the degree of a relation?",
+      "options": [
+        "Number of attributes (columns)",
+        "Number of rows",
+        "Number of databases",
+        "Number of transactions"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is the cardinality of a relation?",
+      "options": [
+        "Number of tuples (rows)",
+        "Number of columns",
+        "Number of keys only",
+        "Number of tables in a server"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which relational algebra operation selects rows that satisfy a condition?",
+      "options": [
+        "Selection",
+        "Projection",
+        "Union",
+        "Rename"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which relational algebra operation selects specific columns?",
+      "options": [
+        "Selection",
+        "Projection",
+        "Join only",
+        "Difference only"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is a stored procedure?",
+      "options": [
+        "A stored collection of SQL statements or procedural logic that can be invoked",
+        "A database table row",
+        "A primary key",
+        "A backup device"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a trigger in a database?",
+      "options": [
+        "Code that automatically executes in response to specified database events",
+        "A command that always deletes a table",
+        "A type of database key",
+        "A manual backup file"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which SQL operator checks whether a value matches any value in a specified list?",
+      "options": [
+        "BETWEEN",
+        "IN",
+        "LIKE",
+        "IS NULL"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which SQL operator is commonly used for pattern matching?",
+      "options": [
+        "MATCHES ONLY",
+        "LIKE",
+        "EQUALS",
+        "PATTERN"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "In SQL LIKE patterns, what does % usually represent?",
+      "options": [
+        "Exactly one character",
+        "Zero or more characters",
+        "A numeric value only",
+        "A NULL value"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which clause filters groups after aggregation?",
+      "options": [
+        "WHERE",
+        "HAVING",
+        "ORDER BY",
+        "FROM"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which function calculates the average of numeric values?",
+      "options": [
+        "SUM()",
+        "COUNT()",
+        "AVG()",
+        "MAX()"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which SQL expression checks whether a value is NULL?",
+      "options": [
+        "= NULL",
+        "IS NULL",
+        "== NULL",
+        "EQUAL NULL"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which command is commonly used to create an index?",
+      "options": [
+        "MAKE INDEX",
+        "CREATE INDEX",
+        "ADD KEY INDEX",
+        "INSERT INDEX"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which type of database is designed primarily to store data as documents, key-value pairs, graphs, or other non-relational models?",
+      "options": [
+        "NoSQL database",
+        "Spreadsheet only",
+        "Flat text editor",
+        "Operating system"
+      ],
+      "answer": 0
+    }
+  ],
+  "Python": [
+    {
+      "q": "Who developed Python?",
+      "options": [
+        "Dennis Ritchie",
+        "Guido van Rossum",
+        "James Gosling",
+        "Bjarne Stroustrup"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which extension is used for Python files?",
+      "options": [
+        ".java",
+        ".cpp",
+        ".py",
+        ".html"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which function displays output in Python?",
+      "options": [
+        "echo()",
+        "print()",
+        "display()",
+        "show()"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which symbol is used for a single-line comment in Python?",
+      "options": [
+        "//",
+        "/*",
+        "#",
+        "--"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Is Python case-sensitive?",
+      "options": [
+        "Yes",
+        "No",
+        "Only for variables",
+        "Only for functions"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which keyword defines a function in Python?",
+      "options": [
+        "function",
+        "def",
+        "fun",
+        "define"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which of the following is a valid variable name?",
+      "options": [
+        "2name",
+        "my-name",
+        "my_name",
+        "class"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which function accepts input from the user?",
+      "options": [
+        "scan()",
+        "input()",
+        "read()",
+        "get()"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which keyword is used to check a condition?",
+      "options": [
+        "if",
+        "for",
+        "def",
+        "import"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is the output of print(2 + 3)?",
+      "options": [
+        "23",
+        "5",
+        "6",
+        "Error"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which data type stores whole numbers?",
+      "options": [
+        "str",
+        "int",
+        "list",
+        "bool"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the data type of 3.14?",
+      "options": [
+        "int",
+        "str",
+        "float",
+        "bool"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which data type stores True or False?",
+      "options": [
+        "bool",
+        "int",
+        "str",
+        "float"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is the output of 10 // 3?",
+      "options": [
+        "3.33",
+        "3",
+        "1",
+        "4"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the output of 10 % 3?",
+      "options": [
+        "3",
+        "0",
+        "1",
+        "10"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which operator is used for exponentiation?",
+      "options": [
+        "^",
+        "**",
+        "//",
+        "%"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the output of 2 ** 3?",
+      "options": [
+        "5",
+        "6",
+        "8",
+        "9"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which operator checks equality?",
+      "options": [
+        "=",
+        "==",
+        "!=",
+        ">="
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the output of 5 != 3?",
+      "options": [
+        "True",
+        "False",
+        "5",
+        "Error"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which function returns the data type of a value?",
+      "options": [
+        "type()",
+        "datatype()",
+        "typeof()",
+        "kind()"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which of the following creates a string?",
+      "options": [
+        "\"Hello\"",
+        "123",
+        "True",
+        "[1, 2]"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is the output of len(\"Python\")?",
+      "options": [
+        "5",
+        "6",
+        "7",
+        "8"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the output of \"Python\"[0]?",
+      "options": [
+        "P",
+        "y",
+        "n",
+        "Error"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which method converts a string to uppercase?",
+      "options": [
+        "upper()",
+        "uppercase()",
+        "capital()",
+        "up()"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is the output of \"HELLO\".lower()?",
+      "options": [
+        "HELLO",
+        "Hello",
+        "hello",
+        "Error"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which operator joins two strings?",
+      "options": [
+        "-",
+        "+",
+        "/",
+        "%"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the output of \"Py\" * 3?",
+      "options": [
+        "Py3",
+        "PyPyPy",
+        "Py Py Py",
+        "Error"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which method removes whitespace from both ends of a string?",
+      "options": [
+        "strip()",
+        "remove()",
+        "delete()",
+        "clear()"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is the output of \"Python\"[1:4]?",
+      "options": [
+        "Pyt",
+        "yth",
+        "tho",
+        "ytho"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Are Python strings mutable?",
+      "options": [
+        "Yes",
+        "No",
+        "Only numeric strings",
+        "Only empty strings"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which brackets are used to create a list?",
+      "options": [
+        "()",
+        "{}",
+        "[]",
+        "<>"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which method adds an element to the end of a list?",
+      "options": [
+        "add()",
+        "append()",
+        "insert_end()",
+        "push()"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the output of len([10, 20, 30])?",
+      "options": [
+        "2",
+        "3",
+        "10",
+        "60"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which method removes an element by its value from a list?",
+      "options": [
+        "remove()",
+        "delete()",
+        "discard()",
+        "erase()"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which method sorts a list in place?",
+      "options": [
+        "order()",
+        "sort()",
+        "arrange()",
+        "sorted_in()"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which brackets are commonly used to create a tuple?",
+      "options": [
+        "[]",
+        "{}",
+        "()",
+        "<>"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Are tuples mutable?",
+      "options": [
+        "Yes",
+        "No",
+        "Only integers are mutable",
+        "Only strings are mutable"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the output of [1, 2, 3][1]?",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "Error"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which method adds an element at a specified position in a list?",
+      "options": [
+        "append()",
+        "insert()",
+        "extend()",
+        "sort()"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the output of list(range(3))?",
+      "options": [
+        "[1, 2, 3]",
+        "[0, 1, 2]",
+        "[0, 1, 2, 3]",
+        "[3]"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which data structure stores key-value pairs?",
+      "options": [
+        "List",
+        "Tuple",
+        "Dictionary",
+        "String"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which brackets are used to create a dictionary?",
+      "options": [
+        "[]",
+        "{}",
+        "()",
+        "<>"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which method returns a dictionary's keys?",
+      "options": [
+        "keys()",
+        "values()",
+        "items()",
+        "getkeys()"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which method returns a dictionary's values?",
+      "options": [
+        "keys()",
+        "values()",
+        "items()",
+        "get()"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which data structure stores unique elements?",
+      "options": [
+        "List",
+        "Tuple",
+        "Set",
+        "String"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which operator finds the intersection of two sets?",
+      "options": [
+        "|",
+        "&",
+        "+",
+        "//"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the output of len({1, 2, 2, 3})?",
+      "options": [
+        "2",
+        "3",
+        "4",
+        "Error"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which dictionary method safely retrieves a key's value with an optional default?",
+      "options": [
+        "fetch()",
+        "get()",
+        "find()",
+        "search()"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Can a Python dictionary have duplicate keys?",
+      "options": [
+        "Yes, all keys remain separately",
+        "No, keys must be unique",
+        "Only string keys can repeat",
+        "Only integer keys can repeat"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which method adds one element to a set?",
+      "options": [
+        "append()",
+        "insert()",
+        "add()",
+        "push()"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which keyword starts an alternative condition after if?",
+      "options": [
+        "else if",
+        "elif",
+        "elseif",
+        "otherwise"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which loop iterates over a sequence?",
+      "options": [
+        "for",
+        "switch",
+        "case",
+        "define"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which loop continues while a condition is True?",
+      "options": [
+        "for",
+        "while",
+        "if",
+        "def"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What does break do inside a loop?",
+      "options": [
+        "Skips only the current iteration",
+        "Terminates the nearest enclosing loop",
+        "Restarts the loop",
+        "Pauses the program permanently"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What does continue do?",
+      "options": [
+        "Ends the entire program",
+        "Skips to the next iteration",
+        "Deletes the loop",
+        "Returns a value"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the output of list(range(1, 5))?",
+      "options": [
+        "[1, 2, 3, 4]",
+        "[1, 2, 3, 4, 5]",
+        "[0, 1, 2, 3, 4]",
+        "[5]"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "How many times does this loop execute? for i in range(4):",
+      "options": [
+        "3",
+        "4",
+        "5",
+        "Infinite times"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the output of print(5 > 3)?",
+      "options": [
+        "True",
+        "False",
+        "5",
+        "Error"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which keyword combines two conditions so both must be True?",
+      "options": [
+        "or",
+        "not",
+        "and",
+        "is"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "What does pass do in Python?",
+      "options": [
+        "Exits the program",
+        "Acts as a placeholder without performing an operation",
+        "Skips all future loops",
+        "Returns a value"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which keyword returns a value from a function?",
+      "options": [
+        "print",
+        "return",
+        "yield_value",
+        "send"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the output of this code?",
+      "options": [
+        "def add(a, b):    return a + bprint(add(2, 3))"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which keyword imports a module?",
+      "options": [
+        "include",
+        "using",
+        "import",
+        "require"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which module provides mathematical functions such as sqrt()?",
+      "options": [
+        "random",
+        "math",
+        "os",
+        "sys"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is a parameter in a function?",
+      "options": [
+        "A variable listed in the function definition",
+        "A comment",
+        "A loop",
+        "A module name only"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a lambda function?",
+      "options": [
+        "An anonymous function defined using lambda",
+        "A class constructor",
+        "A type of loop",
+        "A file-handling method"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is recursion?",
+      "options": [
+        "A function calling itself",
+        "A loop that never stops",
+        "A variable changing type",
+        "A module importing itself only"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which built-in function returns the largest item in an iterable?",
+      "options": [
+        "top()",
+        "max()",
+        "large()",
+        "highest()"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which built-in function calculates the sum of items in an iterable?",
+      "options": [
+        "total()",
+        "add_all()",
+        "sum()",
+        "count()"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "What is the output of abs(-10)?",
+      "options": [
+        "-10",
+        "0",
+        "10",
+        "Error"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which keyword defines a class in Python?",
+      "options": [
+        "object",
+        "class",
+        "struct",
+        "define"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is an object?",
+      "options": [
+        "An instance of a class",
+        "A comment",
+        "A loop condition",
+        "A module import"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which method is commonly used to initialize an object's attributes?",
+      "options": [
+        "__start__()",
+        "__init__()",
+        "__create__()",
+        "__main__()"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What does self usually refer to in an instance method?",
+      "options": [
+        "The current instance",
+        "The parent module",
+        "The class name as a string",
+        "A global variable"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is inheritance?",
+      "options": [
+        "One class deriving attributes and methods from another class",
+        "A function calling itself",
+        "A list storing multiple values",
+        "A variable changing its value"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is polymorphism?",
+      "options": [
+        "The ability to use a common interface with different implementations",
+        "The process of deleting objects",
+        "The conversion of strings to integers only",
+        "A type of loop"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which concept combines data and the methods that operate on it within a class?",
+      "options": [
+        "Encapsulation",
+        "Iteration",
+        "Compilation",
+        "Recursion"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which function checks whether an object is an instance of a class or type?",
+      "options": [
+        "typecheck()",
+        "isinstance()",
+        "checktype()",
+        "objectof()"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which symbol is used to inherit from a base class in a class definition?",
+      "options": [
+        "Square brackets []",
+        "Parentheses ()",
+        "Curly braces {}",
+        "Angle brackets <>"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is method overriding?",
+      "options": [
+        "A subclass providing its own implementation of an inherited method",
+        "Defining a variable twice",
+        "Calling a function without arguments",
+        "Deleting a class"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which keyword is used to handle exceptions?",
+      "options": [
+        "catch",
+        "except",
+        "error",
+        "handle"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which block contains code that may raise an exception?",
+      "options": [
+        "try",
+        "except",
+        "finally",
+        "else only"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which block generally executes whether an exception occurs or not?",
+      "options": [
+        "try",
+        "except",
+        "finally",
+        "raise"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which keyword manually raises an exception?",
+      "options": [
+        "throw",
+        "raise",
+        "error",
+        "except"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which function opens a file in Python?",
+      "options": [
+        "file()",
+        "open()",
+        "readfile()",
+        "load()"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which file mode is used to read a file?",
+      "options": [
+        "\"w\"",
+        "\"a\"",
+        "\"r\"",
+        "\"x\""
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which file mode overwrites an existing file or creates a new one?",
+      "options": [
+        "\"r\"",
+        "\"w\"",
+        "\"a\"",
+        "\"b\""
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which method reads the entire remaining contents of a file?",
+      "options": [
+        "read()",
+        "write()",
+        "close()",
+        "append()"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Why is the with open(...) statement useful?",
+      "options": [
+        "It automatically closes the file when the block exits",
+        "It always deletes the file",
+        "It prevents all exceptions",
+        "It converts files into lists automatically"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which exception is raised when dividing an integer by zero?",
+      "options": [
+        "ValueError",
+        "NameError",
+        "ZeroDivisionError",
+        "TypeError"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "What is the output of print(bool(0))?",
+      "options": [
+        "True",
+        "False",
+        "0",
+        "None"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the output of print(bool(\"Hello\"))?",
+      "options": [
+        "True",
+        "False",
+        "Hello",
+        "Error"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which keyword creates a generator function that produces values one at a time?",
+      "options": [
+        "return",
+        "yield",
+        "generate",
+        "next"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What does enumerate() commonly provide when iterating over a sequence?",
+      "options": [
+        "Only the last element",
+        "Index-value pairs",
+        "Sorted values",
+        "Unique values only"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the output of print(10 == 10.0)?",
+      "options": [
+        "True",
+        "False",
+        "10",
+        "Error"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which expression creates a list of squares from 0 to 4?",
+      "options": [
+        "[x**2 for x in range(5)]",
+        "{x**2 for x in range(5)}",
+        "(x**2 for x in range(5))",
+        "x**2 in range(5)"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is the output of print(\"Python\"[::-1])?",
+      "options": [
+        "Python",
+        "nohtyP",
+        "P",
+        "Error"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which keyword is used to create an asynchronous function?",
+      "options": [
+        "async",
+        "await",
+        "parallel",
+        "thread"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is the output of print([1, 2] + [3, 4])?",
+      "options": [
+        "[4, 6]",
+        "[1, 2, 3, 4]",
+        "[[1, 2], [3, 4]]",
+        "Error"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the output of the following code?",
+      "options": [
+        "x = [1, 2, 3]x.append(4)print(x)"
+      ],
+      "answer": 0
+    }
+  ],
+  "DSA": [
+    {
+      "q": "What is a data structure?",
+      "options": [
+        "A programming language",
+        "A way to organize and store data",
+        "An operating system",
+        "A computer network"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which of the following is a linear data structure?",
+      "options": [
+        "Tree",
+        "Graph",
+        "Array",
+        "Heap"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which data structure follows LIFO?",
+      "options": [
+        "Queue",
+        "Stack",
+        "Tree",
+        "Graph"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which data structure follows FIFO?",
+      "options": [
+        "Stack",
+        "Queue",
+        "Tree",
+        "Heap"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which of the following is a non-linear data structure?",
+      "options": [
+        "Array",
+        "Stack",
+        "Queue",
+        "Tree"
+      ],
+      "answer": 3
+    },
+    {
+      "q": "What is the main advantage of an array?",
+      "options": [
+        "Random access to elements",
+        "Unlimited size in every language",
+        "No memory usage",
+        "Automatic sorting"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which data structure stores elements in nodes connected by pointers or references?",
+      "options": [
+        "Array",
+        "Linked list",
+        "Matrix",
+        "String"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which operation adds an element to a data structure?",
+      "options": [
+        "Delete",
+        "Search",
+        "Insert",
+        "Traverse"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which operation visits each element of a data structure?",
+      "options": [
+        "Traversal",
+        "Compilation",
+        "Encryption",
+        "Recursion"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What does time complexity describe?",
+      "options": [
+        "Memory capacity",
+        "Execution time growth as input size increases",
+        "Program file size",
+        "Number of variables"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "In most programming languages, what is the index of the first array element?",
+      "options": [
+        "0",
+        "1",
+        "-1",
+        "2"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is the time complexity of accessing an array element by index?",
+      "options": [
+        "O(n)",
+        "O(log n)",
+        "O(1)",
+        "O(n\u00b2)"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which of the following best describes an array?",
+      "options": [
+        "A collection of elements accessed using indices",
+        "A collection of unrelated programs",
+        "A type of operating system",
+        "A network protocol"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is the time complexity of linear search in an unsorted array in the worst case?",
+      "options": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "O(n\u00b2)"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Inserting an element at the beginning of an array usually requires what?",
+      "options": [
+        "Shifting existing elements",
+        "Deleting the entire array",
+        "Sorting all elements",
+        "Reversing the array"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which array type uses rows and columns?",
+      "options": [
+        "One-dimensional array",
+        "Two-dimensional array",
+        "Circular array only",
+        "Linked array"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is a major limitation of a traditional fixed-size array?",
+      "options": [
+        "It cannot store numbers",
+        "Its capacity is fixed after creation",
+        "It cannot be indexed",
+        "It cannot be traversed"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the index of the last element in an array of size 10 with zero-based indexing?",
+      "options": [
+        "10",
+        "9",
+        "11",
+        "0"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which operation finds the total number of elements in an array?",
+      "options": [
+        "Length or size check",
+        "Sorting",
+        "Reversing",
+        "Merging"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which of the following is commonly used to represent a table of values?",
+      "options": [
+        "Stack",
+        "Two-dimensional array",
+        "Queue",
+        "Binary tree"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is a linked list?",
+      "options": [
+        "A collection of connected nodes",
+        "A collection of fixed-size tables",
+        "A sorting technique",
+        "A searching algorithm"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which fields are commonly present in a singly linked list node?",
+      "options": [
+        "Data and next pointer",
+        "Data and two arrays",
+        "Index and stack",
+        "Key and queue"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which pointer points to the first node of a linked list?",
+      "options": [
+        "Tail",
+        "Head",
+        "Root",
+        "Rear"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which linked list allows traversal in both directions?",
+      "options": [
+        "Singly linked list",
+        "Doubly linked list",
+        "Circular queue",
+        "Simple array"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "In a singly linked list, what does the last node's next pointer usually contain?",
+      "options": [
+        "Head",
+        "Root",
+        "NULL",
+        "Previous node"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "What is the time complexity of accessing the nth element in a singly linked list?",
+      "options": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "O(n\u00b2)"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which linked list connects the last node back to the first node?",
+      "options": [
+        "Circular linked list",
+        "Linear linked list",
+        "Doubly linked list only",
+        "Static array"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a major advantage of linked lists over fixed-size arrays?",
+      "options": [
+        "Constant-time random access",
+        "Flexible size",
+        "Always use less memory",
+        "Automatic sorting"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is generally required to insert a node at the beginning of a singly linked list?",
+      "options": [
+        "Updating the head pointer",
+        "Sorting the list",
+        "Shifting every node",
+        "Deleting the last node"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which of the following is a disadvantage of a linked list?",
+      "options": [
+        "It cannot store data",
+        "It does not support direct random access",
+        "It cannot grow dynamically",
+        "It cannot be traversed"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which operation inserts an element into a stack?",
+      "options": [
+        "Enqueue",
+        "Push",
+        "Dequeue",
+        "Search"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which operation removes the top element from a stack?",
+      "options": [
+        "Pop",
+        "Push",
+        "Insert",
+        "Traverse"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is stack overflow?",
+      "options": [
+        "Removing an element from an empty stack",
+        "Adding an element to a full bounded stack",
+        "Sorting a stack",
+        "Searching a stack"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is stack underflow?",
+      "options": [
+        "Pushing an element onto a stack",
+        "Creating a stack",
+        "Attempting to pop from an empty stack",
+        "Reversing a stack"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which data structure is commonly used to manage function calls?",
+      "options": [
+        "Stack",
+        "Queue",
+        "Graph",
+        "Hash table"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which application commonly uses a stack?",
+      "options": [
+        "Undo operation in a text editor",
+        "Printer scheduling only",
+        "Network routing only",
+        "Database table creation"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is the time complexity of push in a stack implemented using an array, assuming space is available?",
+      "options": [
+        "O(n)",
+        "O(log n)",
+        "O(1)",
+        "O(n\u00b2)"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which data structure is often used to check balanced parentheses?",
+      "options": [
+        "Stack",
+        "Queue",
+        "Graph",
+        "Heap"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which element is removed first from the stack containing 10, 20, 30, pushed in that order?",
+      "options": [
+        "10",
+        "20",
+        "30",
+        "All at once"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which algorithm technique commonly uses a stack to manage unfinished work?",
+      "options": [
+        "Depth-first search",
+        "Breadth-first search",
+        "Counting sort only",
+        "Hashing only"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which operation adds an element to a queue?",
+      "options": [
+        "Push",
+        "Enqueue",
+        "Pop",
+        "Peek"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which operation removes an element from a queue?",
+      "options": [
+        "Dequeue",
+        "Push",
+        "Insert at top",
+        "Peek"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "In a standard queue, insertion usually occurs at the:",
+      "options": [
+        "Front",
+        "Rear",
+        "Middle",
+        "Top"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "In a standard queue, deletion usually occurs at the:",
+      "options": [
+        "Rear",
+        "Middle",
+        "Front",
+        "Top"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "What is a circular queue?",
+      "options": [
+        "A queue that connects its final position back to its first position logically",
+        "A queue that stores only circular objects",
+        "A stack arranged in a circle",
+        "A queue that cannot delete elements"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which queue type allows insertion and deletion at both ends?",
+      "options": [
+        "Simple queue",
+        "Deque",
+        "Priority stack",
+        "Binary queue only"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which data structure is commonly used in breadth-first search (BFS)?",
+      "options": [
+        "Stack",
+        "Queue",
+        "Heap only",
+        "Hash table only"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which is a common real-world application of a queue?",
+      "options": [
+        "Managing print jobs",
+        "Function call management",
+        "Expression parentheses checking only",
+        "Recursive function tracking"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a priority queue?",
+      "options": [
+        "A queue where elements are served according to priority",
+        "A queue where only the last element is removed",
+        "A stack with no top element",
+        "A queue that cannot store numbers"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is the time complexity of enqueue in a typical queue implemented with a linked list and a rear pointer?",
+      "options": [
+        "O(n)",
+        "O(log n)",
+        "O(1)",
+        "O(n\u00b2)"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "What is a tree in data structures?",
+      "options": [
+        "A linear collection of elements",
+        "A hierarchical collection of nodes",
+        "A sorting algorithm",
+        "A type of array"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the topmost node of a tree called?",
+      "options": [
+        "Leaf",
+        "Root",
+        "Edge",
+        "Child"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is a leaf node?",
+      "options": [
+        "A node with no children",
+        "A node with two parents",
+        "The topmost node",
+        "A node without data"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "In a binary tree, each node can have at most how many children?",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which traversal visits the root before its left and right subtrees?",
+      "options": [
+        "Inorder",
+        "Postorder",
+        "Preorder",
+        "Level-order"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which traversal follows Left\u2013Root\u2013Right?",
+      "options": [
+        "Preorder",
+        "Inorder",
+        "Postorder",
+        "Level-order"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which traversal follows Left\u2013Right\u2013Root?",
+      "options": [
+        "Preorder",
+        "Inorder",
+        "Postorder",
+        "Level-order"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "What is a Binary Search Tree (BST)?",
+      "options": [
+        "A tree where every node must have exactly two children",
+        "A binary tree ordered by key values according to BST rules",
+        "A tree used only for graphics",
+        "A tree without leaf nodes"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "In a BST with distinct keys, where are keys smaller than a node's key placed?",
+      "options": [
+        "In its left subtree",
+        "In its right subtree",
+        "Always at the root",
+        "Outside the tree"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which data structure is commonly used to perform level-order traversal of a tree?",
+      "options": [
+        "Stack",
+        "Queue",
+        "Hash table",
+        "Array index only"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is a graph made up of?",
+      "options": [
+        "Rows and columns only",
+        "Vertices and edges",
+        "Stacks and queues only",
+        "Roots and leaves only"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is a vertex in a graph?",
+      "options": [
+        "A node",
+        "A sorting method",
+        "A pointer only",
+        "A queue operation"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What connects two vertices in a graph?",
+      "options": [
+        "Index",
+        "Edge",
+        "Root",
+        "Stack"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is a directed graph?",
+      "options": [
+        "A graph whose edges have directions",
+        "A graph without vertices",
+        "A graph with no edges",
+        "A graph that must be a tree"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which algorithm is commonly used for breadth-first search in a graph?",
+      "options": [
+        "BFS",
+        "DFS",
+        "Binary search",
+        "Insertion sort"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which data structure is commonly used for iterative depth-first search?",
+      "options": [
+        "Queue",
+        "Stack",
+        "Priority queue only",
+        "Hash table only"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which representation stores a list of neighboring vertices for each vertex?",
+      "options": [
+        "Adjacency list",
+        "Stack array",
+        "Sorted array",
+        "Linked stack only"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which graph representation uses a two-dimensional table of vertex connections?",
+      "options": [
+        "Linked list",
+        "Adjacency matrix",
+        "Binary tree",
+        "Circular queue"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is a path in a graph?",
+      "options": [
+        "A sequence of connected vertices",
+        "A single isolated vertex only",
+        "A sorting operation",
+        "A memory address"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which algorithm can find shortest paths from a source in a graph with non-negative edge weights?",
+      "options": [
+        "Dijkstra's algorithm",
+        "Bubble sort",
+        "Binary search",
+        "Preorder traversal"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which searching algorithm checks elements one by one?",
+      "options": [
+        "Binary search",
+        "Linear search",
+        "Merge sort",
+        "Heap sort"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the worst-case time complexity of linear search in an array of n elements?",
+      "options": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "O(n log n)"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Binary search generally requires the data to be:",
+      "options": [
+        "Randomly arranged",
+        "Sorted",
+        "Stored in a stack",
+        "Stored only in a tree"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the worst-case time complexity of binary search on a sorted array?",
+      "options": [
+        "O(n)",
+        "O(n\u00b2)",
+        "O(log n)",
+        "O(1)"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Binary search works by repeatedly dividing the search interval into how many parts?",
+      "options": [
+        "Two",
+        "Three",
+        "Four",
+        "Ten"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "In binary search, what happens if the target is smaller than the middle element in ascending order?",
+      "options": [
+        "Search the left half",
+        "Search the right half",
+        "Stop immediately with success",
+        "Sort the array again"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which search method is generally suitable for a small, unsorted array?",
+      "options": [
+        "Linear search",
+        "Binary search without sorting",
+        "Tree traversal only",
+        "Dijkstra's algorithm"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is the best-case time complexity of linear search when the target is the first element?",
+      "options": [
+        "O(n)",
+        "O(log n)",
+        "O(1)",
+        "O(n\u00b2)"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which search algorithm repeatedly compares the target with the middle element?",
+      "options": [
+        "Linear search",
+        "Binary search",
+        "Depth-first search",
+        "Breadth-first search"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the maximum number of elements checked in the worst case by linear search in an array of 100 elements?",
+      "options": [
+        "10",
+        "50",
+        "99",
+        "100"
+      ],
+      "answer": 3
+    },
+    {
+      "q": "Which sorting algorithm repeatedly swaps adjacent elements when they are in the wrong order?",
+      "options": [
+        "Merge sort",
+        "Bubble sort",
+        "Quick sort",
+        "Heap sort"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the average time complexity of Quick sort?",
+      "options": [
+        "O(n)",
+        "O(n\u00b2)",
+        "O(n log n)",
+        "O(log n)"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "What is the worst-case time complexity of Bubble sort?",
+      "options": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "O(n\u00b2)"
+      ],
+      "answer": 3
+    },
+    {
+      "q": "Which sorting algorithm uses the divide-and-conquer technique?",
+      "options": [
+        "Merge sort",
+        "Linear search",
+        "Bubble sort only",
+        "Sequential search"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is the worst-case time complexity of Merge sort?",
+      "options": [
+        "O(n\u00b2)",
+        "O(n log n)",
+        "O(log n)",
+        "O(1)"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which sorting algorithm selects the smallest element from the unsorted portion in each pass?",
+      "options": [
+        "Selection sort",
+        "Merge sort",
+        "Quick sort",
+        "Heap sort"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which sorting algorithm builds a sorted portion by inserting each new element into its correct position?",
+      "options": [
+        "Bubble sort",
+        "Insertion sort",
+        "Heap sort",
+        "Counting sort"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which sorting algorithm uses a pivot element to partition the array?",
+      "options": [
+        "Quick sort",
+        "Merge sort",
+        "Selection sort",
+        "Insertion sort"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which sorting algorithm uses a heap data structure?",
+      "options": [
+        "Bubble sort",
+        "Heap sort",
+        "Insertion sort",
+        "Linear sort"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "Which sorting algorithm is generally stable and guarantees O(n log n) time in its standard array implementation?",
+      "options": [
+        "Merge sort",
+        "Selection sort",
+        "Quick sort",
+        "Bubble sort"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is hashing used for?",
+      "options": [
+        "Mapping keys to positions or hash values",
+        "Arranging nodes into a tree only",
+        "Reversing an array",
+        "Managing function calls"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a hash table?",
+      "options": [
+        "A data structure that stores key-based entries using a hash function",
+        "A sorting algorithm",
+        "A type of linked list only",
+        "A graph traversal method"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a hash collision?",
+      "options": [
+        "When two different keys map to the same hash location",
+        "When an array becomes empty",
+        "When a tree loses its root",
+        "When a stack overflows"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "Which technique resolves hash collisions by storing multiple entries in a bucket, often using a linked list?",
+      "options": [
+        "Linear search",
+        "Separate chaining",
+        "Binary search",
+        "Merge sort"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the average-case lookup time of a well-designed hash table under suitable assumptions?",
+      "options": [
+        "O(1)",
+        "O(n\u00b2)",
+        "O(log n)",
+        "O(2\u207f)"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "What is a heap in data structures?",
+      "options": [
+        "A complete binary tree that satisfies the heap-order property",
+        "A sorted linked list",
+        "A graph with no edges",
+        "A fixed-size stack"
+      ],
+      "answer": 0
+    },
+    {
+      "q": "In a max-heap, which element is stored at the root?",
+      "options": [
+        "The smallest element",
+        "The largest element",
+        "The middle element",
+        "The oldest element"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What is the time complexity of inserting an element into a binary heap with n elements?",
+      "options": [
+        "O(1) in all cases",
+        "O(log n)",
+        "O(n\u00b2)",
+        "O(2\u207f)"
+      ],
+      "answer": 1
+    },
+    {
+      "q": "What does O(1) time complexity mean?",
+      "options": [
+        "Execution time grows linearly with input size",
+        "Execution time grows quadratically with input size",
+        "Execution time remains constant with respect to input size",
+        "Execution time doubles with each input element"
+      ],
+      "answer": 2
+    },
+    {
+      "q": "Which data structure is most suitable for implementing a priority queue efficiently?",
+      "options": [
+        "Unsorted string",
+        "Binary heap",
+        "Simple stack",
+        "Two-dimensional array only"
+      ],
+      "answer": 1
+    }
+  ]
+}

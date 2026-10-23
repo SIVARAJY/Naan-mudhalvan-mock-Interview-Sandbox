@@ -62,14 +62,15 @@
       {% endif %}
       <form id="quiz-form" onsubmit="submitQuiz(event)">
         {% for q in quiz %}
+        {% set q_idx = loop.index0 %}
         <fieldset class="question" style="border:0;border-top:1px solid var(--line);padding:16px 0;margin:0;">
           <legend style="font-weight:700;font-size:14px;">
             <span class="q-number">{{ loop.index }}</span>{{ q.q }}
           </legend>
           {% for opt in q.options %}
           <label class="option">
-            <input type="radio" name="q{{ loop.index0 }}_parent{{ loop.revindex }}" data-qi="{{ loop.index0 - loop.index0 }}" value="{{ loop.index0 }}"
-              onchange="recordAnswer({{ loop.index0 - loop.index0 }}, {{ loop.index0 }})">
+            <input type="radio" name="q{{ q_idx }}_opt" data-qi="{{ q_idx }}" value="{{ loop.index0 }}"
+              onchange="recordAnswer({{ q_idx }}, {{ loop.index0 }})">
             {{ opt }}
           </label>
           {% endfor %}
