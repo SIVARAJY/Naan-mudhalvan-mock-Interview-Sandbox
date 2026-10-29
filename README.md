@@ -63,7 +63,7 @@ The platform strictly implements the official institutional color palette:
 
 ---
 
-## 🛠️ Technology Stack
+Technology Stack
 
 SkillSandbox is engineered with dual-architecture flexibility:
 
@@ -73,7 +73,7 @@ SkillSandbox is engineered with dual-architecture flexibility:
 - **Frontend:** Semantic HTML5, CSS3 Custom Properties, Vanilla JavaScript (ES6+), Jinja2
 - **Hosting:** Render Cloud Platform with automated CI/CD via GitHub webhooks
 
-### Alternative Architecture (MERN Monorepo)
+Alternative Architecture (MERN Monorepo)
 - **Backend:** Node.js (v24), Express.js REST API
 - **Database:** MongoDB Atlas (Mongoose ODM)
 - **Frontend:** React.js (v19) Single Page Application scaffolded with Vite
