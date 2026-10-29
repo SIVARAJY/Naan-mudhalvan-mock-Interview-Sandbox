@@ -31,6 +31,10 @@ SUPABASE_URL = (os.getenv("SUPABASE_URL") or "").rstrip("/")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
 IS_PRODUCTION = os.getenv("FLASK_ENV", "development") == "production"
 
+# Primary Super Admin configuration
+DEFAULT_SUPER_ADMIN = "sivarajy.it24@bitsathy.ac.in"
+ADMIN_MASTER_PASSWORD = os.getenv("ADMIN_MASTER_PASSWORD", "SivarajAdmin@2026")
+
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE="Lax",
@@ -230,20 +234,37 @@ def _pkce_pair():
     challenge = base64.urlsafe_b64encode(digest).rstrip(b"=").decode("ascii")
     return verifier, challenge
 
+def _is_admin_email(email):
+    """Check if the given email is an authorized administrator."""
+    if not email:
+        return False
+    e = email.strip().lower()
+    admins = os.getenv("ADMIN_EMAILS", "").split(",")
+    admin_list = [a.strip().lower() for a in admins if a.strip()]
+    if DEFAULT_SUPER_ADMIN.lower() not in admin_list:
+        admin_list.append(DEFAULT_SUPER_ADMIN.lower())
+    return e in admin_list
+
 @app.context_processor
 def inject_user():
-    return {"current_user": session.get("user")}
+    user = session.get("user")
+    is_admin = False
+    if user:
+        is_admin = bool(user.get("is_admin")) or _is_admin_email(user.get("email"))
+    return {"current_user": user, "is_admin": is_admin}
 
-def _start_session(user):
+def _start_session(user, is_admin=False):
     """Store the verified Supabase user in the Flask session."""
     meta = user.get("user_metadata") or {}
     email = user.get("email") or meta.get("email") or ""
+    admin_status = is_admin or _is_admin_email(email)
     session.clear()
     session["user"] = {
         "id": user["id"],
         "email": email,
         "name": meta.get("full_name") or meta.get("name") or email.split("@")[0],
         "avatar": meta.get("avatar_url") or meta.get("picture"),
+        "is_admin": admin_status,
     }
 
 def _csrf_token():
@@ -516,17 +537,14 @@ def _extract_yt_id(url: str) -> str:
     return ""
 
 def _admin_required(view):
-    """Decorator: only allow users whose email is in ADMIN_EMAILS env var."""
+    """Decorator: only allow authorized administrator access."""
     @wraps(view)
     @login_required
     def wrapped(*args, **kwargs):
-        admins = os.getenv("ADMIN_EMAILS", "").split(",")
-        admins = [a.strip().lower() for a in admins if a.strip()]
-        user_email = session.get("user", {}).get("email", "").lower()
-        # If no admins configured, any logged-in user can manage content (demo mode)
-        if admins and user_email not in admins:
-            flash("Admin access required.", "error")
-            return redirect(url_for("learning_hub"))
+        user = session.get("user", {})
+        if not (user.get("is_admin") or _is_admin_email(user.get("email"))):
+            flash("Admin access required. Please sign in with administrator credentials.", "error")
+            return redirect(url_for("admin_login"))
         return view(*args, **kwargs)
     return wrapped
 
@@ -846,6 +864,45 @@ def recommend_course():
 # ══════════════════════════════════════════════════════════════════════════════
 #  ADMIN – Course & Lesson Management
 # ══════════════════════════════════════════════════════════════════════════════
+
+@app.route("/admin/login", methods=["GET", "POST"])
+def admin_login():
+    """Dedicated Admin Login screen for the Super Administrator."""
+    if "user" in session and (session["user"].get("is_admin") or _is_admin_email(session["user"].get("email"))):
+        return redirect(url_for("admin_learning"))
+    if request.method == "GET":
+        return render_template("admin_login.html", csrf=_csrf_token(), default_email=DEFAULT_SUPER_ADMIN)
+    _check_csrf()
+    email = request.form.get("email", "").strip().lower()
+    password = request.form.get("password", "")
+
+    if not _is_admin_email(email):
+        flash("Access Denied: That email is not registered as an administrator.", "error")
+        return redirect(url_for("admin_login"))
+
+    master_pw = os.getenv("ADMIN_MASTER_PASSWORD", ADMIN_MASTER_PASSWORD)
+    # Check if master password matches
+    if password == master_pw:
+        admin_user = {
+            "id": "admin_super_" + hashlib.sha256(email.encode()).hexdigest()[:12],
+            "email": email,
+            "name": "Super Administrator (" + email.split("@")[0] + ")",
+            "avatar": None,
+            "is_admin": True,
+        }
+        _start_session(admin_user, is_admin=True)
+        flash("Welcome, Administrator. You have full access to management tools.", "info")
+        return redirect(url_for("admin_learning"))
+
+    # Also try regular Supabase auth if student password is used
+    data, err = _supabase_auth("token?grant_type=password", {"email": email, "password": password})
+    if data and "user" in data:
+        _start_session(data["user"], is_admin=True)
+        flash("Signed in as Administrator.", "info")
+        return redirect(url_for("admin_learning"))
+
+    flash("Invalid administrator credentials. Please check your password.", "error")
+    return redirect(url_for("admin_login"))
 
 @app.route("/admin/learning")
 @_admin_required
