@@ -1,15 +1,221 @@
 {% extends "base.html" %}
-{% block title %}Coding Sandbox · SkillSandbox{% endblock %}
+{% block title %}Coding Sandbox · Multi-Language Evaluation{% endblock %}
 {% block content %}
-<div class="page-heading"><p class="eyebrow">MODULE 02</p><h1>Coding sandbox</h1><p class="muted">Read the problem, write a solution, and submit it for prototype rubric feedback.</p></div>
-<section class="problem-layout">
-  <article class="panel problem-card"><p class="eyebrow">CODING CHALLENGE</p><h2>{{ challenge.title }}</h2><p>{{ challenge.description }}</p><div class="example"><span>EXAMPLE</span><code>{{ challenge.example }}</code></div><h3>Hint</h3><p class="muted">{{ challenge.hints }}</p></article>
-  <form method="post" class="panel editor-panel">
-    <label class="field-label" for="student_name">Student name</label><input id="student_name" name="student_name" placeholder="Enter your name">
-    <div class="editor-top"><span>solution.py</span><span>Python 3 · Prototype</span></div>
-    <textarea class="code-editor" name="code" spellcheck="false" required>{{ challenge.starter }}</textarea>
-    <p class="small muted">Prototype note: submitted code is not executed. The current evaluator checks visible code patterns only.</p>
-    <button class="button" type="submit">Evaluate submission</button>
-  </form>
+<div class="page-heading">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+    <div>
+      <p class="eyebrow">MODULE 02 · MULTI-FACTOR EVALUATOR</p>
+      <h1>Coding Sandbox</h1>
+      <p class="muted">Select your programming language, develop your algorithmic solution, test against real-time sample vectors, and submit for multi-factor evaluation.</p>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <a href="{{ url_for('practice_arena') }}" class="button secondary" style="font-size:12px;">⚡ Practice Arena</a>
+      <a href="{{ url_for('history') }}" class="button secondary" style="font-size:12px;">📜 Submission History</a>
+    </div>
+  </div>
+</div>
+
+<!-- Challenge Picker Tabs -->
+<div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
+  {% for cid, ch in all_challenges.items() %}
+  <a href="{{ url_for('coding', challenge_id=cid) }}" 
+     class="button {% if cid == active_challenge.id %}gold{% else %}secondary{% endif %}"
+     style="font-size:12px;padding:8px 16px;">
+    {{ ch.title }}
+  </a>
+  {% endfor %}
+</div>
+
+<section class="problem-layout" style="display:grid;grid-template-columns:1fr 1.35fr;gap:20px;align-items:start;">
+  <!-- Left Column: Problem Details & Test Vectors -->
+  <article class="panel problem-card" style="background:#ffffff;border:1px solid var(--line);border-radius:12px;padding:24px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <span class="pill teal">{{ active_challenge.difficulty }}</span>
+      <span class="eyebrow" style="margin:0;">ALGORITHMIC BENCHMARK</span>
+    </div>
+    <h2 style="font-size:22px;color:var(--teal);margin:0 0 12px;">{{ active_challenge.title }}</h2>
+    <p style="font-size:14px;line-height:1.6;color:var(--ink);margin-bottom:16px;">{{ active_challenge.description }}</p>
+
+    <div class="example" style="background:var(--card-bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:16px;">
+      <span style="font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:4px;">EXAMPLE</span>
+      <code style="font-family:'DM Mono',monospace;color:var(--teal);font-size:13px;">{{ active_challenge.example }}</code>
+    </div>
+
+    {% if active_challenge.constraints %}
+    <div style="margin-bottom:16px;">
+      <span style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;">Constraints</span>
+      <p style="font-family:'DM Mono',monospace;font-size:12px;color:var(--ink);margin:4px 0 0;">{{ active_challenge.constraints }}</p>
+    </div>
+    {% endif %}
+
+    <div style="background:var(--mint-light);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:20px;">
+      <h3 style="font-size:13px;color:var(--teal);margin:0 0 4px;">💡 Algorithmic Hint</h3>
+      <p class="muted" style="font-size:12px;margin:0;">{{ active_challenge.hints }}</p>
+    </div>
+
+    <!-- Test Cases Preview -->
+    <div>
+      <span style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:8px;">Evaluation Test Suite</span>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        {% for tc in active_challenge.test_cases %}
+        <div style="background:#fff;border:1px solid var(--line);padding:8px 12px;border-radius:6px;font-size:12px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-family:'DM Mono',monospace;color:var(--ink);">Input: {{ tc.display }}</span>
+          <span class="pill gold" style="font-size:10px;">Expect: {{ tc.expected }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </article>
+
+  <!-- Right Column: Code Editor & Multi-Factor Controls -->
+  <div class="panel editor-panel" style="background:#ffffff;border:1px solid var(--line);border-radius:12px;padding:24px;">
+    <form id="coding-form" method="post" action="{{ url_for('coding', challenge_id=active_challenge.id) }}">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <input type="hidden" name="challenge_id" value="{{ active_challenge.id }}">
+
+      <!-- Language Selector & Controls Header -->
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:14px;">
+        <div>
+          <label for="lang-select" style="font-size:11px;font-weight:700;color:var(--muted);display:block;text-transform:uppercase;margin-bottom:4px;">
+            Programming Language
+          </label>
+          <select id="lang-select" name="language" onchange="switchLanguage(this.value)"
+            style="border:1px solid var(--line);border-radius:6px;padding:6px 12px;font:inherit;font-size:13px;font-weight:700;background:var(--mint-light);color:var(--teal);cursor:pointer;">
+            <option value="python" {% if selected_lang == 'python' %}selected{% endif %}>🐍 Python 3.12 (Subprocess)</option>
+            <option value="javascript" {% if selected_lang == 'javascript' %}selected{% endif %}>⚡ JavaScript (Node.js)</option>
+            <option value="java" {% if selected_lang == 'java' %}selected{% endif %}>☕ Java (OOP Class)</option>
+            <option value="cpp" {% if selected_lang == 'cpp' %}selected{% endif %}>⚙️ C++ (Standard STL)</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="student_name" style="font-size:11px;font-weight:700;color:var(--muted);display:block;text-transform:uppercase;margin-bottom:4px;">
+            Candidate
+          </label>
+          <input id="student_name" name="student_name" value="{{ current_user.name if current_user else '' }}" placeholder="Your name"
+            style="border:1px solid var(--line);border-radius:6px;padding:6px 10px;font:inherit;font-size:12px;width:160px;background:#fff;color:var(--ink);">
+        </div>
+      </div>
+
+      <!-- Editor Window -->
+      <div class="editor-top" style="display:flex;justify-content:space-between;background:var(--teal);color:#fff;padding:8px 14px;border-top-left-radius:8px;border-top-right-radius:8px;font-family:'DM Mono',monospace;font-size:12px;">
+        <span id="editor-filename">solution.py</span>
+        <span id="editor-runtime-badge">Execution Sandbox: Active (5s Limit)</span>
+      </div>
+      <textarea id="code-editor" class="code-editor" name="code" spellcheck="false" required
+        style="width:100%;height:320px;font-family:'DM Mono',monospace;font-size:13px;line-height:1.5;padding:14px;background:#1e293b;color:#f8fafc;border:1px solid var(--teal);border-top:none;border-bottom-left-radius:8px;border-bottom-right-radius:8px;resize:vertical;">{{ active_code }}</textarea>
+
+      <!-- Action Buttons: Run & Submit -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;flex-wrap:wrap;gap:12px;">
+        <div style="display:flex;gap:10px;">
+          <!-- Run Button (Instant AJAX Sandbox Execution) -->
+          <button id="run-btn" type="button" onclick="runSandboxCode()" class="button secondary" style="font-size:13px;padding:9px 16px;cursor:pointer;">
+            ▶️ Run Code (Test Cases)
+          </button>
+          <!-- Submit Button (Multi-Factor Graded Evaluation) -->
+          <button id="submit-btn" type="submit" class="button" style="font-size:13px;padding:9px 20px;background:var(--teal);cursor:pointer;">
+            🚀 Submit for Multi-Factor Evaluation
+          </button>
+        </div>
+        <button type="button" onclick="resetStarter()" class="button secondary" style="font-size:11px;padding:6px 10px;background:none;border:none;color:var(--muted);cursor:pointer;">
+          ↺ Reset Starter Code
+        </button>
+      </div>
+    </form>
+
+    <!-- Real-time Test Output Console (Populated by Run Code) -->
+    <div id="sandbox-console" style="display:none;margin-top:20px;border-top:1px solid var(--line);padding-top:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <span style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;">Execution Console & Output</span>
+        <span id="console-latency" class="pill teal" style="font-size:10px;">0 ms</span>
+      </div>
+      <div id="console-results" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+  </div>
 </section>
+
+<!-- Starter Codes Data Provider for JavaScript Language Switching -->
+<script>
+const STARTER_CODES = {{ starters_json | safe }};
+const CHALLENGE_ID = "{{ active_challenge.id }}";
+
+function switchLanguage(lang) {
+  const filenameMap = {
+    'python': 'solution.py',
+    'javascript': 'solution.js',
+    'java': 'Solution.java',
+    'cpp': 'solution.cpp'
+  };
+  document.getElementById('editor-filename').textContent = filenameMap[lang] || 'solution.txt';
+  
+  // Update editor with starter if user hasn't written customized code or upon confirmation
+  if (STARTER_CODES[lang]) {
+    document.getElementById('code-editor').value = STARTER_CODES[lang];
+  }
+}
+
+function resetStarter() {
+  const lang = document.getElementById('lang-select').value;
+  if (confirm("Reset editor to original starter template for " + lang + "?")) {
+    document.getElementById('code-editor').value = STARTER_CODES[lang] || "";
+  }
+}
+
+function runSandboxCode() {
+  const btn = document.getElementById('run-btn');
+  const code = document.getElementById('code-editor').value;
+  const lang = document.getElementById('lang-select').value;
+  const consoleBox = document.getElementById('sandbox-console');
+  const resultsDiv = document.getElementById('console-results');
+  const latencyBadge = document.getElementById('console-latency');
+
+  btn.disabled = true;
+  btn.textContent = "⏳ Running sandbox...";
+  consoleBox.style.display = "block";
+  resultsDiv.innerHTML = "<p style='color:var(--muted);font-size:12px;'>Compiling and executing against test vectors in secure subprocess...</p>";
+
+  fetch("{{ url_for('coding_run_ajax') }}", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      challenge_id: CHALLENGE_ID,
+      language: lang,
+      code: code
+    })
+  })
+  .then(r => r.json())
+  .then(d => {
+    btn.disabled = false;
+    btn.textContent = "▶️ Run Code (Test Cases)";
+    if (!d.ok) {
+      resultsDiv.innerHTML = `<div class="notice" style="background:#FFF1F0;border-left:4px solid #d43;color:#8A1F17;padding:10px;border-radius:6px;">${d.error || 'Execution failed.'}</div>`;
+      return;
+    }
+
+    latencyBadge.textContent = `${d.elapsed_ms} ms · ${d.passed_tests}/${d.total_tests} Passed`;
+    latencyBadge.className = d.all_pass ? "pill green" : "pill gold";
+
+    let html = "";
+    (d.test_results || []).forEach((tc, idx) => {
+      const pass = tc.passed;
+      html += `
+        <div style="background:${pass ? '#f0fbf5' : '#fff5f5'};border:1px solid ${pass ? '#c3e6cb' : '#f5c6cb'};padding:10px 14px;border-radius:8px;font-size:12px;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <strong style="color:${pass ? 'var(--green)' : '#d43'};">Test Case ${idx + 1}: ${pass ? 'PASSED ✓' : 'FAILED ✗'}</strong>
+            <span style="font-family:'DM Mono',monospace;display:block;margin-top:2px;color:var(--ink);">Input: ${tc.input}</span>
+            <span style="font-family:'DM Mono',monospace;display:block;font-size:11px;color:var(--muted);">Expected: ${JSON.stringify(tc.expected)} | Actual: ${JSON.stringify(tc.got)}</span>
+          </div>
+          <span class="status ${pass ? 'pass' : 'review'}" style="font-size:10px;">${pass ? 'PASS' : 'FAIL'}</span>
+        </div>
+      `;
+    });
+    resultsDiv.innerHTML = html;
+  })
+  .catch(err => {
+    btn.disabled = false;
+    btn.textContent = "▶️ Run Code (Test Cases)";
+    resultsDiv.innerHTML = `<div class="notice" style="background:#FFF1F0;color:#8A1F17;padding:10px;">Network / Server error: ${err.message}</div>`;
+  });
+}
+</script>
 {% endblock %}

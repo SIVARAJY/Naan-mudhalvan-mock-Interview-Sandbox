@@ -1,30 +1,112 @@
 {% extends "base.html" %}
-{% block title %}Coding Results · SkillSandbox{% endblock %}
+{% block title %}Multi-Factor Evaluation Results · SkillSandbox{% endblock %}
 {% block content %}
-<div class="page-heading"><p class="eyebrow">CODING ASSESSMENT</p><h1>Submission feedback</h1></div>
-<section class="result-hero panel"><div class="score-ring"><strong>{{ score }}%</strong><span>Rubric score</span></div><div><h2>Submission recorded</h2><p>{{ feedback }}</p><a class="button" href="{{ url_for('coding') }}">Try again</a></div></section>
-<section class="panel"><h2>Rubric checks</h2>
-{% for label, passed in checks.items() %}<div class="check-row"><span>{{ label }}</span><span class="status {{ 'pass' if passed else 'review' }}">{{ 'PASS' if passed else 'REVIEW' }}</span></div>{% endfor %}
-<p class="small muted">This score is a static code-pattern heuristic. It does not establish that the code compiles or passes test cases.</p>
-</section>
+<div class="page-heading">
+  <p class="eyebrow">CODING ASSESSMENT RESULTS</p>
+  <h1>Multi-Factor Evaluation Report</h1>
+  <p class="muted">Detailed algorithmic breakdown across functional test vectors, runtime speed, structural quality, and code efficiency.</p>
+</div>
 
-<section class="panel" style="border-color:var(--line);background:var(--mint-light);margin-top:20px;">
-  <div class="section-heading">
-    <div>
-      <p class="eyebrow" style="color:var(--green);">RECOMMENDED PRACTICE</p>
-      <h2>Strengthen Your Algorithmic Problem Solving</h2>
+<!-- Score Hero Ring -->
+<section class="result-hero panel" style="display:flex;align-items:center;gap:28px;background:var(--teal);color:#fff;border-bottom:4px solid var(--gold);padding:30px;border-radius:12px;margin-bottom:24px;">
+  <div class="score-ring" style="border:4px solid var(--gold);width:110px;height:110px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,0.06);">
+    <strong style="font-size:32px;color:var(--gold);">{{ score }}%</strong>
+    <span style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;">Multi-Factor</span>
+  </div>
+  <div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+      <span class="pill gold" style="font-size:10px;">{{ language|upper }} RUNNER</span>
+      <span class="status pass" style="font-size:10px;">{{ passed_tests }} / {{ total_tests }} TESTS PASSED</span>
+    </div>
+    <h2 style="font-size:24px;color:#fff;margin:0 0 6px;">{{ challenge.title }}</h2>
+    <p style="color:var(--mint-soft);font-size:13px;margin:0 0 14px;max-width:550px;">
+      Candidate: <strong>{{ student_name }}</strong> · Execution Latency: <strong>{{ elapsed_ms }} ms</strong> · Subprocess Sandbox: <strong>Verified</strong>
+    </p>
+    <div style="display:flex;gap:10px;">
+      <a class="button gold" href="{{ url_for('coding', challenge_id=challenge.id) }}">Retry with Another Language</a>
+      <a class="button secondary" href="{{ url_for('history') }}">View Complete History</a>
     </div>
   </div>
-  <p class="muted" style="margin:0 0 16px;">Practice interactive Python and DSA problems with automated unit test suites and progressive hints in the Practice Arena:</p>
+</section>
+
+<!-- Multi-Factor Breakdown Cards -->
+<section style="margin-bottom:24px;">
+  <h2 style="font-size:18px;color:var(--teal);margin-bottom:14px;">Multi-Factor Technique Breakdown</h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;">
+    {% for key, f in factors.items() %}
+    <div class="panel" style="background:#fff;border:1px solid var(--line);border-radius:10px;padding:18px;border-top:3px solid var(--teal);">
+      <span style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;">Factor {{ loop.index }}</span>
+      <h3 style="font-size:15px;color:var(--teal);margin:4px 0 8px;">{{ f.label }}</h3>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+        <strong style="font-size:22px;color:var(--green);">{{ f.score }}</strong>
+        <span class="muted small">/ {{ f.max }} pts</span>
+      </div>
+      <div class="progress-bar" style="height:6px;background:var(--line);border-radius:3px;overflow:hidden;">
+        <div style="height:100%;width:{{ (f.score / f.max * 100)|round }}%;background:var(--green);"></div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Test Cases Detailed Results -->
+<section class="panel" style="background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px;margin-bottom:24px;">
+  <div class="section-heading" style="margin-bottom:14px;">
+    <div>
+      <p class="eyebrow">AUTOMATED TEST VECTOR VALIDATION</p>
+      <h2>Input / Output Verification</h2>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:10px;">
+    {% for tc in test_results %}
+    <div style="background:{% if tc.passed %}#f0fbf5{% else %}#fff5f5{% endif %};border:1px solid {% if tc.passed %}#c3e6cb{% else %}#f5c6cb{% endif %};padding:12px 16px;border-radius:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+      <div>
+        <strong style="color:{% if tc.passed %}var(--green){% else %}#d43{% endif %};font-size:13px;">
+          Test Case {{ loop.index }}: {% if tc.passed %}PASSED ✓{% else %}FAILED ✗{% endif %}
+        </strong>
+        <span style="font-family:'DM Mono',monospace;display:block;margin-top:4px;color:var(--ink);font-size:12px;">Input: {{ tc.input }}</span>
+        <span style="font-family:'DM Mono',monospace;display:block;font-size:11px;color:var(--muted);margin-top:2px;">
+          Expected: {{ tc.expected }} | Got: {{ tc.got }}
+        </span>
+      </div>
+      <span class="status {% if tc.passed %}pass{% else %}review{% endif %}" style="font-size:11px;">
+        {% if tc.passed %}PASS{% else %}REVIEW{% endif %}
+      </span>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Code Structure Rubric Checks -->
+<section class="panel" style="background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px;margin-bottom:24px;">
+  <h2 style="font-size:18px;color:var(--teal);margin-bottom:14px;">Semantic Code Analysis & Rules</h2>
+  {% for label, passed in checks.items() %}
+  <div class="check-row" style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px;">
+    <span>{{ label }}</span>
+    <span class="status {{ 'pass' if passed else 'review' }}" style="font-size:10px;">{{ 'PASS' if passed else 'REVIEW' }}</span>
+  </div>
+  {% endfor %}
+</section>
+
+<!-- Recommended Reinforcement -->
+<section class="panel" style="border-color:var(--line);background:var(--mint-light);">
+  <div class="section-heading" style="margin-bottom:8px;">
+    <div>
+      <p class="eyebrow" style="color:var(--green);">RECOMMENDED NEXT STEPS</p>
+      <h2>Reinforce Your Problem-Solving Speed</h2>
+    </div>
+  </div>
+  <p class="muted" style="margin:0 0 16px;">Improve your multi-language fluency and tackle timed interview coding drills:</p>
   <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    <a class="button" href="{{ url_for('practice_drill', topic='Python', type='code') }}" style="background:var(--teal);">
-      ⚡ Practice Python Coding Problems
+    <a class="button" href="{{ url_for('practice_drill', topic='DSA', type='code') }}" style="background:var(--teal);">
+      ⚡ Practice DSA Coding Problems
     </a>
-    <a class="button secondary" href="{{ url_for('practice_drill', topic='DSA', type='code') }}">
-      🌲 Practice DSA Problems
+    <a class="button secondary" href="{{ url_for('practice_drill', topic='Python', type='code') }}">
+      🐍 Practice Python Drills
     </a>
-    <a class="button secondary" href="{{ url_for('learning_hub', topic='Python') }}">
-      📚 Python Learning Course
+    <a class="button secondary" href="{{ url_for('learning_hub', topic='DSA') }}">
+      📚 DSA Learning Course
     </a>
   </div>
 </section>

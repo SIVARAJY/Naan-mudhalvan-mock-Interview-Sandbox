@@ -19,6 +19,8 @@ from psycopg.rows import dict_row
 from dotenv import load_dotenv
 from pathlib import Path
 from werkzeug.middleware.proxy_fix import ProxyFix
+from coding_challenges import CODING_CHALLENGES
+from sandbox_evaluator import evaluate_multi_factor
 
 load_dotenv(Path(__file__).with_name(".env"))
 app = Flask(__name__)
@@ -41,13 +43,7 @@ app.config.update(
     SESSION_COOKIE_SECURE=IS_PRODUCTION,
 )
 
-CHALLENGE = {
-    "title": "Find the maximum",
-    "description": "Write a function that returns the largest number in a non-empty list.",
-    "example": "Input: [3, 9, 2]  ->  Output: 9",
-    "starter": "def find_max(numbers):\n    # Write your solution here\n    pass",
-    "hints": "Consider using max(numbers) or comparing values in a loop.",
-}
+CHALLENGE = CODING_CHALLENGES.get("find_max")
 
 # ---------------------------------------------------------------- database
 @contextmanager
@@ -492,23 +488,80 @@ def dashboard():
 @app.route("/coding", methods=["GET", "POST"])
 @login_required
 def coding():
+    challenge_id = request.args.get("challenge_id") or request.form.get("challenge_id") or "find_max"
+    challenge = CODING_CHALLENGES.get(challenge_id, CODING_CHALLENGES["find_max"])
+
     if request.method == "POST":
         student_name = (request.form.get("student_name", "").strip()
-                        or session["user"]["name"] or "Demo Student")
+                        or session.get("user", {}).get("name") or "Candidate")
+        language = request.form.get("language", "python").strip().lower()
         code = request.form.get("code", "")
-        checks = {
-            "Defines a function": "def " in code,
-            "Returns a result": "return" in code,
-            "Uses a max/comparison approach": ("max(" in code or ">" in code or "sorted(" in code),
-        }
-        score = round(sum(checks.values()) / len(checks) * 100, 1)
-        feedback = "Static rubric checks: " + ", ".join(
-            f"{label}: {'pass' if ok else 'review'}" for label, ok in checks.items()
+
+        eval_result = evaluate_multi_factor(code, language, challenge.get("test_cases", []))
+        score = eval_result["score"]
+        passed = eval_result["passed_tests"]
+        total = eval_result["total_tests"]
+        elapsed_ms = eval_result["elapsed_ms"]
+
+        feedback = f"Multi-Factor Evaluation ({language.upper()}): {score}% | {passed}/{total} tests passed ({elapsed_ms}ms latency)"
+        save_attempt(student_name, "Coding Sandbox", challenge["title"], score, feedback)
+
+        return render_template(
+            "coding_result.html",
+            student_name=student_name,
+            challenge=challenge,
+            language=language,
+            score=score,
+            factors=eval_result["factors"],
+            test_results=eval_result["test_results"],
+            checks=eval_result["checks"],
+            elapsed_ms=elapsed_ms,
+            passed_tests=passed,
+            total_tests=total,
         )
-        save_attempt(student_name, "Coding Sandbox", CHALLENGE["title"], score, feedback)
-        return render_template("coding_result.html", student_name=student_name, score=score,
-                               checks=checks, feedback=feedback)
-    return render_template("coding.html", challenge=CHALLENGE)
+
+    # GET request
+    selected_lang = request.args.get("language", "python").strip().lower()
+    if selected_lang not in challenge.get("starters", {}):
+        selected_lang = "python"
+    active_code = challenge.get("starters", {}).get(selected_lang, "")
+
+    return render_template(
+        "coding.html",
+        all_challenges=CODING_CHALLENGES,
+        active_challenge=challenge,
+        selected_lang=selected_lang,
+        active_code=active_code,
+        starters_json=json.dumps(challenge.get("starters", {})),
+        challenge=challenge,
+        csrf=_csrf_token(),
+    )
+
+@app.route("/coding/api/run", methods=["POST"])
+@login_required
+def coding_run_ajax():
+    data = request.get_json(silent=True) or {}
+    challenge_id = data.get("challenge_id", "find_max")
+    challenge = CODING_CHALLENGES.get(challenge_id, CODING_CHALLENGES["find_max"])
+    language = (data.get("language") or "python").strip().lower()
+    code = data.get("code", "")
+
+    if not code.strip():
+        return jsonify({"ok": False, "error": "No code provided to execute."}), 400
+
+    eval_result = evaluate_multi_factor(code, language, challenge.get("test_cases", []))
+    return jsonify({
+        "ok": True,
+        "score": eval_result["score"],
+        "passed_tests": eval_result["passed_tests"],
+        "total_tests": eval_result["total_tests"],
+        "elapsed_ms": eval_result["elapsed_ms"],
+        "test_results": eval_result["test_results"],
+        "factors": eval_result["factors"],
+        "checks": eval_result["checks"],
+        "all_pass": eval_result["all_pass"],
+        "error": eval_result.get("runtime_error"),
+    })
 
 @app.route("/history")
 @login_required
